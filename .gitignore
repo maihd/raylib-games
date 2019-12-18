@@ -1,0 +1,7 @@
+.vs
+.vscode
+.DS_Store
+
+Build/bin
+Build/obj
+Build/*.vcxproj.user
