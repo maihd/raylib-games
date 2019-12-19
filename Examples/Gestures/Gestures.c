@@ -4,10 +4,10 @@
 int main(void)
 {
     const int SCREEN_WIDTH  = 800;
-    const int SCREEN_HEIGHT = 600;
+    const int SCREEN_HEIGHT = 450;
 
     enum {
-        MAX_GESTURES = 12,
+        MAX_GESTURES = 21,
     };
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Gestures");

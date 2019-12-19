@@ -72,3 +72,4 @@ end
 
 template ("BasicWindow", "Examples/BasicWindow")
 template ("Gestures", "Examples/Gestures")
+template ("AppState", "Examples/AppState")
