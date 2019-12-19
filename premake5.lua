@@ -12,37 +12,63 @@ do
     filter {} 
 end
 
-project "BasicWindow"
+project "Framework"
 do
-    kind "ConsoleApp"
+    kind "StaticLib"
 
-    links {
-        "raylib_static",
-        "winmm"
-    }
-
-    includedirs {
-        path.join(ROOT_DIR, "ThirdParty/Include")
+    includedirs { 
+        path.join(ROOT_DIR, "Framework/Include"),
     }
 
     files {
-        path.join(ROOT_DIR, "Examples/BasicWindow/Main.c")
+        path.join(ROOT_DIR, "Framework/Include/*.h"),
+        path.join(ROOT_DIR, "Framework/Include/**/*.h"),
+        path.join(ROOT_DIR, "Framework/Sources/*.c"),
+        path.join(ROOT_DIR, "Framework/Sources/**/*.c"),
     }
-
-    defines {
-        "GRAPHICS_API_OPENGL_33",
-        "PLATFORM_DESKTOP"
-    }
-
-    filter { "platforms:x32" }
-    do
-        libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win32") }
-    end
-
-    filter { "platforms:x64" }
-    do
-        libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win64") }
-    end
 
     filter {}
 end
+
+function template(name, projectPath)
+    project (name)
+    do
+        kind "ConsoleApp"
+
+        links {
+            "raylib_static",
+            "winmm",
+            "Framework"
+        }
+
+        includedirs {
+            path.join(ROOT_DIR, "ThirdParty/Include"),
+            path.join(ROOT_DIR, "Framework/Include"),
+        }
+
+        files {
+            path.join(ROOT_DIR, projectPath, "*.c"),
+            path.join(ROOT_DIR, projectPath, "**/*.c"),
+        }
+
+        defines {
+            "GRAPHICS_API_OPENGL_33",
+            "PLATFORM_DESKTOP"
+        }
+
+        filter { "platforms:x32" }
+        do
+            libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win32") }
+        end
+
+        filter { "platforms:x64" }
+        do
+            libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win64") }
+        end
+
+        filter {}
+    end
+end
+
+template ("BasicWindow", "Examples/BasicWindow")
+template ("Gestures", "Examples/Gestures")

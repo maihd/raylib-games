@@ -35,10 +35,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{FFF798A7-6BAD-119D-F4A1-0B74605608A1}</ProjectGuid>
+    <ProjectGuid>{17C26575-038F-C080-2CA8-AE2818D4F50E}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>BasicWindow</RootNamespace>
+    <RootNamespace>Gestures</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -102,43 +102,43 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x32\Debug\</OutDir>
-    <IntDir>obj\x32\Debug\BasicWindow\</IntDir>
-    <TargetName>BasicWindow</TargetName>
+    <IntDir>obj\x32\Debug\Gestures\</IntDir>
+    <TargetName>Gestures</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x64\Debug\</OutDir>
-    <IntDir>obj\x64\Debug\BasicWindow\</IntDir>
-    <TargetName>BasicWindow</TargetName>
+    <IntDir>obj\x64\Debug\Gestures\</IntDir>
+    <TargetName>Gestures</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Native|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\Native\Debug\</OutDir>
-    <IntDir>obj\Native\Debug\BasicWindow\</IntDir>
-    <TargetName>BasicWindow</TargetName>
+    <IntDir>obj\Native\Debug\Gestures\</IntDir>
+    <TargetName>Gestures</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x32\Release\</OutDir>
-    <IntDir>obj\x32\Release\BasicWindow\</IntDir>
-    <TargetName>BasicWindow</TargetName>
+    <IntDir>obj\x32\Release\Gestures\</IntDir>
+    <TargetName>Gestures</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x64\Release\</OutDir>
-    <IntDir>obj\x64\Release\BasicWindow\</IntDir>
-    <TargetName>BasicWindow</TargetName>
+    <IntDir>obj\x64\Release\Gestures\</IntDir>
+    <TargetName>Gestures</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Native|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\Native\Release\</OutDir>
-    <IntDir>obj\Native\Release\BasicWindow\</IntDir>
-    <TargetName>BasicWindow</TargetName>
+    <IntDir>obj\Native\Release\Gestures\</IntDir>
+    <TargetName>Gestures</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -224,7 +224,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Examples\BasicWindow\BasicWindow.c" />
+    <ClCompile Include="..\Examples\Gestures\Gestures.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Framework.vcxproj">
