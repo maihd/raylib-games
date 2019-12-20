@@ -47,6 +47,8 @@ function template(name, projectPath)
         }
 
         files {
+            path.join(ROOT_DIR, projectPath, "*.h"),
+            path.join(ROOT_DIR, projectPath, "**/*.h"),
             path.join(ROOT_DIR, projectPath, "*.c"),
             path.join(ROOT_DIR, projectPath, "**/*.c"),
         }
@@ -70,6 +72,12 @@ function template(name, projectPath)
     end
 end
 
-template ("BasicWindow", "Examples/BasicWindow")
-template ("Gestures", "Examples/Gestures")
-template ("AppState", "Examples/AppState")
+function example(name)
+    template(name, path.join("Examples", name))
+end
+
+example "BasicWindow"
+example "Gestures"
+example "AppState"
+example "Shapes"
+example "Easing"

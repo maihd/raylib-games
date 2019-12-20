@@ -35,10 +35,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C7EB4531-B3B8-A03C-DCD1-8EE4C8FDD5CA}</ProjectGuid>
+    <ProjectGuid>{09400CD1-F5E1-36A7-DE9C-4AFBCADDBDF7}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>AppState</RootNamespace>
+    <RootNamespace>Shapes</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -102,43 +102,43 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x32\Debug\</OutDir>
-    <IntDir>obj\x32\Debug\AppState\</IntDir>
-    <TargetName>AppState</TargetName>
+    <IntDir>obj\x32\Debug\Shapes\</IntDir>
+    <TargetName>Shapes</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x64\Debug\</OutDir>
-    <IntDir>obj\x64\Debug\AppState\</IntDir>
-    <TargetName>AppState</TargetName>
+    <IntDir>obj\x64\Debug\Shapes\</IntDir>
+    <TargetName>Shapes</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Native|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\Native\Debug\</OutDir>
-    <IntDir>obj\Native\Debug\AppState\</IntDir>
-    <TargetName>AppState</TargetName>
+    <IntDir>obj\Native\Debug\Shapes\</IntDir>
+    <TargetName>Shapes</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x32\Release\</OutDir>
-    <IntDir>obj\x32\Release\AppState\</IntDir>
-    <TargetName>AppState</TargetName>
+    <IntDir>obj\x32\Release\Shapes\</IntDir>
+    <TargetName>Shapes</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x64\Release\</OutDir>
-    <IntDir>obj\x64\Release\AppState\</IntDir>
-    <TargetName>AppState</TargetName>
+    <IntDir>obj\x64\Release\Shapes\</IntDir>
+    <TargetName>Shapes</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Native|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\Native\Release\</OutDir>
-    <IntDir>obj\Native\Release\AppState\</IntDir>
-    <TargetName>AppState</TargetName>
+    <IntDir>obj\Native\Release\Shapes\</IntDir>
+    <TargetName>Shapes</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -224,7 +224,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Examples\AppState\AppState.c" />
+    <ClCompile Include="..\Examples\Shapes\Shapes.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Framework.vcxproj">
