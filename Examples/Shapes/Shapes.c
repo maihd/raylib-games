@@ -1,6 +1,12 @@
 #include <raylib.h>
+#include <Array.h>
 
 #define MAX_COLORS_COUNT    21          // Number of colors available
+
+typedef struct
+{
+    Array(int) values;
+} Thing;
 
 int main(void)
 {
@@ -11,6 +17,16 @@ int main(void)
 
     SetTargetFPS(60);
 
+    Array(int) intArray = ArrayNew(int, 0);
+
+    ArrayPush(intArray, 10);
+
+    ArrayFree(intArray);
+
+    Thing thing = { ArrayNew(int, 0) };
+    ArrayPush(thing.values, 11);
+    ArrayFree(thing.values);
+       
     while (!WindowShouldClose())
     {
         BeginDrawing();

@@ -25,7 +25,7 @@ int main(void)
 
     intArray = ArrayPush(intArray, 10);
     
-    intArray = ArrayFree(intArray);
+    ArrayFree(intArray);
 
     SetTargetFPS(60);
 

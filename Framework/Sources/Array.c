@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-void* ArrayGrow(void* array, int capacity, int elementSize)
+int ArrayGrow(void** array, int capacity, int elementSize)
 {
     int newCapacity = (capacity > 16) ? capacity - 1 : 15;
     newCapacity = newCapacity | (newCapacity >> 1);
@@ -12,14 +12,20 @@ void* ArrayGrow(void* array, int capacity, int elementSize)
     newCapacity = newCapacity | (newCapacity >> 16);
     newCapacity = newCapacity + 1;
 
-    int* oldBuffer = array ? (int*)array - 2 : 0;
+    int* oldBuffer = *array ? (int*)*array - 2 : 0;
     int* newBuffer = realloc(oldBuffer, sizeof(int) * 2 + newCapacity * elementSize);
 
     if (newBuffer)
     {
         newBuffer[0] = oldBuffer ? oldBuffer[0] : 0;
         newBuffer[1] = newCapacity;
-    }
 
-    return newBuffer + 2;
+        *array = (newBuffer + 2);
+
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
