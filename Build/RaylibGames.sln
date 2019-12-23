@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gestures", "Gestures.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shapes", "Shapes.vcxproj", "{09400CD1-F5E1-36A7-DE9C-4AFBCADDBDF7}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Textures", "Textures.vcxproj", "{A95C6780-9529-C28B-BE42-B033AA6EF719}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Native = Debug|Native
@@ -95,6 +97,18 @@ Global
 		{09400CD1-F5E1-36A7-DE9C-4AFBCADDBDF7}.Release|Win32.Build.0 = Release|Win32
 		{09400CD1-F5E1-36A7-DE9C-4AFBCADDBDF7}.Release|x64.ActiveCfg = Release|x64
 		{09400CD1-F5E1-36A7-DE9C-4AFBCADDBDF7}.Release|x64.Build.0 = Release|x64
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Debug|Native.ActiveCfg = Debug Native|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Debug|Native.Build.0 = Debug Native|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Debug|Win32.Build.0 = Debug|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Debug|x64.ActiveCfg = Debug|x64
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Debug|x64.Build.0 = Debug|x64
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Release|Native.ActiveCfg = Release Native|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Release|Native.Build.0 = Release Native|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Release|Win32.ActiveCfg = Release|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Release|Win32.Build.0 = Release|Win32
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Release|x64.ActiveCfg = Release|x64
+		{A95C6780-9529-C28B-BE42-B033AA6EF719}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
