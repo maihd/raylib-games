@@ -8,7 +8,7 @@
 #define FreeListNew(T, capacity)    (FreeList(T)){ ArrayNew(T, capacity), ArrayNew(int, capacity) }
 #define FreeListFree(list)          (ArrayFree((list).elements), ArrayFree((list).freeElements))
 
-#define FreeListCount(list)         (ArrayCount((list).elements) - ArrayCount((list).freeElements))
+#define FreeListCount(list)         (ArrayCount((list).elements))
 #define FreeListCapacity(list)      (ArrayCapacity((list).elements))
 
 #define FreeListRef(list, index)            (&(list).elements[index])
