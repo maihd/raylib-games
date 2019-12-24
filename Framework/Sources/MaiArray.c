@@ -1,6 +1,26 @@
-#include <Array.h>
+#include <MaiArray.h>
 
 #include <stdlib.h>
+
+void* ArrayCreateBuffer(int capacity, int elementSize)
+{
+    int newCapacity = (capacity > 16) ? capacity - 1 : 15;
+    newCapacity = newCapacity | (newCapacity >> 1);
+    newCapacity = newCapacity | (newCapacity >> 2);
+    newCapacity = newCapacity | (newCapacity >> 4);
+    newCapacity = newCapacity | (newCapacity >> 8);
+    newCapacity = newCapacity | (newCapacity >> 16);
+    newCapacity = newCapacity + 1;
+
+    int* newBuffer = malloc(sizeof(int) * 2 + newCapacity * elementSize);
+    if (newBuffer)
+    {
+        newBuffer[0] = 0;
+        newBuffer[1] = newCapacity;
+    }
+
+    return newBuffer + 2;
+}
 
 int ArrayGrow(void** array, int capacity, int elementSize)
 {

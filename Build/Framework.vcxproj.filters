@@ -9,27 +9,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Framework\Include\Array.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\Easings.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\FreeList.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\GUI.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="..\Framework\Include\MaiLib.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\MaiMath.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\MaiGui.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\MaiArray.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\MaiEasings.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\MaiFreeList.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Framework\Sources\Array.c">
+    <ClCompile Include="..\Framework\Sources\MaiGui.c">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Framework\Sources\GUI.c">
+    <ClCompile Include="..\Framework\Sources\MaiArray.c">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -76,6 +76,10 @@ function example(name)
     template(name, path.join("Examples", name))
 end
 
+function game(name)
+    template(name, path.join("Games", name))
+end
+
 example "BasicWindow"
 example "Gestures"
 example "AppState"
@@ -83,3 +87,5 @@ example "Shapes"
 example "Easing"
 example "Textures"
 example "DrawRing"
+
+game "NeonShooter"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./MaiLib.h"
+#include "./MaiTypes.h"
 
 #if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
 #   define GUIDEF __declspec(dllexport) extern  // We are building raygui as a Win32 shared library (.dll).

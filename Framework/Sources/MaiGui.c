@@ -1,4 +1,5 @@
-#include <GUI.h>
+#include <MaiGui.h>
+#include <MaiLib.h>
 
 #if defined(GUI_SUPPORT_ICONS)
     #include "riconsdata.h"     // Required for: raygui icons data
