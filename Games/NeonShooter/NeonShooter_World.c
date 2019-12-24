@@ -409,7 +409,7 @@ bool UpdateBlackhole(Entity* blackhole, Entity* other)
     else if (vec2Distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
     {
         vec2 diff = vec2Sub(blackhole->position, other->position);
-        other->velocity = vec2Add(other->velocity, vec2Scale(vec2Normalize(diff), lerpf(1, 0, vec2Length(diff) / (GetScreenWidth() * 0.2f))));
+        other->velocity = vec2Add(other->velocity, vec2Scale(vec2Normalize(diff), lerpf(1.0f, 0.0f, vec2Length(diff) / (blackhole->radius * 10.0f))));
         other->velocity = vec2Normalize(other->velocity);
     }
 
@@ -626,7 +626,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             {
                 float r = b->radius + s->radius * 5.0f;
                 float t = (d - r) / r;
-                b->velocity = vec2Normalize(vec2Add(b->velocity, vec2Normalize(vec2Scale(vec2Sub(b->position, s->position), 0.3f))));
+                b->velocity = vec2Normalize(vec2Add(b->velocity, vec2Scale(vec2Normalize(vec2Sub(b->position, s->position)), 0.3f)));
             }
         }
     }
