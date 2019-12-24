@@ -28,7 +28,7 @@ static Entity UpdateEntity(Entity entity, float dt)
         .active = entity.active,
 
         .scale = entity.scale,
-        .position = vec2Add(entity.position, vec2Scale(entity.velocity, dt)),
+        .position = vec2Add(entity.position, vec2Scale(entity.velocity, entity.movespeed * dt)),
         .rotation = entity.velocity.x != 0.0f || entity.velocity.y != 0.0f ? atan2f(entity.velocity.y, entity.velocity.x) : entity.rotation,
 
         .velocity = entity.velocity,
@@ -76,7 +76,7 @@ static Entity UpdateEntityWithBound(Entity entity, vec2 bound, float dt)
         entity.active,
 
         entity.scale,
-        entity.velocity.x != 0.0f || entity.velocity.y != 0.0f ? (entity.velocity.y, entity.velocity.x) : entity.rotation,
+        entity.velocity.x != 0.0f || entity.velocity.y != 0.0f ? (entity.velocity.y, entity.velocity.x) : entity.rotation + dt,
         pos,
 
         entity.velocity,
@@ -101,7 +101,15 @@ static void RenderEntity(Entity entity)
 {
     if (entity.active)
     {
-        DrawTextureEx(entity.texture, entity.position, entity.rotation, entity.scale, entity.color);
+        //DrawTextureEx(entity.texture, entity.position, entity.rotation * RAD2DEG, entity.scale, entity.color
+        DrawTexturePro(
+            entity.texture, 
+            (rect) { 0, 0, entity.texture.width, entity.texture.height }, 
+            (rect) { entity.position.x, entity.position.y, entity.texture.width, entity.texture.height },
+            (vec2) { entity.texture.width * 0.5f, entity.texture.height * 0.5f },
+            entity.rotation * RAD2DEG, 
+            entity.color
+        );
     }
 }
 
@@ -112,7 +120,15 @@ static void RenderEntities(Array(Entity) entities)
         Entity entity = entities[i];
         if (entity.active)
         {
-            DrawTextureEx(entity.texture, entity.position, entity.rotation, entity.scale, entity.color);
+            DrawTexturePro(
+                entity.texture, 
+                (rect) { 0, 0, entity.texture.width, entity.texture.height }, 
+                (rect) { entity.position.x, entity.position.y, entity.texture.width, entity.texture.height },
+                (vec2) { entity.texture.width * 0.5f, entity.texture.height * 0.5f },
+                entity.rotation * RAD2DEG, 
+                entity.color
+            );
+            //DrawTextureEx(entity.texture, entity.position, entity.rotation * RAD2DEG, entity.scale, entity.color);
         }
     }
 }
@@ -776,7 +792,7 @@ void WorldRender(World world)
         (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
         vec2Zero(),
         0,
-        0.5f,
+        1.0f,
     };
     BeginMode2D(camera);
     {
