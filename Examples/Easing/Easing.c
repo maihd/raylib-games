@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <Easings.h>
 
 int main(void)
 {
@@ -16,13 +17,15 @@ int main(void)
         END
     } state = MOVE;
 
-    int frameCounter = 0;
+    float timer = 0;
     float ballPositionX = -SCREEN_WIDTH * 0.5f;
     float ballRadius = 20;
     float ballAlpha = 1.0f;
     
     while (!WindowShouldClose())
     {
+        timer += GetFrameTime();
+
         BeginDrawing();
         {
             ClearBackground(RAYWHITE);
@@ -31,16 +34,42 @@ int main(void)
             switch (state)
             {
             case MOVE:
-                //ballPositionX = EaseElastic
+                ballPositionX = EaseElasticOut(-SCREEN_WIDTH * 0.5f, SCREEN_WIDTH * 0.5f, timer, 2.0f);
+                if (timer >= 2.0f)
+                {
+                    timer = 0;
+                    state = INLARGE;
+                }
                 break;
 
             case INLARGE:
+                ballRadius = EaseElasticIn(20, SCREEN_WIDTH, timer, 3.0f);
+                if (timer >= 3.0f)
+                {
+                    timer = 0.0f;
+                    state = FADING;
+                }
                 break;
 
             case FADING:
+                ballAlpha = EaseCubicOut(1.0f, 0.0f, timer, 3.0f);
+                if (timer >= 3.0f)
+                {
+                    timer = 0.0f;
+                    state = END;
+                }
                 break;
 
             case END:
+                if (IsKeyPressed(KEY_ENTER))
+                {
+                    timer = 0.0f;
+                    state = MOVE;
+
+                    ballPositionX   = -SCREEN_WIDTH * 0.5f;
+                    ballRadius      = 20;
+                    ballAlpha       = 1.0f;
+                }
                 break;
             }
 
@@ -48,9 +77,17 @@ int main(void)
             switch (state)
             {
             case END:
+                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
+                DrawText("PRESS [ENTER] TO PLAY AGAIN!", 240, 200, 20, BLACK);
+                break;
+
+            case FADING:
+                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GREEN);
+                DrawCircle(ballPositionX, SCREEN_HEIGHT * 0.5f, ballRadius, Fade(RED, ballAlpha));
                 break;
 
             default:
+                DrawCircle(ballPositionX, SCREEN_HEIGHT * 0.5f, ballRadius, Fade(RED, ballAlpha));
                 break;
             }
         }
