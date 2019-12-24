@@ -51,7 +51,7 @@ static void UpdateEntities(Array(Entity) entities, float dt)
 
 static Entity UpdateEntityWithBound(Entity entity, vec2 bound, float dt)
 {
-    vec2  pos = vec2Add(entity.position, vec2Scale(entity.velocity, dt));
+    vec2  pos = vec2Add(entity.position, vec2Scale(entity.velocity, entity.movespeed * dt));
     float rad = entity.radius;
 
     if (pos.x + rad > bound.x)
@@ -76,7 +76,7 @@ static Entity UpdateEntityWithBound(Entity entity, vec2 bound, float dt)
         entity.active,
 
         entity.scale,
-        entity.velocity.x != 0.0f || entity.velocity.y != 0.0f ? (entity.velocity.y, entity.velocity.x) : entity.rotation + dt,
+        entity.velocity.x != 0.0f || entity.velocity.y != 0.0f ? atan2f(entity.velocity.y, entity.velocity.x) : entity.rotation,
         pos,
 
         entity.velocity,
@@ -461,7 +461,7 @@ void WorldFree(World* world)
     *world = (World) { 0 };
 }
 
-void WorldUpdate(World* world, float vertical, float horizontal, vec2 aim_dir, bool fire, float dt)
+void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, bool fire, float dt)
 {
     if (world->gameOverTimer > 0.0f)
     {
@@ -792,7 +792,7 @@ void WorldRender(World world)
         (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
         vec2Zero(),
         0,
-        1.0f,
+        0.5f,
     };
     BeginMode2D(camera);
     {
