@@ -772,10 +772,20 @@ void WorldRender(World world)
         return;
     }
 
-    RenderEntity(world.player);
-    RenderEntities(world.bullets.elements);
-    RenderEntities(world.seekers.elements);
-    RenderEntities(world.wanderers.elements);
-    RenderEntities(world.blackHoles.elements);
+    Camera2D camera = {
+        (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
+        vec2Zero(),
+        0,
+        0.5f,
+    };
+    BeginMode2D(camera);
+    {
+        RenderEntity(world.player);
+        RenderEntities(world.bullets.elements);
+        RenderEntities(world.seekers.elements);
+        RenderEntities(world.wanderers.elements);
+        RenderEntities(world.blackHoles.elements);
+    }
+    EndMode2D();
 }
 
