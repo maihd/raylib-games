@@ -1,4 +1,4 @@
-#include <raylib.h>
+#include <MaiLib.h>
 #include <Array.h>
 
 #define MAX_COLORS_COUNT    21          // Number of colors available
@@ -92,7 +92,7 @@ int main(void)
 
                     float x = startX + j * (CELL_SIZE + PADDING);
                     float y = startY + i * (CELL_SIZE + PADDING);
-                    Rectangle rect = { x, y, CELL_SIZE, CELL_SIZE };
+                    rect rect = { x, y, CELL_SIZE, CELL_SIZE };
                     
                     DrawRectangleRec(rect, color);
 

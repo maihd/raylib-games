@@ -1,4 +1,4 @@
-#include <raylib.h>
+#include <MaiLib.h>
 #include <Easings.h>
 
 int main(void)

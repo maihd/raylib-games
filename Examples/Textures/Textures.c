@@ -1,4 +1,4 @@
-#include <raylib.h>
+#include <MaiLib.h>
 #include <FreeList.h>
 
 int main(void)
@@ -12,8 +12,8 @@ int main(void)
 
     Texture scarfy = LoadTexture("../Assets/scarfy.png");
 
-    Vector2 position = { 350.0f, 280.0f };
-    Rectangle frameRec = { 0.0f, 0.0f, (float)scarfy.width / 6.0f, (float)scarfy.height };
+    vec2 position = { 350.0f, 280.0f };
+    rect frameRec = { 0.0f, 0.0f, (float)scarfy.width / 6.0f, (float)scarfy.height };
     int currentFrame = 0;
 
     int frameCounter = 0;
@@ -70,7 +70,7 @@ int main(void)
             DrawRectangleLines(15 + frameRec.x, 40 + frameRec.y, frameRec.width, frameRec.height, RED);
 
             DrawText("FRAME SPEED: ", 165, 210, 10, DARKGRAY);
-            DrawText(FormatText("%02i FPS", frameInterval), 575, 210, 10, DARKGRAY);
+            DrawText(TextFormat("%02i FPS", frameInterval), 575, 210, 10, DARKGRAY);
             DrawText("PRESS RIGHT/LEFT KEYS to CHANGE SPEED!", 290, 240, 10, DARKGRAY);
 
             for (int i = 0; i < MAX_FRAME_SPEED; i++)

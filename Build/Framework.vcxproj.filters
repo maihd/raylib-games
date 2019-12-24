@@ -12,9 +12,24 @@
     <ClInclude Include="..\Framework\Include\Array.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Framework\Include\Easings.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\FreeList.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\GUI.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\MaiLib.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Framework\Sources\Array.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Framework\Sources\GUI.c">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>
