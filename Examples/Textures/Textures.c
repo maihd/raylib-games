@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <FreeList.h>
 
 int main(void)
 {
@@ -17,6 +18,11 @@ int main(void)
 
     int frameCounter = 0;
     int frameInterval = 8;
+
+    FreeList(int) numberList = FreeListNew(int, 0);
+    FreeListAdd(numberList, 10);
+    FreeListRemove(numberList, 10);
+    FreeListFree(numberList);
 
     SetTargetFPS(60);
 

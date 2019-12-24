@@ -29,3 +29,11 @@ int ArrayGrow(void** array, int capacity, int elementSize)
         return 0;
     }
 }
+
+int ArrayMove(void* array, int start, int end, int count, int elementSize)
+{
+    if (array && count > 0)
+    {
+        memmove((char*)array + start * elementSize, (char*)array + end * elementSize, count * elementSize);
+    }
+}

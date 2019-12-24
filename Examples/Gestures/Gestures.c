@@ -21,7 +21,7 @@ int main(void)
     int currentGesture = GESTURE_NONE;
     int lastGesture = GESTURE_NONE;
 
-    int* intArray = ArrayNew(0);
+    Array(int) intArray = ArrayNew(int, 0);
 
     intArray = ArrayPush(intArray, 10);
     

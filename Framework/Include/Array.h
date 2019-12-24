@@ -1,5 +1,6 @@
 #pragma once
 
+int ArrayMove(void*  array, int start, int end, int count, int elementSize);
 int ArrayGrow(void** array, int capacity, int elementSize);
 
 #define Array(T)                        T*
@@ -15,3 +16,72 @@ int ArrayGrow(void** array, int capacity, int elementSize);
 
 #define ArrayPush(array, value)         (ArrayEnsure(array, ArrayCount(array) + 1) ? ((array)[((int*)(array) - 2)[0]++] = value, 1) : 0)
 #define ArrayPop(array)                 ((array)[--((int*)array - 2)[0]])
+
+#define ArrayIndexOf(array, value, outIndex)                    \
+    do {                                                        \
+        outIndex = -1;                                          \
+        for (int i = 0, n = ArrayCount(array); i < n; i++) {    \
+            if (array[i] == value) {                            \
+                outIndex = i;                                   \
+                break;                                          \
+            }                                                   \
+        }                                                       \
+    } while (0)
+
+#define ArrayLastIndexOf(array, value, outIndex)                \
+    do {                                                        \
+        outIndex = -1;                                          \
+        for (int i = 0, n = ArrayCount(array); i < n; i++) {    \
+            if (array[i] == value) {                            \
+                outIndex = i;                                   \
+            }                                                   \
+        }                                                       \
+    } while (0)
+
+#define ArrayErase(array, index)                                                                            \
+    do {                                                                                                    \
+        if (index > -1 && index < ArrayCount(array)) {                                                      \
+            if (index < ArrayCount(array) - 1) {                                                            \
+                ArrayMove(array, index, index + 1, ArrayCount(array) - index - 1, sizeof((array)[0]));      \
+                ((int*)(array) - 2)[0]--;                                                                   \
+            }                                                                                               \
+        }                                                                                                   \
+    } while (0)
+
+#define ArrayEraseWithHole(array, index)                                                                    \
+    do {                                                                                                    \
+        if (index > -1 && index < ArrayCount(array)) {                                                      \
+            if (index < ArrayCount(array) - 1) {                                                            \
+                array[index] = array[ArrayCount(array) - 1];                                                \
+                ((int*)(array) - 2)[0]--;                                                                   \
+            }                                                                                               \
+        }                                                                                                   \
+    } while (0)
+
+#define ArrayRemove(array, value)                                                                           \
+    do {                                                                                                    \
+        int index;                                                                                          \
+        ArrayIndexOf(array, value, index);                                                                  \
+        ArrayErase(array, index);                                                                           \
+    } while (0)
+
+#define ArrayRemoveLast(array, value)                                                                       \
+    do {                                                                                                    \
+        int index;                                                                                          \
+        ArrayLastIndexOf(array, value, index);                                                              \
+        ArrayErase(array, index);                                                                           \
+    } while (0)
+
+#define ArrayRemoveWithHole(array, value)                                                                   \
+    do {                                                                                                    \
+        int index;                                                                                          \
+        ArrayIndexOf(array, value, index);                                                                  \
+        ArrayErase(array, index);                                                                           \
+    } while (0)
+
+#define ArrayRemoveLastWithHole(array, value)                                                               \
+    do {                                                                                                    \
+        int index;                                                                                          \
+        ArrayLastIndexOf(array, value, index);                                                              \
+        ArrayErase(array, index);                                                                           \
+    } while (0)
