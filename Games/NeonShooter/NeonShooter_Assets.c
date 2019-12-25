@@ -66,5 +66,11 @@ void    ClearCacheTextures(void)
 
 Texture CacheTexture(const char* path)
 {
-    
+#ifdef RELEASE
+#   define ASSET_PATH "Assets"
+#else
+#   define ASSET_PATH "../Games/NeonShooter/Assets"
+#endif
+
+    return LoadTexture(TextFormat("%s/%s", ASSET_PATH, path));
 }

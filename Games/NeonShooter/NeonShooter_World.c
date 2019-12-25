@@ -1,15 +1,10 @@
 #include "NeonShooter_World.h"
+#include "NeonShooter_Assets.h"
 #include "NeonShooter_ParticleSystem.h"
 
 #include <MaiLib.h>
 #include <MaiMath.h>
 #include <MaiArray.h>
-
-#ifdef RELEASE
-#   define ASSET_PATH(path) "Assets/" path
-#else
-#   define ASSET_PATH(path) "../Games/NeonShooter/Assets/" path
-#endif
 
 static inline vec4 HSV(float h, float s, float v)
 {
@@ -141,7 +136,7 @@ static void RenderEntities(Array(Entity) entities)
 
 static void SpawnBullet(World* world, vec2 pos, vec2 vel)
 {
-    Texture texture = LoadTexture(ASSET_PATH("Art/Bullet.png"));
+    Texture texture = CacheTexture("Art/Bullet.png");
     Entity entity = {
         true,
         1.0f,
@@ -203,7 +198,7 @@ static void SpawnSeeker(World* world)
     vec2 pos = GetSpawnPosition(*world);
     vec2 vel = vec2Normalize(vec2Sub(world->player.position, pos));
 
-    Texture texture = LoadTexture(ASSET_PATH("Art/Seeker.png"));
+    Texture texture = CacheTexture("Art/Seeker.png");
 
     Entity entity = {
         true,
@@ -230,7 +225,7 @@ static void SpawnWanderer(World* world)
     vec2 pos = GetSpawnPosition(*world);
     vec2 vel = vec2Normalize(vec2Sub(world->player.position, pos));
 
-    Texture texture = LoadTexture(ASSET_PATH("Art/Wanderer.png"));
+    Texture texture = CacheTexture("Art/Wanderer.png");
 
     Entity entity = {
         true,
@@ -257,7 +252,7 @@ static void SpawnBlackhole(World* world)
     vec2 pos = GetSpawnPosition(*world);
     vec2 vel = (vec2){ 0.0f, 0.0f };
 
-    Texture texture = LoadTexture(ASSET_PATH("Art/Black Hole.png"));
+    Texture texture = CacheTexture("Art/Black Hole.png");
 
     Entity entity = {
         true,
@@ -285,7 +280,7 @@ static void DestroyBullet(World* world, int index, bool explosion)
     if (explosion)
     {
         const int PARTICLE_COUNT = 30;
-        Texture texture = LoadTexture(ASSET_PATH("Art/Laser.png"));
+        Texture texture = CacheTexture("Art/Laser.png");
 
         for (int i = 0; i < PARTICLE_COUNT; i++)
         {
@@ -307,7 +302,7 @@ static void DestroySeeker(World* world, int index)
     world->seekers.elements[index].active = false;
     FreeListCollect(world->seekers, index);
 
-    Texture texture = LoadTexture(ASSET_PATH("Art/Laser.png"));
+    Texture texture = CacheTexture("Art/Laser.png");
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
@@ -333,7 +328,7 @@ void DestroyWanderer(World* world, int index)
     world->wanderers.elements[index].active = false;
     FreeListCollect(world->wanderers, index);
 
-    Texture texture = LoadTexture(ASSET_PATH("Art/Laser.png"));
+    Texture texture = CacheTexture("Art/Laser.png");
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
@@ -359,7 +354,7 @@ void DestroyBlackhole(World* world, int index)
     world->blackHoles.elements[index].active = false;
     FreeListCollect(world->blackHoles, index);
 
-    Texture texture = LoadTexture(ASSET_PATH("Art/Laser.png"));
+    Texture texture = CacheTexture("Art/Laser.png");
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
@@ -388,7 +383,7 @@ void OnGameOver(World* world)
     FreeListClear(world->blackHoles);
 
     world->gameOverTimer = 3.0f;
-    Texture texture = LoadTexture(ASSET_PATH("Art/Laser.png"));
+    Texture texture = CacheTexture("Art/Laser.png");
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
@@ -436,7 +431,7 @@ World WorldNew(void)
     world.player.rotation = 0.0f;
     world.player.scale = 1.0f;
     world.player.movespeed = 720.0f;
-    world.player.texture = LoadTexture(ASSET_PATH("Art/Player.png"));
+    world.player.texture = CacheTexture("Art/Player.png");
     world.player.radius = world.player.texture.width * 0.5f;
 
     world.seekerSpawnRate = 80;
@@ -489,8 +484,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         float speed;
         float angle = atan2f(world->player.velocity.y, world->player.velocity.x);
     
-        Texture glow_tex = LoadTexture(ASSET_PATH("Art/Laser.png"));
-        Texture line_tex = LoadTexture(ASSET_PATH("Art/Laser.png"));
+        Texture glow_tex = CacheTexture("Art/Laser.png");
+        Texture line_tex = CacheTexture("Art/Laser.png");
     
         vec2 vel = vec2Scale(world->player.velocity, -0.25f * world->player.movespeed);
         vec2 pos = vec2Add(world->player.position, vec2Scale(world->player.velocity, -45.0f));
@@ -670,8 +665,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         Entity* s = &world->blackHoles.elements[i];
         if (s->active)
         {
-            Texture glow_tex = LoadTexture(ASSET_PATH("Art/Glow.png"));
-            Texture line_tex = LoadTexture(ASSET_PATH("Art/Laser.png"));
+            Texture glow_tex = CacheTexture("Art/Glow.png");
+            Texture line_tex = CacheTexture("Art/Laser.png");
 
             vec4 color1 = (vec4){ 0.3f, 0.8f, 0.4f, 1.0f };
             vec4 color2 = (vec4){ 0.5f, 1.0f, 0.7f, 1.0f };
@@ -690,7 +685,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
 
             if (GetFrameCount() % 60 == 0)
             {
-                Texture texture = LoadTexture(ASSET_PATH("Art/Laser.png"));
+                Texture texture = CacheTexture("Art/Laser.png");
 
                 float hue1 = rand() % 101 / 100.0f * 6.0f;
                 float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
