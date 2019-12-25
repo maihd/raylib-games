@@ -231,6 +231,18 @@ MAIMATH_DEF vec3 vec3One(void)
     return result;
 }
 
+MAIMATH_DEF vec3 vec3From(float x, float y, float z)
+{
+    vec3 result = { x, y, z };
+    return result;
+}
+
+MAIMATH_DEF vec3 vec3Repeat(float s)
+{
+    vec3 result = { s, s, s };
+    return result;
+}
+
 // Add two vectors
 MAIMATH_DEF vec3 vec3Add(vec3 v1, vec3 v2)
 {
@@ -517,6 +529,18 @@ MAIMATH_DEF vec4 vec4Zero(void)
 MAIMATH_DEF vec4 vec4One(void)
 {
     vec4 result = { 1.0f, 1.0f, 1.0f, 1.0f };
+    return result;
+}
+
+MAIMATH_DEF vec4 vec4From(float x, float y, float z, float w)
+{
+    vec4 result = { x, y, z, w };
+    return result;
+}
+
+MAIMATH_DEF vec4 vec4Repeat(float s)
+{
+    vec4 result = { s, s, s, s };
     return result;
 }
 

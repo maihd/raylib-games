@@ -21,6 +21,7 @@ extern "C" {            // Prevents name mangling of functions
 // Window-related functions
 MAILIB_API void InitWindow(int width, int height, const char *title);  // Initialize window and OpenGL context
 MAILIB_API bool WindowShouldClose(void);                               // Check if KEY_ESCAPE pressed or Close icon pressed
+MAILIB_API bool PollWindowEvents(void);                                // Update window
 MAILIB_API void CloseWindow(void);                                     // Close window and unload OpenGL context
 MAILIB_API bool IsWindowReady(void);                                   // Check if window has been initialized successfully
 MAILIB_API bool IsWindowMinimized(void);                               // Check if window has been minimized (or lost focus)
@@ -73,7 +74,10 @@ MAILIB_API mat4 GetCameraMatrix(Camera camera);                      // Returns 
 // Timing-related functions
 MAILIB_API void SetTargetFPS(int fps);                                 // Set target FPS (maximum)
 MAILIB_API int GetFPS(void);                                           // Returns current FPS
+MAILIB_API int GetFrameCount(void);                                    // Get total frames have passed
 MAILIB_API float GetFrameTime(void);                                   // Returns time in seconds for last frame drawn
+MAILIB_API float GetDeltaTime(void);                                   // Returns time in seconds for last frame drawn
+MAILIB_API float GetTotalTime(void);                                   // Returns time in seconds for total frames taken
 MAILIB_API double GetTime(void);                                       // Returns elapsed time in seconds since InitWindow()
 
 // Color-related functions
@@ -81,6 +85,7 @@ MAILIB_API int ColorToInt(Color color);                                // Return
 MAILIB_API vec4 ColorNormalize(Color color);                        // Returns color normalized as float [0..1]
 MAILIB_API vec3 ColorToHSV(Color color);                            // Returns HSV values for a Color
 MAILIB_API Color ColorFromHSV(vec3 hsv);                            // Returns a Color from HSV values
+MAILIB_API Color ColorFromVec4(vec4 color);
 MAILIB_API Color GetColor(int hexValue);                               // Returns a Color struct from hexadecimal value
 MAILIB_API Color Fade(Color color, float alpha);                       // Color fade-in or fade-out, alpha goes from 0.0f to 1.0f
 

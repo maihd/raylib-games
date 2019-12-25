@@ -2,6 +2,12 @@
 
 #include <stdlib.h>
 
+typedef struct
+{
+    int count;
+    int capacity;
+} ArrayHeader;
+
 void* ArrayCreateBuffer(int capacity, int elementSize)
 {
     int newCapacity = (capacity > 16) ? capacity - 1 : 15;
@@ -12,14 +18,14 @@ void* ArrayCreateBuffer(int capacity, int elementSize)
     newCapacity = newCapacity | (newCapacity >> 16);
     newCapacity = newCapacity + 1;
 
-    int* newBuffer = malloc(sizeof(int) * 2 + newCapacity * elementSize);
+    ArrayHeader* newBuffer = malloc(sizeof(ArrayHeader) + newCapacity * elementSize);
     if (newBuffer)
     {
-        newBuffer[0] = 0;
-        newBuffer[1] = newCapacity;
+        newBuffer->count    = 0;
+        newBuffer->capacity = newCapacity;
     }
 
-    return newBuffer + 2;
+    return newBuffer + 1;
 }
 
 int ArrayGrow(void** array, int capacity, int elementSize)
@@ -32,15 +38,16 @@ int ArrayGrow(void** array, int capacity, int elementSize)
     newCapacity = newCapacity | (newCapacity >> 16);
     newCapacity = newCapacity + 1;
 
-    int* oldBuffer = *array ? (int*)*array - 2 : 0;
-    int* newBuffer = realloc(oldBuffer, sizeof(int) * 2 + newCapacity * elementSize);
+    int oldCount = ArrayCount(*array);
+    ArrayHeader* oldBuffer = *array ? ((ArrayHeader*)(*array) - 1) : NULL;
+    ArrayHeader* newBuffer = realloc(oldBuffer, sizeof(ArrayHeader) + newCapacity * elementSize);
 
     if (newBuffer)
     {
-        newBuffer[0] = oldBuffer ? oldBuffer[0] : 0;
-        newBuffer[1] = newCapacity;
+        newBuffer->count    = oldCount;
+        newBuffer->capacity = newCapacity;
 
-        *array = (newBuffer + 2);
+        *array = (newBuffer + 1);
 
         return 1;
     }

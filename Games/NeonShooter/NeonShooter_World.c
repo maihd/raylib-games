@@ -1,5 +1,7 @@
 #include "NeonShooter_World.h"
+#include "NeonShooter_ParticleSystem.h"
 
+#include <MaiLib.h>
 #include <MaiMath.h>
 #include <MaiArray.h>
 
@@ -286,9 +288,10 @@ static void DestroyBullet(World* world, int index, bool explosion)
             float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
             vec2  vel   = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
+            vec2  pos   = world->bullets.elements[index].position;
             vec4  color = (vec4){ 0.6f, 1.0f, 1.0f, 1.0f };
 
-            //ParticleSystem::SpawnParticle(texture, bullet->position, color, 1.0f, float2(1.0f), 0.0f, vel);
+            SpawnParticle(texture, pos, color, 1.0f, vec2Repeat(1.0f), 0.0f, vel);
         }
     }
 }
@@ -312,9 +315,10 @@ static void DestroySeeker(World* world, int index)
         float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
         float angle = rand() % 101 / 100.0f * 2 * PI;
         vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
+        vec2  pos = world->seekers.elements[index].position;
         vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
 
-        //ParticleSystem::SpawnParticle(texture, world->seekers.elements[index].position, color, 1.0f, vec2{ 1.0f, 1.0f }, 0.0f, vel);
+        SpawnParticle(texture, pos, color, 1.0f, (vec2){ 1.0f, 1.0f }, 0.0f, vel);
     }
 }
 
@@ -337,9 +341,10 @@ void DestroyWanderer(World* world, int index)
         float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
         float angle = rand() % 101 / 100.0f * 2 * PI;
         vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
+        vec2  pos = world->wanderers.elements[index].position;
         vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
 
-        //ParticleSystem::SpawnParticle(texture, world->seekers.elements[index].position, color, 1.0f, vec2{ 1.0f, 1.0f }, 0.0f, vel);
+        SpawnParticle(texture, pos, color, 1.0f, (vec2){ 1.0f, 1.0f }, 0.0f, vel);
     }
 }
 
@@ -362,9 +367,10 @@ void DestroyBlackhole(World* world, int index)
         float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
         float angle = rand() % 101 / 100.0f * 2 * PI;
         vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
+        vec2  pos = world->blackHoles.elements[index].position;
         vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
 
-        //ParticleSystem::SpawnParticle(texture, world->seekers.elements[index].position, color, 1.0f, vec2{ 1.0f, 1.0f }, 0.0f, vel);
+        SpawnParticle(texture, pos, color, 1.0f, (vec2){ 1.0f, 1.0f }, 0.0f, vel);
     }
 }
 
@@ -392,7 +398,7 @@ void OnGameOver(World* world)
         vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
 
         vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
-        //ParticleSystem::SpawnParticle(texture, player.position, color, gameOverTimer, float2(1.0f), 0.0f, vel);
+        SpawnParticle(texture, world->player.position, color, world->gameOverTimer, vec2Repeat(1.0f), 0.0f, vel);
     }
 
     world->player.position = (vec2){ 0, 0 };
@@ -474,35 +480,35 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
 
     world->player.velocity = vec2Lerp(world->player.velocity, vec2Normalize((vec2){ horizontal, vertical }), 5.0f * dt);
     world->player = UpdateEntityWithBound(world->player, (vec2){ GetScreenWidth(), GetScreenHeight() }, dt);
-    //if (lensqr(world->player.velocity) > 0.1f && fmodf(Time::GetTotalTime(), 0.025f) <= 0.01f)
-    //{
-    //    float speed;
-    //    float angle = atan2f(player.velocity.y, player.velocity.x);
-    //
-    //    Texture glow_tex = LoadTexture(ASSET_PATH("Art/Laser.png");
-    //    Texture line_tex = LoadTexture(ASSET_PATH("Art/Laser.png");
-    //
-    //    float2 vel = -0.25f * player.movespeed * player.velocity;
-    //    float2 pos = player.position + 45.0f * (-player.velocity);
-    //    float2 nvel = float2(vel.y, -vel.x) * 0.9f * sinf(Game::totalTime * 10.0f);
-    //    float alpha = 0.7f;
-    //
-    //    float2 mid_vel = vel;
-    //    ParticleSystem::SpawnParticle(glow_tex, pos, float4(1.0f, 0.7f, 0.1f, 1.0f) * alpha, 0.4f, float2(3.0f, 2.0f), angle, mid_vel);
-    //    ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(3.0f, 1.0f), angle, mid_vel);
-    //
-    //    speed = rand() % 101 / 100.0f * 40.0f;
-    //    angle = rand() % 101 / 100.0f * 2.0f * PI;
-    //    float2 side_vel1 = vel + nvel + float2(cosf(angle), sinf(angle)) * speed;
-    //    ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(3.0f, 2.0f), angle, side_vel1);
-    //    ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(3.0f, 1.0f), angle, side_vel1);
-    //
-    //    speed = rand() % 101 / 100.0f * 40.0f;
-    //    angle = rand() % 101 / 100.0f * 2.0f * PI;
-    //    float2 side_vel2 = vel - nvel + float2(cosf(angle), sinf(angle)) * speed;
-    //    ParticleSystem::SpawnParticle(glow_tex, pos, float4(0.8f, 0.2f, 0.1f, 1.0f) * alpha, 0.4f, float2(3.0f, 2.0f), angle, side_vel2);
-    //    ParticleSystem::SpawnParticle(line_tex, pos, float4(1.0f, 1.0f, 1.0f, 1.0f) * alpha, 0.4f, float2(3.0f, 1.0f), angle, side_vel2);
-    //}
+    if (vec2LengthSq(world->player.velocity) > 0.1f && fmodf(GetTotalTime(), 0.025f) <= 0.01f)
+    {
+        float speed;
+        float angle = atan2f(world->player.velocity.y, world->player.velocity.x);
+    
+        Texture glow_tex = LoadTexture(ASSET_PATH("Art/Laser.png"));
+        Texture line_tex = LoadTexture(ASSET_PATH("Art/Laser.png"));
+    
+        vec2 vel = vec2Scale(world->player.velocity, -0.25f * world->player.movespeed);
+        vec2 pos = vec2Add(world->player.position, vec2Scale(world->player.velocity, -45.0f));
+        vec2 nvel = vec2Scale(vec2From(vel.y, -vel.x), 0.9f * sinf(GetTotalTime() * 10.0f));
+        float alpha = 0.7f;
+    
+        vec2 mid_vel = vel;
+        SpawnParticle(glow_tex, pos, vec4Scale(vec4From(1.0f, 0.7f, 0.1f, 1.0f), alpha), 0.4f, vec2From(3.0f, 2.0f), angle, mid_vel);
+        SpawnParticle(line_tex, pos, vec4Scale(vec4From(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2From(3.0f, 1.0f), angle, mid_vel);
+    
+        speed = rand() % 101 / 100.0f * 40.0f;
+        angle = rand() % 101 / 100.0f * 2.0f * PI;
+        vec2 side_vel1 = vec2Add(vel, vec2Add(nvel, vec2Scale(vec2From(cosf(angle), sinf(angle)), speed)));
+        SpawnParticle(glow_tex, pos, vec4Scale(vec4From(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2From(3.0f, 2.0f), angle, side_vel1);
+        SpawnParticle(line_tex, pos, vec4Scale(vec4From(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2From(3.0f, 1.0f), angle, side_vel1);
+    
+        speed = rand() % 101 / 100.0f * 40.0f;
+        angle = rand() % 101 / 100.0f * 2.0f * PI;
+        vec2 side_vel2 = vec2Sub(vel, vec2Add(nvel, vec2Scale(vec2From(cosf(angle), sinf(angle)), speed)));
+        SpawnParticle(glow_tex, pos, vec4Scale(vec4From(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2From(3.0f, 2.0f), angle, side_vel2);
+        SpawnParticle(line_tex, pos, vec4Scale(vec4From(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2From(3.0f, 1.0f), angle, side_vel2);
+    }
 
     for (int i = 0, n = FreeListCount(world->bullets); i < n; i++)
     {
@@ -666,8 +672,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             vec4 color1 = (vec4){ 0.3f, 0.8f, 0.4f, 1.0f };
             vec4 color2 = (vec4){ 0.5f, 1.0f, 0.7f, 1.0f };
 
-            //if (GetFrameTime() % 3 == 0)
-            if (false)
+            if (GetFrameCount() % 3 == 0)
             {
                 float speed = 16.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
                 float angle = rand() % 101 / 100.0f * 0.0f;//Time::GetTotalTime();
@@ -675,12 +680,11 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
                 vec2  pos = vec2Add(vec2Add(s->position, vec2Scale((vec2){ vel.y, -vel.x }, 0.4f)), vec2Repeat(4.0f + rand() % 101 / 100.0f * 4.0f));
 
                 vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
-                //ParticleSystem::SpawnParticle(glow_tex, pos, color, 4.0f, float2(0.3f, 0.2f), 0.0f, vel);
-                //ParticleSystem::SpawnParticle(line_tex, pos, color, 4.0f, float2(1.0f, 1.0f), 0.0f, vel);
+                SpawnParticle(glow_tex, pos, color, 4.0f, vec2From(0.3f, 0.2f), 0.0f, vel);
+                SpawnParticle(line_tex, pos, color, 4.0f, vec2From(1.0f, 1.0f), 0.0f, vel);
             }
 
-            //if (Time::GetTotalFrames() % 60 == 0)
-            if (false)
+            if (GetFrameCount() % 60 == 0)
             {
                 Texture texture = LoadTexture(ASSET_PATH("Art/Laser.png"));
 
@@ -696,7 +700,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
                     vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
                     vec2  pos = vec2Add(s->position, vel);
                     vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
-                    //ParticleSystem::SpawnParticle(texture, pos, color, 2.0f, float2(1.0f), 0.0f, float2(0.0f));
+                    SpawnParticle(texture, pos, color, 2.0f, vec2Repeat(1.0f), 0.0f, vec2Repeat(0.0f));
                 }
             }
 
@@ -788,20 +792,10 @@ void WorldRender(World world)
         return;
     }
 
-    Camera2D camera = {
-        (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
-        vec2Zero(),
-        0,
-        0.5f,
-    };
-    BeginMode2D(camera);
-    {
-        RenderEntity(world.player);
-        RenderEntities(world.bullets.elements);
-        RenderEntities(world.seekers.elements);
-        RenderEntities(world.wanderers.elements);
-        RenderEntities(world.blackHoles.elements);
-    }
-    EndMode2D();
+    RenderEntity(world.player);
+    RenderEntities(world.bullets.elements);
+    RenderEntities(world.seekers.elements);
+    RenderEntities(world.wanderers.elements);
+    RenderEntities(world.blackHoles.elements);
 }
 

@@ -12,11 +12,12 @@ int main(void)
 
     SetTargetFPS(60);
 
+    InitParticles();
     World world = WorldNew();
     vec2 aim;
     bool fire;
 
-    while (!WindowShouldClose())
+    while (!PollWindowEvents())
     {
         float axis_vertical = 0.0f;
         float axis_horizontal = 0.0f;
@@ -108,17 +109,32 @@ int main(void)
         axis_vertical = axes.y;
         axis_horizontal = axes.x;
 
-        WorldUpdate(&world, axis_horizontal, axis_vertical, aim, fire, GetFrameTime());
+        WorldUpdate(&world, axis_horizontal, axis_vertical, aim, fire, GetDeltaTime());
+        UpdateParticles(&world, GetDeltaTime());
 
         BeginDrawing();
         {
             ClearBackground(BLACK);
+            
+            Camera2D camera = {
+                (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
+                vec2Zero(),
+                0,
+                0.5f,
+            };
+            BeginMode2D(camera);
+            {
+                WorldRender(world);
+                DrawParticles();
+            }
+            EndMode2D();
 
-            WorldRender(world);
+            DrawFPS(0, 0);
         }
         EndDrawing();
     }
 
+    ReleaseParticles();
     WorldFree(&world);
     CloseWindow();
     return 0;

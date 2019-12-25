@@ -14,7 +14,7 @@ void*   ArrayCreateBuffer(int capacity, int elementSize);
 
 #define ArrayClear(array)               if (array) ((int*)(array) - 2)[0] = 0
 
-#define ArrayEnsure(array, capacity)    ((ArrayCapacity(array) > (capacity) ? 1 : ArrayGrow(&(array), capacity, sizeof((array)[0]))))
+#define ArrayEnsure(array, capacity)    (ArrayCapacity(array) >= (capacity) ? 1 : ArrayGrow(&(array), capacity, sizeof((array)[0])))
 #define ArrayResize(array, capacity)    (ArrayGrow(&(array), capacity, sizeof((array)[0])))
 
 #define ArrayPush(array, value)         (ArrayEnsure(array, ArrayCount(array) + 1) ? ((array)[((int*)(array) - 2)[0]++] = value, 1) : 0)

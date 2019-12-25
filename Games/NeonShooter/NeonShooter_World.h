@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MaiLib.h>
+#include <MaiTypes.h>
 #include <MaiArray.h>
 #include <MaiFreeList.h>
 
