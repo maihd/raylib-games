@@ -206,6 +206,7 @@
     <ClInclude Include="..\Framework\Include\MaiEasings.h" />
     <ClInclude Include="..\Framework\Include\MaiFreeList.h" />
     <ClInclude Include="..\Framework\Include\MaiGui.h" />
+    <ClInclude Include="..\Framework\Include\MaiHashTable.h" />
     <ClInclude Include="..\Framework\Include\MaiLib.h" />
     <ClInclude Include="..\Framework\Include\MaiMath.h" />
     <ClInclude Include="..\Framework\Include\MaiTypes.h" />
@@ -213,6 +214,7 @@
   <ItemGroup>
     <ClCompile Include="..\Framework\Sources\MaiArray.c" />
     <ClCompile Include="..\Framework\Sources\MaiGui.c" />
+    <ClCompile Include="..\Framework\Sources\MaiHashTable.c" />
     <ClCompile Include="..\Framework\Sources\MaiLib.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

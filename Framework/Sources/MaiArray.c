@@ -8,7 +8,7 @@ typedef struct
     int capacity;
 } ArrayHeader;
 
-void* ArrayCreateBuffer(int capacity, int elementSize)
+void* Array_CreateBuffer(int capacity, int elementSize)
 {
     int newCapacity = (capacity > 16) ? capacity - 1 : 15;
     newCapacity = newCapacity | (newCapacity >> 1);
@@ -28,7 +28,7 @@ void* ArrayCreateBuffer(int capacity, int elementSize)
     return newBuffer + 1;
 }
 
-int ArrayGrow(void** array, int capacity, int elementSize)
+int Array_GrowMemory(void** array, int capacity, int elementSize)
 {
     int newCapacity = (capacity > 16) ? capacity - 1 : 15;
     newCapacity = newCapacity | (newCapacity >> 1);
@@ -57,7 +57,7 @@ int ArrayGrow(void** array, int capacity, int elementSize)
     }
 }
 
-int ArrayMove(void* array, int start, int end, int count, int elementSize)
+int Array_MoveMemory(void* array, int start, int end, int count, int elementSize)
 {
     if (array && count > 0)
     {

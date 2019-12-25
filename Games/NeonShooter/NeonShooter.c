@@ -4,6 +4,8 @@
 #include "NeonShooter_ParticleSystem.h"
 #include "NeonShooter_World.h"
 
+#include "NeonShooter_Assets.h"
+
 int main(void)
 {
     const int SCREEN_WIDTH = 1280;
@@ -12,7 +14,9 @@ int main(void)
 
     SetTargetFPS(60);
 
+    InitCacheTextures();
     InitParticles();
+
     World world = WorldNew();
     vec2 aim;
     bool fire;
@@ -76,7 +80,7 @@ int main(void)
             float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
             if (vec2Length(vec2From(x, y)) < 0.01f)
             {
-                aim = vec2Zero();
+                //aim = vec2Zero();
             }
             else
             {
@@ -136,8 +140,10 @@ int main(void)
         EndDrawing();
     }
 
-    ReleaseParticles();
     WorldFree(&world);
+    ReleaseParticles();
+
+    ClearCacheTextures();
     CloseWindow();
     return 0;
 }

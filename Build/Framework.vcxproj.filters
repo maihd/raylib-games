@@ -21,6 +21,9 @@
     <ClInclude Include="..\Framework\Include\MaiGui.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Framework\Include\MaiHashTable.h">
+      <Filter>Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\Framework\Include\MaiLib.h">
       <Filter>Include</Filter>
     </ClInclude>
@@ -36,6 +39,9 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\MaiGui.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Framework\Sources\MaiHashTable.c">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\MaiLib.c">
