@@ -63,17 +63,20 @@ int main(void)
             aim = vec2Lerp(aim, taim, 0.8f);
         }
 
-#if 0
         if (IsGamepadAvailable(0))
         {
-            axis_vertical = lerpf(axis_vertical, Input::GetAxis(0, GamepadAxis::LeftVertical), LERP_RATE);
-            axis_horizontal = lerpf(axis_horizontal, Input::GetAxis(0, GamepadAxis::LeftHorizontal), LERP_RATE);
+            float axis_left_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X);
+            float axis_left_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y);
+            axis_vertical = lerpf(axis_vertical, fabsf(axis_left_y) > 0.05f ? axis_left_y : 0.0f, LERP_RATE);
+            axis_horizontal = lerpf(axis_horizontal, fabsf(axis_left_x) > 0.05f ? axis_left_x : 0.0f, LERP_RATE);
 
-            float x = Input::GetAxis(0, GamepadAxis::RightHorizontal);
-            float y = Input::GetAxis(0, GamepadAxis::RightVertical);
-            if (vec2Length(float2(x, y)) < 0.01f)
+            float axis_right_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X);
+            float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
+            float x = fabsf(axis_right_x) > 0.05f ? axis_right_x : 0.0f;
+            float y = fabsf(axis_right_y) > 0.05f ? axis_right_y : 0.0f;
+            if (vec2Length(vec2From(x, y)) < 0.01f)
             {
-                aim = float2();
+                aim = vec2Zero();
             }
             else
             {
@@ -84,14 +87,13 @@ int main(void)
                 float aim_angle = atan2f(y, x);
 
                 cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
-                aim = float2(cosf(cur_angle), sinf(cur_angle));
+                aim = vec2From(cosf(cur_angle), sinf(cur_angle));
 
 
                 aim.x = lerpf(aim.x, x, 0.6f);
                 aim.y = lerpf(aim.y, y, 0.6f);
+            }
         }
-    }
-#endif
 
         vec2 axes = vec2From(axis_horizontal, axis_vertical);
         if (vec2Length(axes) < 0.01f)
