@@ -78,15 +78,21 @@ void    ClearCacheTextures(void)
     ArrayFree(cachedTextures);
 }
 
-Texture CacheTexture(const char* path)
+const char* GetAssetPath(const char* target)
 {
 #ifdef RELEASE
 #   define ASSET_PATH "Assets"
 #else
-#   define ASSET_PATH "../Games/NeonShooter/Assets"
+#   define ASSET_PATH "../Binary/NeonShooter/Assets"
 #endif
 
-    const char* finalPath = TextFormat("%s/%s", ASSET_PATH, path);
+    const char* finalPath = TextFormat("%s/%s", ASSET_PATH, target);
+    return finalPath;
+}
+
+Texture CacheTexture(const char* path)
+{
+    const char* finalPath = GetAssetPath(path);
     u64 targetHash = HashString(finalPath);
     
     for (int i = 0, n = ArrayCount(cachedTextures); i < n; i++)

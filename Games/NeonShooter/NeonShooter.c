@@ -1,10 +1,10 @@
 #include <MaiLib.h>
 #include <MaiMath.h>
 
-#include "NeonShooter_ParticleSystem.h"
 #include "NeonShooter_World.h"
-
 #include "NeonShooter_Assets.h"
+#include "NeonShooter_GameAudio.h"
+#include "NeonShooter_ParticleSystem.h"
 
 int main(void)
 {
@@ -14,8 +14,9 @@ int main(void)
 
     SetTargetFPS(60);
 
+    GameAudioInit();
     InitCacheTextures();
-    InitParticles();
+    InitParticles(); 
 
     World world = WorldNew();
     vec2 aim;
@@ -23,6 +24,8 @@ int main(void)
 
     while (!PollWindowEvents())
     {
+        GameAudioUpdate();
+
         float axis_vertical = 0.0f;
         float axis_horizontal = 0.0f;
 
@@ -143,6 +146,7 @@ int main(void)
     WorldFree(&world);
     ReleaseParticles();
 
+    GameAudioRelease();
     ClearCacheTextures();
     CloseWindow();
     return 0;

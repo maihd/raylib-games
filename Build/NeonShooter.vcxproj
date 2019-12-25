@@ -225,12 +225,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Games\NeonShooter\NeonShooter_Assets.h" />
+    <ClInclude Include="..\Games\NeonShooter\NeonShooter_GameAudio.h" />
     <ClInclude Include="..\Games\NeonShooter\NeonShooter_ParticleSystem.h" />
     <ClInclude Include="..\Games\NeonShooter\NeonShooter_World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Games\NeonShooter\NeonShooter.c" />
     <ClCompile Include="..\Games\NeonShooter\NeonShooter_Assets.c" />
+    <ClCompile Include="..\Games\NeonShooter\NeonShooter_GameAudio.c" />
     <ClCompile Include="..\Games\NeonShooter\NeonShooter_ParticleSystem.c" />
     <ClCompile Include="..\Games\NeonShooter\NeonShooter_World.c" />
   </ItemGroup>

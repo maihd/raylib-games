@@ -1,5 +1,6 @@
 #include "NeonShooter_World.h"
 #include "NeonShooter_Assets.h"
+#include "NeonShooter_GameAudio.h"
 #include "NeonShooter_ParticleSystem.h"
 
 #include <MaiLib.h>
@@ -193,7 +194,7 @@ static vec2 GetSpawnPosition(World world)
 
 static void SpawnSeeker(World* world)
 {
-    //GameAudio::PlaySpawn();
+    GameAudioPlaySpawn();
 
     vec2 pos = GetSpawnPosition(*world);
     vec2 vel = vec2Normalize(vec2Sub(world->player.position, pos));
@@ -220,7 +221,7 @@ static void SpawnSeeker(World* world)
 
 static void SpawnWanderer(World* world)
 {
-    //GameAudio::PlaySpawn();
+    GameAudioPlaySpawn();
 
     vec2 pos = GetSpawnPosition(*world);
     vec2 vel = vec2Normalize(vec2Sub(world->player.position, pos));
@@ -247,7 +248,7 @@ static void SpawnWanderer(World* world)
 
 static void SpawnBlackhole(World* world)
 {
-    //GameAudio::PlaySpawn();
+    GameAudioPlaySpawn();
 
     vec2 pos = GetSpawnPosition(*world);
     vec2 vel = (vec2){ 0.0f, 0.0f };
@@ -297,7 +298,7 @@ static void DestroyBullet(World* world, int index, bool explosion)
 
 static void DestroySeeker(World* world, int index)
 {
-    //GameAudio::PlayExplosion();
+    GameAudioPlayExplosion();
 
     world->seekers.elements[index].active = false;
     FreeListCollect(world->seekers, index);
@@ -323,7 +324,7 @@ static void DestroySeeker(World* world, int index)
 
 void DestroyWanderer(World* world, int index)
 {
-    //GameAudio::PlayExplosion();
+    GameAudioPlayExplosion();
 
     world->wanderers.elements[index].active = false;
     FreeListCollect(world->wanderers, index);
@@ -349,7 +350,7 @@ void DestroyWanderer(World* world, int index)
 
 void DestroyBlackhole(World* world, int index)
 {
-    //GameAudio::PlayExplosion();
+    GameAudioPlayExplosion();
 
     world->blackHoles.elements[index].active = false;
     FreeListCollect(world->blackHoles, index);
@@ -375,7 +376,8 @@ void DestroyBlackhole(World* world, int index)
 
 void OnGameOver(World* world)
 {
-    //GameAudio::PlayExplosion();
+    GameAudioStopMusic();
+    GameAudioPlayExplosion();
 
     FreeListClear(world->bullets);
     FreeListClear(world->seekers);
@@ -446,7 +448,7 @@ World WorldNew(void)
     world.spawnInterval = 1.0f;
 
     world.lock = false;
-    world.gameOverTimer = 0.0f;
+    world.gameOverTimer = 0.5f;
 
     world.bullets = FreeListNew(Entity, 256);
     world.seekers = FreeListNew(Entity, 256);
@@ -471,6 +473,10 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
     if (world->gameOverTimer > 0.0f)
     {
         world->gameOverTimer -= dt;
+        if (world->gameOverTimer <= 0.0f)
+        {
+            GameAudioPlayMusic();
+        }
         return;
     }
 
@@ -752,7 +758,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         world->oldFire = false;
         world->fireTimer = 0.0f;
 
-        //GameAudio::StopShoot();
+        //GameAudioStopShoot();
     }
     else
     {
@@ -768,7 +774,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             world->fireTimer = 0;
             FireBullets(world, aim_dir);
 
-            //GameAudio::PlayShoot();
+            GameAudioPlayShoot();
         }
     }
 
