@@ -23,8 +23,41 @@ typedef struct Entity
 
 FreeListStruct(Entity);
 
+typedef struct PointMass
+{
+    vec2 position;
+    vec2 velocity;
+    vec2 acceleration;
+
+    float invMass;
+    float damping;
+} PointMass;
+
+typedef struct Spring
+{
+    PointMass* p0;
+    PointMass* p1;
+
+    float targetLength;
+    float stiffness;
+    float damping;
+} Spring;
+
+typedef struct WarpGrid
+{
+    int cols;
+    int rows; 
+
+    Array(Spring)    springs;
+
+    Array(PointMass) points;
+    Array(PointMass) fixedPoints;
+} WarpGrid;
+
 typedef struct World
 {
+    WarpGrid grid;
+
     Entity          player;
 
     FreeList(Entity)   bullets;

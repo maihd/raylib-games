@@ -79,6 +79,19 @@ enum { false, true };
 typedef byte bool;
 #endif
 
+// ivec2 type
+typedef struct ivec2 {
+    int x;
+    int y;
+} ivec2;
+
+// ivec3 type
+typedef struct ivec3 {
+    int x;
+    int y;
+    int z;
+} ivec3;
+
 // vec2 type
 typedef struct vec2 {
     float x;

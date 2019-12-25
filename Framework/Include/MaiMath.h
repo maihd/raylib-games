@@ -145,14 +145,20 @@ MAIMATH_DEF float vec2LengthSq(vec2 v)
 // Calculate distance between two vectors
 MAIMATH_DEF float vec2Distance(vec2 v1, vec2 v2)
 {
-    float result = sqrtf((v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y));
+    float dx = (v1.x - v2.x);
+    float dy = (v1.y - v2.y);
+
+    float result = sqrtf(dx * dx + dy * dy);
     return result;
 }
 
 // Calculate distance between two vectors
 MAIMATH_DEF float vec2DistanceSq(vec2 v1, vec2 v2)
 {
-    float result = (v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y);
+    float dx = (v1.x - v2.x);
+    float dy = (v1.y - v2.y);
+
+    float result = dx * dx + dy * dy;
     return result;
 }
 
