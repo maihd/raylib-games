@@ -1,49 +1,61 @@
 #pragma once
 
 #include "./MaiTypes.h"
+                   
+#define HashTable(T, name)  \
+    struct name             \
+    {                       \
+        int     count;      \
+        int     capacity;   \
+        int     hashCount;  \
+        int*    hashs;      \
+        int*    nexts;      \
+        u64*    keys;       \
+        T*      values;     \
+    }
 
-struct HashTableS
-{
-    int     count;
-    int     capacity;
-    int     hashCount;
-    int*    hashs;
-    int*    nexts;
-    u64*    keys;
-};
-
-#define HashTableHeader(table)      ((struct HashTableS*)(table) - 1)
-#define hashtableCount(table)       ((table) ? HashTableHeader(table)->count : 0)
-#define hashtableCapacity(table)    ((table) ? HashTableHeader(table)->capacity : 0)
-
-#define HashTableNew(T, hashCount, capacity)                                        \
-
-#define hashtable_init(t, HASH_COUNT)                                               \
-    do {                                                                            \
-        struct HashTableS* _t = (struct HashTableS*)malloc(sizeof(struct HashTableS)); \
-        _t->size  = 0;                                                              \
-        _t->count = 0;                                                              \
-        _t->hash_count = HASH_COUNT;                                                \
-        _t->hashs = (int*)malloc(sizeof(int) * (HASH_COUNT));                       \
-        _t->nexts = NULL;                                                           \
-        _t->keys  = NULL;                                                           \
-                                                                                    \
-        HASHTABLE_ASSERT(_t->hashs, "Hash list is invalid!");                       \
-        int _i, _n;                                                                 \
-        for (_i = 0, _n = (HASH_COUNT); _i < _n; _i++) {                            \
-            _t->hashs[_i] = -1;                                                     \
-        }                                                                           \
-                                                                                    \
-        *(void**)&(t) = _t + 1;                                                     \
+#define HashTableInit(table, HASH_COUNT, CAPACITY)                                      \
+    do {                                                                                \
+        (table).count = 0;                                                              \
+        (table).capacity = CAPACITY;                                                    \
+        (table).hashCount = HASH_COUNT;                                                 \
+        (table).hashs = CAPACITY > 0 ? (int*)malloc(sizeof(int) * (HASH_COUNT)) : 0;    \
+                                                                                        \
+        if ((table).hashs) {                                                            \
+            int I, N;                                                                   \
+            for (I = 0, N = (HASH_COUNT); I < N; I++) {                                 \
+                (table).hashs[I] = -1;                                                  \
+            }                                                                           \
+        }                                                                               \
+                                                                                        \
+        if (CAPACITY > 0) {                                                             \
+            int cellSize = sizeof(int) + sizeof(u64) + sizeof((table).values[0]);       \
+            void* buffer = malloc(CAPACITY * cellSize);                                 \
+            if (buffer) {                                                               \
+                (table).nexts  = (int*)buffer;                                          \
+                (table).keys   = (u64*)((table).nexts + CAPACITY);                      \
+                (table).values = (T*)((table).keys + CAPACITY);                         \
+                break;                                                                  \
+            }                                                                           \
+        }                                                                               \
+                                                                                        \
+        (table).nexts  = 0;                                                             \
+        (table).keys   = 0;                                                             \
+        (table).values = 0;                                                             \
     } while (0)
 
-#define hashtable_free(t)                           \
-    do {                                            \
-        struct hashtable* __raw = hashtable_raw(t); \
-        free(__raw->keys);                          \
-        free(__raw->nexts);                         \
-        free(__raw->hashs);                         \
-        free(__raw);                                \
+#define HashTableFree(t)                        \
+    do {                                        \
+        free((t).values);                       \
+        free((t).keys);                         \
+        free((t).nexts);                        \
+        free((t).hashs);                        \
+        (t).values = 0;                         \
+        (t).keys = 0;                           \
+        (t).nexts = 0;                          \
+        (t).hashs = 0;                          \
+        (t).count = 0;                          \
+        (t).capacity = 0;                       \
     } while (0)
 
 #define hashtable_set(t, key, value)                        \

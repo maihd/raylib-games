@@ -1,18 +1,21 @@
 #pragma once
 
 // INTERNAL
+void*   Array_NewMemory(int capacity, int elementSize);
+
+// INTERNAL
+int     Array_FreeMemory(void*  array);
+
+// INTERNAL
 int     Array_GrowMemory(void** array, int capacity, int elementSize);
 
 // INTERNAL
 int     Array_MoveMemory(void*  array, int start, int end, int count, int elementSize);
 
-// INTERNAL
-void*   Array_CreateBuffer(int capacity, int elementSize);
-
 #define Array(T)                        T*
 
-#define ArrayNew(T, capacity)           (Array(T))(((capacity) <= 0 ? 0 : Array_CreateBuffer(capacity, sizeof(T))))
-#define ArrayFree(array)                (array = (array ? (free((int*)(array) - 2), 0) : 0))
+#define ArrayNew(T, capacity)           (Array(T))(((capacity) <= 0 ? 0 : Array_NewMemory(capacity, sizeof(T))))
+#define ArrayFree(array)                if (Array_FreeMemory(array)) (array) = 0
 
 #define ArrayCount(array)               (array ? ((int*)(array) - 2)[0] : 0)
 #define ArrayCapacity(array)            (array ? ((int*)(array) - 2)[1] : 0)
