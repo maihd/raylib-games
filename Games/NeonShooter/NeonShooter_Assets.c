@@ -1,8 +1,15 @@
 #include "NeonShooter_Assets.h"
 
 #include <MaiLib.h>
+#include <MaiArray.h>
 
-u64 HashString(const char* path)
+typedef struct
+{
+    u64     hash;
+    Texture texture;
+} CachedTexture;
+
+static u64 HashString(const char* path)
 {
     u64 h = 0;
     int length = (int)strlen(path);
@@ -54,14 +61,21 @@ u64 HashString(const char* path)
     return h;
 }
 
+static Array(CachedTexture) cachedTextures;
+
 void    InitCacheTextures(void)
 {
-
+    cachedTextures = ArrayNew(CachedTexture, 32);
 }
 
 void    ClearCacheTextures(void)
 {
+    for (int i = 0, n = ArrayCount(cachedTextures); i < n; i++)
+    {
+        UnloadTexture(cachedTextures[i].texture);
+    }
 
+    ArrayFree(cachedTextures);
 }
 
 Texture CacheTexture(const char* path)
@@ -72,5 +86,24 @@ Texture CacheTexture(const char* path)
 #   define ASSET_PATH "../Games/NeonShooter/Assets"
 #endif
 
-    return LoadTexture(TextFormat("%s/%s", ASSET_PATH, path));
+    const char* finalPath = TextFormat("%s/%s", ASSET_PATH, path);
+    u64 targetHash = HashString(finalPath);
+    
+    for (int i = 0, n = ArrayCount(cachedTextures); i < n; i++)
+    {
+        CachedTexture cachedTexture = cachedTextures[i];
+        if (cachedTexture.hash == targetHash)
+        {
+            return cachedTexture.texture;
+        }
+    }
+
+    Texture texture = LoadTexture(finalPath);
+    if (texture.id != 0)
+    {
+        CachedTexture newEntry = { .hash = targetHash, .texture = texture };
+        ArrayPush(cachedTextures, newEntry);
+    }
+
+    return texture;
 }

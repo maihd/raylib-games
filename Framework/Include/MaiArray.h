@@ -25,7 +25,7 @@ int     Array_MoveMemory(void*  array, int start, int end, int count, int elemen
 #define ArrayEnsure(array, capacity)    (ArrayCapacity(array) >= (capacity) ? 1 : Array_GrowMemory(&(array), capacity, sizeof((array)[0])))
 #define ArrayResize(array, capacity)    (Array_GrowMemory(&(array), capacity, sizeof((array)[0])))
 
-#define ArrayPush(array, value)         (ArrayEnsure(array, ArrayCount(array) + 1) ? ((array)[((int*)(array) - 2)[0]++] = value, 1) : 0)
+#define ArrayPush(array, value)         (ArrayEnsure(array, ArrayCount(array) + 1) ? ((array)[((int*)(array) - 2)[0]++] = (value), 1) : 0)
 #define ArrayPop(array)                 ((array)[--((int*)(array) - 2)[0]])
 
 #define ArrayIndexOf(array, value, outIndex)                    \
