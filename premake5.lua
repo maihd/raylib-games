@@ -68,6 +68,20 @@ function template(name, projectPath)
             libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win64") }
         end
 
+        filter { "configurations:Debug"}
+        do
+            defines {
+                "DEBUG"
+            }
+        end
+
+        filter { "configurations:Release"}
+        do
+            defines {
+                "RELEASE"
+            }
+        end
+
         filter {}
     end
 end

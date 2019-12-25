@@ -5,7 +5,11 @@
 #include <MaiMath.h>
 #include <MaiArray.h>
 
-#define ASSET_PATH(path) "../Games/NeonShooter/Assets/" path
+#ifdef RELEASE
+#   define ASSET_PATH(path) "Assets/" path
+#else
+#   define ASSET_PATH(path) "../Games/NeonShooter/Assets/" path
+#endif
 
 static inline vec4 HSV(float h, float s, float v)
 {

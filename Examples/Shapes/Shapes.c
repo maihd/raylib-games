@@ -1,5 +1,5 @@
 #include <MaiLib.h>
-#include <Array.h>
+#include <MaiArray.h>
 
 #define MAX_COLORS_COUNT    21          // Number of colors available
 

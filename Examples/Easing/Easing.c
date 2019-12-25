@@ -1,5 +1,5 @@
 #include <MaiLib.h>
-#include <Easings.h>
+#include <MaiEasings.h>
 
 int main(void)
 {

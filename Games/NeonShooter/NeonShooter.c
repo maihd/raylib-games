@@ -72,8 +72,8 @@ int main(void)
 
             float axis_right_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X);
             float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
-            float x = fabsf(axis_right_x) > 0.05f ? axis_right_x : 0.0f;
-            float y = fabsf(axis_right_y) > 0.05f ? axis_right_y : 0.0f;
+            float x = fabsf(axis_right_x) > 0.1f ? axis_right_x : 0.0f;
+            float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
             if (vec2Length(vec2From(x, y)) < 0.01f)
             {
                 aim = vec2Zero();

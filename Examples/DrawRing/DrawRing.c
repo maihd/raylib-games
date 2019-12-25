@@ -1,5 +1,5 @@
 #include <Mailib.h>
-#include <GUI.h>
+#include <MaiGui.h>
 
 int main(void)
 {

@@ -1,5 +1,5 @@
 #include <MaiLib.h>
-#include <Array.h>
+#include <MaiArray.h>
 
 int main(void)
 {
