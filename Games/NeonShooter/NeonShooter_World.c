@@ -22,7 +22,7 @@ static PointMass NewPointMass(vec2 position, float invMass)
 static void UpdatePointMass(PointMass* p, float dt)
 {
     vec2 velocity = vec2Add(p->velocity, p->acceleration);
-    vec2 position = vec2Add(p->position, velocity);
+    vec2 position = vec2Add(p->position, vec2Scale(velocity, dt));
 
     if (vec2LengthSq(velocity) < 0.001f * 0.001f)
     {
@@ -55,7 +55,7 @@ static Spring NewSpring(PointMass* p0, PointMass* p1, float stiffness, float dam
         .p0 = p0,
         .p1 = p1,
 
-        .targetLength = vec2Distance(p0->position, p1->position) * 0.995f,
+        .targetLength = vec2Distance(p0->position, p1->position) * 0.95f,
         .stiffness = stiffness,
         .damping = damping
     };
@@ -180,6 +180,13 @@ static void RenderWarpGrid(WarpGrid grid)
 
             vec2 up = grid.points[(i - 1) * cols + j].position;
             DrawLineEx(up, current, j % 3 == 0 ? 6.0f : 2.0f, color);
+
+            if (i > 1 && j > 1)
+            {
+                vec2 upLeft = grid.points[(i - 1) * cols + (j - 1)].position;
+                DrawLineEx(vec2Scale(vec2Add(upLeft, up), 0.5f), vec2Scale(vec2Add(current, up), 0.5f), 2.0f, color);   // vertical line
+                DrawLineEx(vec2Scale(vec2Add(upLeft, left), 0.5f), vec2Scale(vec2Add(current, up), 0.5f), 2.0f, color);   // horizontal line
+            }
         }
     }
 }
@@ -696,7 +703,7 @@ void WorldFree(World* world)
 void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, bool fire, float dt)
 {
     // Update warp grid
-    UpdateWarpGrid(world->grid, dt);
+    //UpdateWarpGrid(world->grid, dt);
 
     if (world->gameOverTimer > 0.0f)
     {
@@ -749,7 +756,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         {
             Entity bullet = UpdateEntity(FreeListGet(world->bullets, i), dt);
 
-            WarpGridApplyExplosiveForce(world->grid, bullet.movespeed, bullet.position, 80);
+            WarpGridApplyExplosiveForce(world->grid, 0.2f * bullet.movespeed, bullet.position, 80);
 
             if (bullet.position.x < -GetScreenWidth()
                 || bullet.position.x > GetScreenWidth()
@@ -1025,7 +1032,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
 
 void WorldRender(World world)
 {
-    RenderWarpGrid(world.grid);
+    //RenderWarpGrid(world.grid);
 
     if (world.gameOverTimer > 0)
     {
