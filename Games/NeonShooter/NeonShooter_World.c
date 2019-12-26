@@ -337,7 +337,7 @@ static void MeshGridApplyImplosiveForce(MeshGrid* grid, float force, vec2 positi
     {
         vec2 point = grid->points[i];
         vec2 pointToVertex = vec2Sub(point, position);
-        float attenuatedForce = force / (1.0f + vec2LengthSq(pointToVertex));
+        float attenuatedForce = force / fmaxf(1.0f, vec2LengthSq(pointToVertex));
         float velocity = attenuatedForce * dt;
         velocities[i] = vec2Add(velocities[i], vec2Scale(vec2Neg(vec2Normalize(pointToVertex)), velocity));
     }
@@ -351,7 +351,7 @@ static void MeshGridApplyExplosiveForce(MeshGrid* grid, float force, vec2 positi
     {
         vec2 point = grid->points[i];
         vec2 pointToVertex = vec2Sub(point, position);
-        float attenuatedForce = force / (1.0f + vec2LengthSq(pointToVertex));
+        float attenuatedForce = force / fmaxf(1.0f, vec2LengthSq(pointToVertex));
         float velocity = attenuatedForce * dt;
         velocities[i] = vec2Add(velocities[i], vec2Scale(vec2Normalize(pointToVertex), velocity));
     }
