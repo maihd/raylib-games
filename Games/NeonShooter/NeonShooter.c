@@ -22,6 +22,84 @@ int main(void)
     vec2 aim;
     bool fire;
 
+#if 0
+    const char* bloomShaderSource =
+        "#version 330 core\n"
+        
+        "in vec2 fragTexCoord;"
+        "in vec4 fragColor;"
+        
+        "out vec4 finalColor;"
+
+        "uniform sampler2D image;"
+        
+        "void main() {"
+            "float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);"
+            
+            "vec2 texSize = textureSize(image, 0);"
+            "float size = max(texSize.x, texSize.y);"
+            
+            "vec2 texOffset = 1.0 / vec2(size, size);"
+            "vec3 result = texture(image, fragTexCoord).rgb * weight[0];"
+            
+            "for(int i = 1; i < 5; ++i) {"
+                "result += texture(image, fragTexCoord + vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
+                "result += texture(image, fragTexCoord - vec2(texOffset.x * i, 0.0)).rgb * weight[i];"
+                "result += texture(image, fragTexCoord + vec2(0.0, texOffset.y * i)).rgb * weight[i];"
+                "result += texture(image, fragTexCoord - vec2(0.0, texOffset.y * i)).rgb * weight[i];"
+            "}"
+
+            "result = texture(image, fragTexCoord).rgb + result;"
+            "result = vec3(1.0) - exp(-result * 0.5f);"
+            "result = pow(result, vec3(1.0 / 2.2));"
+            "finalColor = vec4(result, 1.0);"
+        "}";
+#else
+    const char* bloomShaderSource =
+        "#version 330 core\n"
+
+        // Input vertex attributes (from vertex shader)
+        "in vec2 fragTexCoord;"
+        "in vec4 fragColor;"
+
+        // Output fragment color
+        "out vec4 finalColor;"
+
+        // Input uniform values
+        "uniform sampler2D image;"
+        "uniform vec4 colDiffuse;"
+
+        "void main()"
+        "{"
+            "float samples = 5.0;"        // pixels per axis; higher = bigger glow, worse performance
+            "float quality = 1.7;" 	      // lower = smaller glow, better quality
+
+            "vec2 size = textureSize(image, 0);"
+            "vec2 sizeFactor = vec2(1.0) / size * quality;"
+
+            "vec4 sum = vec4(0);"
+
+            // Texel color fetching from texture sampler
+            "vec4 source = texture(image, fragTexCoord);"
+
+            "int range = 2;"
+
+            "for (int x = -range; x <= range; x++)"
+            "{"
+                "for (int y = -range; y <= range; y++)"
+                "{"
+                    "sum += texture(image, fragTexCoord + vec2(x, y) * sizeFactor);"
+                "}"
+            "}"
+
+            // Calculate final fragment color
+            "finalColor = ((sum / (samples * samples)) + source) * colDiffuse;"
+        "}";
+#endif
+
+    Shader bloomShader = LoadShaderCode(0, bloomShaderSource);
+    RenderTexture frame = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
+
     while (!PollWindowEvents())
     {
         GameAudioUpdate();
@@ -125,6 +203,9 @@ int main(void)
         {
             ClearBackground(BLACK);
             
+            BeginTextureMode(frame);
+            ClearBackground(BLACK);
+
             Camera2D camera = {
                 (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
                 vec2Zero(),
@@ -137,6 +218,11 @@ int main(void)
                 DrawParticles();
             }
             EndMode2D();
+            EndTextureMode();
+
+            BeginShaderMode(bloomShader);
+            DrawTextureRec(frame.texture, (rect) { 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, vec2From(0, 0), WHITE);
+            EndShaderMode();
 
             DrawFPS(0, 0);
         }
