@@ -54,9 +54,23 @@ typedef struct WarpGrid
     Array(PointMass) fixedPoints;
 } WarpGrid;
 
+typedef struct MeshGrid 
+{
+    int cols;
+    int rows;
+
+    float springForce;
+    float damping;
+    
+    Array(vec2) velocities;
+    Array(vec2) points;
+    Array(vec2) fixedPoints;
+} MeshGrid;
+
 typedef struct World
 {
     WarpGrid grid;
+    MeshGrid meshGrid;
 
     Entity          player;
 
