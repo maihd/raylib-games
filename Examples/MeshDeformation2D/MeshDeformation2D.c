@@ -34,7 +34,7 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Mesh Deformation 2D");
     SetTargetFPS(60);
 
-    DeformMesh2D mesh = NewDeformMesh2D((rect){ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(32, 32), 10.0f, 1.0f);
+    DeformMesh2D mesh = NewDeformMesh2D((rect){ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(64, 64), 20.0f, 5.0f);
 
     while (!WindowShouldClose())
     {
@@ -137,10 +137,67 @@ void RenderDeformMesh2D(DeformMesh2D mesh, Color lineColor)
             vec2 p0 = mesh.displacedVertices[i * cols + j];
             vec2 p1 = mesh.displacedVertices[(i - 1) * cols + j];
             vec2 p2 = mesh.displacedVertices[i * cols + (j - 1)];
+            vec2 p3 = mesh.displacedVertices[(i - 1) * cols + (j - 1)];
 
-            DrawLineEx(p0, p1, 1.0f, lineColor);
-            DrawLineEx(p0, p2, 1.0f, lineColor);
-            DrawLineEx(p1, p2, 1.0f, lineColor);
+#if 0
+            DrawLineEx(vec2Scale(vec2Add(p3, p1), 0.5f), vec2Scale(vec2Add(p2, p0), 0.5f), 1.0f, lineColor);
+            DrawLineEx(vec2Scale(vec2Add(p3, p2), 0.5f), vec2Scale(vec2Add(p1, p0), 0.5f), 1.0f, lineColor);
+#endif
+
+#if 0
+            if (j > 1)
+            {
+                float thickness = j % 3 == 1 ? 2.0f : 1.0f;
+
+                // use Catmull-Rom interpolation to help smooth bends in the grid
+                int clampedX = (int)(fmaxf(j + 1, cols - 1));
+                vec2 mid = vec2CatmullRom(mesh.displacedVertices[i * cols + (j - 2)], p2, p0, mesh.displacedVertices[i * cols + clampedX], 0.5f);
+
+                // If the grid is very straight here, draw a single straight line. Otherwise, draw lines to our
+                // new interpolated midpoint
+                if (vec2DistanceSq(mid, vec2Scale(vec2Add(p2, p0), 0.5f)) > 1.0f)
+                {
+                    DrawLineEx(p2, mid, thickness, lineColor);
+                    DrawLineEx(p0, mid, thickness, lineColor);
+                }
+                else
+                {
+                    DrawLineEx(p2, p0, thickness, lineColor);
+                }
+            }
+            else
+#endif
+            {
+                float thickness = 1.0f;
+                DrawLineEx(p0, p2, thickness, lineColor);
+            }
+            
+            //if (i > 10000)
+            //{
+            //    float thickness = i % 3 == 1 ? 2.0f : 1.0f;
+            //
+            //    // use Catmull-Rom interpolation to help smooth bends in the grid
+            //    int clampedY = (int)(fmaxf(i + 1, rows - 1));
+            //    vec2 mid = vec2CatmullRom(mesh.displacedVertices[(i - 2) * cols + j], p1, p0, mesh.displacedVertices[clampedY * cols + j], 0.5f);
+            //
+            //    // If the grid is very straight here, draw a single straight line. Otherwise, draw lines to our
+            //    // new interpolated midpoint
+            //    if (vec2DistanceSq(mid, vec2Scale(vec2Add(p1, p0), 0.5f)) > 1.0f)
+            //    {
+            //        DrawLineEx(p1, mid, thickness, lineColor);
+            //        DrawLineEx(p0, mid, thickness, lineColor);
+            //    }
+            //    else
+            //    {
+            //        DrawLineEx(p1, p0, thickness, lineColor);
+            //    }
+            //}
+            //else
+            {
+                float thickness = 1.0f;
+                DrawLineEx(p0, p1, thickness, lineColor);
+            }
+            
         }
     }
 }

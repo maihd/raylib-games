@@ -194,7 +194,16 @@ MAIMATH_DEF vec2 vec2Lerp(vec2 v1, vec2 v2, float amount)
     return result;
 }
 
-// Calculate linear interpolation between two vectors
+MAIMATH_DEF vec2 vec2Min(vec2 v1, vec2 v2)
+{
+    return (vec2){ fminf(v1.x, v2.x), fminf(v1.y, v2.y) };
+}
+
+MAIMATH_DEF vec2 vec2Max(vec2 v1, vec2 v2)
+{
+    return (vec2) { fmaxf(v1.x, v2.x), fmaxf(v1.y, v2.y) };
+}
+
 MAIMATH_DEF vec2 vec2Clamp(vec2 v, vec2 min, vec2 max)
 {
     vec2 result = { 0 };
@@ -203,6 +212,22 @@ MAIMATH_DEF vec2 vec2Clamp(vec2 v, vec2 min, vec2 max)
     result.y = clampf(v.y, min.y, max.y);
 
     return result;
+}
+
+MAIMATH_DEF vec2 vec2CatmullRom(vec2 v1, vec2 v2, vec2 v3, vec2 v4, float amount)
+{
+    float squared = amount * amount;
+    float cubed = amount * squared;
+
+    float x = 0.5f * ((((2.0f * v2.x) + ((-v1.x + v3.x) * amount)) 
+        + (((((2.0f * v1.x) - (5.0f * v2.x)) + (4.0f * v3.x)) - v4.x) * squared)) 
+        + ((((-v1.x + (3.0f * v2.x)) - (3.0f * v3.x)) + v4.x) * cubed));
+
+    float y = 0.5f * ((((2.0f * v2.y) + ((-v1.y + v3.y) * amount)) 
+        + (((((2.0f * v1.y) - (5.0f * v2.y)) + (4.0f * v3.y)) - v4.y) * squared)) 
+        + ((((-v1.y + (3.0f * v2.y)) - (3.0f * v3.y)) + v4.y) * cubed));
+
+    return (vec2) { x, y };
 }
 
 //----------------------------------------------------------------------------------
