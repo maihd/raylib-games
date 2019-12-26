@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef __cpluscplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -16,7 +16,7 @@ int     Array_GrowMemory(void** array, int capacity, int elementSize);
 // INTERNAL
 int     Array_MoveMemory(void*  array, int start, int end, int count, int elementSize);
 
-#ifndef __cplusplus
+#ifdef __cplusplus
 }
 #endif
 
@@ -27,6 +27,8 @@ int     Array_MoveMemory(void*  array, int start, int end, int count, int elemen
 
 #define ArrayCount(array)               (array ? ((int*)(array) - 2)[0] : 0)
 #define ArrayCapacity(array)            (array ? ((int*)(array) - 2)[1] : 0)
+
+#define ArraySetCount(array, count)     (array ? (((int*)(array) - 2)[0] = count) : 0)
 
 #define ArrayClear(array)               if (array) ((int*)(array) - 2)[0] = 0
 

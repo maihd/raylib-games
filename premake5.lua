@@ -101,6 +101,7 @@ example "Shapes"
 example "Easing"
 example "Textures"
 example "DrawRing"
+example "LiquidSurface2D"
 example "MeshDeformation2D"
 
 game "NeonShooter"

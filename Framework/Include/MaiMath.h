@@ -19,23 +19,9 @@
 #   define RAD2DEG (180.0f/PI)
 #endif
 
-// Return float vector for mat4
-#ifndef mat4ToFloat
-#   define mat4ToFloat(mat) (mat4ToFloatV(mat).v)
-#endif
-
-// Return float vector for vec3
-#ifndef vec3ToFloat
-#   define vec3ToFloat(vec) (vec3ToFloatV(vec).v)
-#endif
-
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
-
-// NOTE: Helper types to be used instead of array return types for *ToFloat functions
-typedef struct float3 { float v[3]; } float3;
-typedef struct float16 { float v[16]; } float16;
 
 #include <math.h>       // Required for: sinf(), cosf(), tan(), fabs()
 
@@ -505,18 +491,6 @@ MAIMATH_DEF vec3 vec3Barycenter(vec3 p, vec3 a, vec3 b, vec3 c)
     };
 
     return result;
-}
-
-// Returns vec3 as float array
-MAIMATH_DEF float3 vec3ToFloatV(vec3 v)
-{
-    float3 buffer = { 0 };
-
-    buffer.v[0] = v.x;
-    buffer.v[1] = v.y;
-    buffer.v[2] = v.z;
-
-    return buffer;
 }
 
 //----------------------------------------------------------------------------------
@@ -1180,31 +1154,6 @@ MAIMATH_DEF mat4 mat4LookAt(vec3 eye, vec3 target, vec3 up)
     result = mat4Invert(result);
 
     return result;
-}
-
-// Returns float array of matrix data
-MAIMATH_DEF float16 mat4ToFloatV(mat4 mat)
-{
-    float16 buffer = { 0 };
-
-    buffer.v[0] = mat.m0;
-    buffer.v[1] = mat.m1;
-    buffer.v[2] = mat.m2;
-    buffer.v[3] = mat.m3;
-    buffer.v[4] = mat.m4;
-    buffer.v[5] = mat.m5;
-    buffer.v[6] = mat.m6;
-    buffer.v[7] = mat.m7;
-    buffer.v[8] = mat.m8;
-    buffer.v[9] = mat.m9;
-    buffer.v[10] = mat.m10;
-    buffer.v[11] = mat.m11;
-    buffer.v[12] = mat.m12;
-    buffer.v[13] = mat.m13;
-    buffer.v[14] = mat.m14;
-    buffer.v[15] = mat.m15;
-
-    return buffer;
 }
 
 //----------------------------------------------------------------------------------

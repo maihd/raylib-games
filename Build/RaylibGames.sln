@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Framework", "Framework.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Gestures", "Gestures.vcxproj", "{17C26575-038F-C080-2CA8-AE2818D4F50E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LiquidSurface2D", "LiquidSurface2D.vcxproj", "{8CC5E409-F850-52CE-0162-D5C26D6CAECE}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshDeformation2D", "MeshDeformation2D.vcxproj", "{80AF35E0-ECC5-3376-353D-BF97A19204FE}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NeonShooter", "NeonShooter.vcxproj", "{B968E41B-251E-5D11-AE12-57E81AC75315}"
@@ -103,6 +105,18 @@ Global
 		{17C26575-038F-C080-2CA8-AE2818D4F50E}.Release|Win32.Build.0 = Release|Win32
 		{17C26575-038F-C080-2CA8-AE2818D4F50E}.Release|x64.ActiveCfg = Release|x64
 		{17C26575-038F-C080-2CA8-AE2818D4F50E}.Release|x64.Build.0 = Release|x64
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Debug|Native.ActiveCfg = Debug Native|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Debug|Native.Build.0 = Debug Native|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Debug|Win32.Build.0 = Debug|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Debug|x64.ActiveCfg = Debug|x64
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Debug|x64.Build.0 = Debug|x64
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Release|Native.ActiveCfg = Release Native|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Release|Native.Build.0 = Release Native|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Release|Win32.ActiveCfg = Release|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Release|Win32.Build.0 = Release|Win32
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Release|x64.ActiveCfg = Release|x64
+		{8CC5E409-F850-52CE-0162-D5C26D6CAECE}.Release|x64.Build.0 = Release|x64
 		{80AF35E0-ECC5-3376-353D-BF97A19204FE}.Debug|Native.ActiveCfg = Debug Native|Win32
 		{80AF35E0-ECC5-3376-353D-BF97A19204FE}.Debug|Native.Build.0 = Debug Native|Win32
 		{80AF35E0-ECC5-3376-353D-BF97A19204FE}.Debug|Win32.ActiveCfg = Debug|Win32
