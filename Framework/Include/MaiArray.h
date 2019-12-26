@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cpluscplus
+extern "C" {
+#endif
+
 // INTERNAL
 void*   Array_NewMemory(int capacity, int elementSize);
 
@@ -11,6 +15,10 @@ int     Array_GrowMemory(void** array, int capacity, int elementSize);
 
 // INTERNAL
 int     Array_MoveMemory(void*  array, int start, int end, int count, int elementSize);
+
+#ifndef __cplusplus
+}
+#endif
 
 #define Array(T)                        T*
 
