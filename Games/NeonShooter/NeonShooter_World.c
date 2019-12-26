@@ -26,7 +26,7 @@ static void UpdatePointMass(PointMass* p, float dt)
 
     if (vec2LengthSq(velocity) < 0.001f * 0.001f)
     {
-        velocity = vec2Zero();
+        velocity = vec2New(0, 0);
     }
     else
     {
@@ -35,7 +35,7 @@ static void UpdatePointMass(PointMass* p, float dt)
 
     p->position     = position;
     p->velocity     = velocity;
-    p->acceleration = vec2Zero();
+    p->acceleration = vec2New(0, 0);
     p->damping      = 0.98f;
 }
 
@@ -262,7 +262,7 @@ static MeshGrid NewMeshGrid(rect bounds, vec2 spacing, float springForce, float 
 
             ArrayPush(points, position);
             ArrayPush(fixedPoints, position);
-            ArrayPush(velocities, vec2From(0, 0));
+            ArrayPush(velocities, vec2New(0, 0));
         }
     }
 
@@ -856,24 +856,24 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
     
         vec2 vel = vec2Scale(world->player.velocity, -0.25f * world->player.movespeed);
         vec2 pos = vec2Add(world->player.position, vec2Scale(world->player.velocity, -45.0f));
-        vec2 nvel = vec2Scale(vec2From(vel.y, -vel.x), 0.9f * sinf(GetTotalTime() * 10.0f));
+        vec2 nvel = vec2Scale(vec2New(vel.y, -vel.x), 0.9f * sinf(GetTotalTime() * 10.0f));
         float alpha = 0.7f;
     
         vec2 mid_vel = vel;
-        SpawnParticle(glow_tex, pos, vec4Scale(vec4From(1.0f, 0.7f, 0.1f, 1.0f), alpha), 0.4f, vec2From(3.0f, 2.0f), angle, mid_vel);
-        SpawnParticle(line_tex, pos, vec4Scale(vec4From(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2From(3.0f, 1.0f), angle, mid_vel);
+        SpawnParticle(glow_tex, pos, vec4Scale(vec4New(1.0f, 0.7f, 0.1f, 1.0f), alpha), 0.4f, vec2New(3.0f, 2.0f), angle, mid_vel);
+        SpawnParticle(line_tex, pos, vec4Scale(vec4New(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2New(3.0f, 1.0f), angle, mid_vel);
     
         speed = rand() % 101 / 100.0f * 40.0f;
         angle = rand() % 101 / 100.0f * 2.0f * PI;
-        vec2 side_vel1 = vec2Add(vel, vec2Add(nvel, vec2Scale(vec2From(cosf(angle), sinf(angle)), speed)));
-        SpawnParticle(glow_tex, pos, vec4Scale(vec4From(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2From(3.0f, 2.0f), angle, side_vel1);
-        SpawnParticle(line_tex, pos, vec4Scale(vec4From(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2From(3.0f, 1.0f), angle, side_vel1);
+        vec2 side_vel1 = vec2Add(vel, vec2Add(nvel, vec2Scale(vec2New(cosf(angle), sinf(angle)), speed)));
+        SpawnParticle(glow_tex, pos, vec4Scale(vec4New(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2New(3.0f, 2.0f), angle, side_vel1);
+        SpawnParticle(line_tex, pos, vec4Scale(vec4New(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2New(3.0f, 1.0f), angle, side_vel1);
     
         speed = rand() % 101 / 100.0f * 40.0f;
         angle = rand() % 101 / 100.0f * 2.0f * PI;
-        vec2 side_vel2 = vec2Sub(vel, vec2Add(nvel, vec2Scale(vec2From(cosf(angle), sinf(angle)), speed)));
-        SpawnParticle(glow_tex, pos, vec4Scale(vec4From(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2From(3.0f, 2.0f), angle, side_vel2);
-        SpawnParticle(line_tex, pos, vec4Scale(vec4From(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2From(3.0f, 1.0f), angle, side_vel2);
+        vec2 side_vel2 = vec2Sub(vel, vec2Add(nvel, vec2Scale(vec2New(cosf(angle), sinf(angle)), speed)));
+        SpawnParticle(glow_tex, pos, vec4Scale(vec4New(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2New(3.0f, 2.0f), angle, side_vel2);
+        SpawnParticle(line_tex, pos, vec4Scale(vec4New(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2New(3.0f, 1.0f), angle, side_vel2);
     }
 
     for (int i = 0, n = FreeListCount(world->bullets); i < n; i++)
@@ -1053,8 +1053,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
                 vec2  pos = vec2Add(vec2Add(s->position, vec2Scale((vec2){ vel.y, -vel.x }, 0.4f)), vec2Repeat(4.0f + rand() % 101 / 100.0f * 4.0f));
 
                 vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
-                SpawnParticle(glow_tex, pos, color, 4.0f, vec2From(0.3f, 0.2f), 0.0f, vel);
-                SpawnParticle(line_tex, pos, color, 4.0f, vec2From(1.0f, 1.0f), 0.0f, vel);
+                SpawnParticle(glow_tex, pos, color, 4.0f, vec2New(0.3f, 0.2f), 0.0f, vel);
+                SpawnParticle(line_tex, pos, color, 4.0f, vec2New(1.0f, 1.0f), 0.0f, vel);
             }
 
             if (GetFrameCount() % 60 == 0)

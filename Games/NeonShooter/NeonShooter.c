@@ -139,9 +139,9 @@ int main(void)
         float my = GetMouseY();
         bool fire = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
         {
-            vec2 clip = vec2From(2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f);
+            vec2 clip = vec2New(2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f);
 
-            vec2 mpos = vec2From(clip.x * GetScreenWidth(), clip.y * GetScreenHeight());
+            vec2 mpos = vec2New(clip.x * GetScreenWidth(), clip.y * GetScreenHeight());
 
             vec2 taim = vec2Normalize(vec2Sub(mpos, world.player.position));
 
@@ -159,9 +159,9 @@ int main(void)
             float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
             float x = fabsf(axis_right_x) > 0.1f ? axis_right_x : 0.0f;
             float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
-            if (vec2Length(vec2From(x, y)) < 0.01f)
+            if (vec2Length(vec2New(x, y)) < 0.01f)
             {
-                //aim = vec2Zero();
+                //aim = vec2New(0, 0);
             }
             else
             {
@@ -172,7 +172,7 @@ int main(void)
                 float aim_angle = atan2f(y, x);
 
                 cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
-                aim = vec2From(cosf(cur_angle), sinf(cur_angle));
+                aim = vec2New(cosf(cur_angle), sinf(cur_angle));
 
 
                 aim.x = lerpf(aim.x, x, 0.6f);
@@ -180,17 +180,17 @@ int main(void)
             }
         }
 
-        vec2 axes = vec2From(axis_horizontal, axis_vertical);
+        vec2 axes = vec2New(axis_horizontal, axis_vertical);
         if (vec2Length(axes) < 0.01f)
         {
-            axes = vec2Zero();
+            axes = vec2New(0, 0);
         }
         else
         {
             float len = clampf(vec2Length(axes), 0, 1);
             float angle = atan2f(axes.y, axes.x);
 
-            axes = vec2From(cosf(angle) * len, sinf(angle) * len);
+            axes = vec2New(cosf(angle) * len, sinf(angle) * len);
         }
 
         axis_vertical = axes.y;
@@ -208,7 +208,7 @@ int main(void)
 
             Camera2D camera = {
                 (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
-                vec2Zero(),
+                vec2New(0, 0),
                 0,
                 0.5f,
             };
@@ -221,7 +221,7 @@ int main(void)
             EndTextureMode();
 
             BeginShaderMode(bloomShader);
-            DrawTextureRec(frame.texture, (rect) { 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, vec2From(0, 0), WHITE);
+            DrawTextureRec(frame.texture, (rect) { 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, vec2New(0, 0), WHITE);
             EndShaderMode();
 
             DrawFPS(0, 0);

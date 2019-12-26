@@ -109,7 +109,7 @@ static bool UpdateParticle(World* world, Particle* p, float dt)
             // add tangential acceleration for nearby particles
             if (d < 10.0f * blackhole->radius)
             {
-                p->velocity = vec2Add(p->velocity, vec2Scale(vec2From(normal.y, -normal.x), (21.0f * blackhole->radius / (120.0f + 1.2f * d))));
+                p->velocity = vec2Add(p->velocity, vec2Scale(vec2New(normal.y, -normal.x), (21.0f * blackhole->radius / (120.0f + 1.2f * d))));
             }
         }
     }

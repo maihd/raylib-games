@@ -60,21 +60,7 @@ MAIMATH_DEF float lerpf(float start, float end, float amount)
 // Module Functions Definition - vec2 math
 //----------------------------------------------------------------------------------
 
-// Vector with components value 0.0f
-MAIMATH_DEF vec2 vec2Zero(void)
-{
-    vec2 result = { 0.0f, 0.0f };
-    return result;
-}
-
-// Vector with components value 1.0f
-MAIMATH_DEF vec2 vec2One(void)
-{
-    vec2 result = { 1.0f, 1.0f };
-    return result;
-}
-
-MAIMATH_DEF vec2 vec2From(float x, float y)
+MAIMATH_DEF vec2 vec2New(float x, float y)
 {
     vec2 result = { x, y };
     return result;
@@ -224,20 +210,8 @@ MAIMATH_DEF vec2 vec2Clamp(vec2 v, vec2 min, vec2 max)
 //----------------------------------------------------------------------------------
 
 // Vector with components value 0.0f
-MAIMATH_DEF vec3 vec3Zero(void)
-{
-    vec3 result = { 0.0f, 0.0f, 0.0f };
-    return result;
-}
 
-// Vector with components value 1.0f
-MAIMATH_DEF vec3 vec3One(void)
-{
-    vec3 result = { 1.0f, 1.0f, 1.0f };
-    return result;
-}
-
-MAIMATH_DEF vec3 vec3From(float x, float y, float z)
+MAIMATH_DEF vec3 vec3New(float x, float y, float z)
 {
     vec3 result = { x, y, z };
     return result;
@@ -525,20 +499,8 @@ MAIMATH_DEF float3 vec3ToFloatV(vec3 v)
 //----------------------------------------------------------------------------------
 
 // Vector with components value 0.0f
-MAIMATH_DEF vec4 vec4Zero(void)
-{
-    vec4 result = { 0.0f, 0.0f, 0.0f, 0.0f };
-    return result;
-}
 
-// Vector with components value 1.0f
-MAIMATH_DEF vec4 vec4One(void)
-{
-    vec4 result = { 1.0f, 1.0f, 1.0f, 1.0f };
-    return result;
-}
-
-MAIMATH_DEF vec4 vec4From(float x, float y, float z, float w)
+MAIMATH_DEF vec4 vec4New(float x, float y, float z, float w)
 {
     vec4 result = { x, y, z, w };
     return result;
@@ -1225,6 +1187,18 @@ MAIMATH_DEF float16 mat4ToFloatV(mat4 mat)
 //----------------------------------------------------------------------------------
 
 // Returns identity quaternion
+MAIMATH_DEF quat quatNew(float x, float y, float z, float w)
+{
+    quat result = { x, y, z, w };
+    return result;
+}
+
+MAIMATH_DEF quat quatRepeat(float s)
+{
+    quat result = { s, s, s, s };
+    return result;
+}
+
 MAIMATH_DEF quat quatIdentity(void)
 {
     quat result = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -1277,7 +1251,7 @@ MAIMATH_DEF quat quatInvert(quat q)
 }
 
 // Calculate two quaternion multiplication
-MAIMATH_DEF quat quatMultiply(quat q1, quat q2)
+MAIMATH_DEF quat quatMul(quat q1, quat q2)
 {
     quat result = { 0 };
 
@@ -1351,7 +1325,7 @@ MAIMATH_DEF quat quatSlerp(quat q1, quat q2, float amount)
 }
 
 // Calculate quaternion based on the rotation from one vector to another
-MAIMATH_DEF quat quatFromvec3Tovec3(vec3 from, vec3 to)
+MAIMATH_DEF quat quatFromVec3ToVec3(vec3 from, vec3 to)
 {
     quat result = { 0 };
 
@@ -1373,7 +1347,7 @@ MAIMATH_DEF quat quatFromvec3Tovec3(vec3 from, vec3 to)
 }
 
 // Returns a quaternion for a given rotation matrix
-MAIMATH_DEF quat quatFrommat4(mat4 mat)
+MAIMATH_DEF quat quatFromMat4(mat4 mat)
 {
     quat result = { 0 };
 
@@ -1429,7 +1403,7 @@ MAIMATH_DEF quat quatFrommat4(mat4 mat)
 }
 
 // Returns a matrix for a given quaternion
-MAIMATH_DEF mat4 quatTomat4(quat q)
+MAIMATH_DEF mat4 quatToMat4(quat q)
 {
     mat4 result = { 0 };
 
