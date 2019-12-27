@@ -54,10 +54,15 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Liquid Surface 2D");
     SetTargetFPS(60);
 
-    LiquidSurface2D surface = NewLiquidSurface2D((rect) { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(32, 32));
+    LiquidSurface2D surface = NewLiquidSurface2D((rect) { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(16, 16));
 
     float timer     = 0.0f;
-    float timeStep  = 1.0f / 40.0f;
+    float timeStep  = 1.0f / 60.0f;
+
+    int   fpsCount    = 0;
+    int   fpsValue    = 0;
+    float fpsTimer    = 0.0f;
+    float fpsInterval = 1.0f;
 
     while (!WindowShouldClose())
     {
@@ -65,6 +70,7 @@ int main(void)
         while (timer >= timeStep)
         {
             timer -= timeStep;
+            fpsCount += 1;
 
             if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
             {
@@ -74,13 +80,23 @@ int main(void)
             UpdateLiquidSurface2D(surface, timeStep);
         }
 
+        fpsTimer += GetDeltaTime();
+        if (fpsTimer >= fpsInterval)
+        {
+            fpsTimer -= fpsInterval;
+            
+            fpsValue = fpsCount;
+            fpsCount = 0;
+        }
+
         BeginDrawing();
         {
             ClearBackground(RAYWHITE);
 
             RenderLiquidSurface2D(surface, GRAY);
 
-            DrawFPS(0, 0);
+            DrawText(TextFormat("%d Fixed FPS", fpsValue), 0, 0, 24, DARKGREEN);
+            DrawText(TextFormat("%d FPS", GetFPS()), 0, 30, 24, DARKGREEN);
         }
         EndDrawing();
     }
@@ -102,8 +118,8 @@ LiquidSpring2D NewLiquidSpring2D(LiquidPoint2D* p0, LiquidPoint2D* p1, float sti
     return (LiquidSpring2D) {
         p0, p1,
 
-        vec2Distance(p0->position, p1->position) * 0.9f,
-        stiffness, damping, 180.0f
+        vec2Distance(p0->position, p1->position) * 0.95f,
+        stiffness, damping, 250.0f
     };
 }
 
