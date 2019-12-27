@@ -2,7 +2,7 @@
 #include <MaiMath.h>
 #include <MaiArray.h>
 
-const int DEFAULT_POINT_DAMPING = 1.0f;
+const int DEFAULT_POINT_DAMPING = 3.0f;
 
 typedef struct LiquidPoint2D
 {
@@ -51,8 +51,9 @@ int main(void)
 {
     const int SCREEN_WIDTH = 1280;
     const int SCREEN_HEIGHT = 720;
+    SetConfigFlags(FLAG_VSYNC_HINT);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Liquid Surface 2D");
-    SetTargetFPS(60);
+    //SetTargetFPS(60);
 
     LiquidSurface2D surface = NewLiquidSurface2D((rect) { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(16, 16));
 
@@ -64,7 +65,7 @@ int main(void)
     float fpsTimer    = 0.0f;
     float fpsInterval = 1.0f;
 
-    while (!WindowShouldClose())
+    while (!PollWindowEvents())
     {
         timer += GetDeltaTime();
         while (timer >= timeStep)
@@ -95,8 +96,8 @@ int main(void)
 
             RenderLiquidSurface2D(surface, GRAY);
 
-            DrawText(TextFormat("%d Fixed FPS", fpsValue), 0, 0, 24, DARKGREEN);
-            DrawText(TextFormat("%d FPS", GetFPS()), 0, 30, 24, DARKGREEN);
+            DrawText(TextFormat("CPU FPS: %d", fpsValue), 0, 0, 24, DARKGREEN);
+            DrawText(TextFormat("GPU FPS: %d", GetFPS()), 0, 30, 24, DARKGREEN);
         }
         EndDrawing();
     }

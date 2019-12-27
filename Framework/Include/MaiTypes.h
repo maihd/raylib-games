@@ -382,14 +382,14 @@ typedef struct VrDeviceInfo {
 // System config flags
 // NOTE: Used for bit masks
 typedef enum {
-    FLAG_SHOW_LOGO          = 1,    // Set to show raylib logo at startup
-    FLAG_FULLSCREEN_MODE    = 2,    // Set to run program in fullscreen
-    FLAG_WINDOW_RESIZABLE   = 4,    // Set to allow resizable window
-    FLAG_WINDOW_UNDECORATED = 8,    // Set to disable window decoration (frame and buttons)
-    FLAG_WINDOW_TRANSPARENT = 16,   // Set to allow transparent window
-    FLAG_WINDOW_HIDDEN      = 128,  // Set to create the window initially hidden
-    FLAG_MSAA_4X_HINT       = 32,   // Set to try enabling MSAA 4X
-    FLAG_VSYNC_HINT         = 64    // Set to try enabling V-Sync on GPU
+    FLAG_SHOW_LOGO          = 1 << 0,   // Set to show raylib logo at startup
+    FLAG_FULLSCREEN_MODE    = 1 << 1,   // Set to run program in fullscreen
+    FLAG_WINDOW_RESIZABLE   = 1 << 2,   // Set to allow resizable window
+    FLAG_WINDOW_UNDECORATED = 1 << 3,   // Set to disable window decoration (frame and buttons)
+    FLAG_WINDOW_TRANSPARENT = 1 << 4,   // Set to allow transparent window
+    FLAG_WINDOW_HIDDEN      = 1 << 7,   // Set to create the window initially hidden
+    FLAG_MSAA_4X_HINT       = 1 << 5,   // Set to try enabling MSAA 4X
+    FLAG_VSYNC_HINT         = 1 << 6,   // Set to try enabling V-Sync on GPU
 } ConfigFlag;
 
 // Trace log type
