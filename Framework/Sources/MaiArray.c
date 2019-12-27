@@ -1,6 +1,7 @@
 #include <MaiArray.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct
 {
@@ -33,6 +34,11 @@ int Array_FreeMemory(void* array)
     if (array)
     {
         free((ArrayHeader*)array - 1);
+        return 1;
+    }
+    else
+    {
+        return 0;
     }
 }
 
@@ -69,6 +75,10 @@ int Array_MoveMemory(void* array, int start, int end, int count, int elementSize
 {
     if (array && count > 0)
     {
-        memmove((char*)array + start * elementSize, (char*)array + end * elementSize, count * elementSize);
+        return memmove((char*)array + start * elementSize, (char*)array + end * elementSize, count * elementSize) == array;
+    }
+    else
+    {
+        return 0;
     }
 }

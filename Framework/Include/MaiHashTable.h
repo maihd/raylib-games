@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./MaiTypes.h"
+#include "./MaiDef.h"
                    
 #define HashTable(T, name)  \
     struct name             \

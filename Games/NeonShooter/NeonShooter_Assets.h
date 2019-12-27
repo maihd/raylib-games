@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MaiTypes.h>
+#include <MaiDef.h>
 
 const char* GetAssetPath(const char* target);
 

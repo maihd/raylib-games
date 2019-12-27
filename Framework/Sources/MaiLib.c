@@ -1,5 +1,7 @@
 #include <MaiLib.h>
 
+#pragma lib (comment, "winmm.lib")
+
 static int _frameCount = 0;
 
 bool PollWindowEvents(void)
@@ -20,7 +22,7 @@ float GetDeltaTime(void)
 
 float GetTotalTime(void)
 {
-    return GetTime();
+    return (float)GetTime();
 }
 
 Color ColorFromVec4(vec4 color)

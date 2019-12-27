@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MaiTypes.h>
+#include <MaiDef.h>
 #include "NeonShooter_World.h"
 
 void InitParticles(void);

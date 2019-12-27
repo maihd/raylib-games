@@ -3,9 +3,12 @@
 #include "NeonShooter_GameAudio.h"
 #include "NeonShooter_ParticleSystem.h"
 
+#include <stdlib.h>
 #include <MaiLib.h>
 #include <MaiMath.h>
 #include <MaiArray.h>
+
+#define DEFAULT_POINT_DAMPING 2.0F
 
 static PointMass NewPointMass(vec2 position, float invMass)
 {
@@ -15,14 +18,14 @@ static PointMass NewPointMass(vec2 position, float invMass)
 
         .acceleration = { 0, 0 }, 
         .invMass = invMass,
-        .damping = 0.98f,
+        .damping = DEFAULT_POINT_DAMPING,
     };
 }
 
-static void UpdatePointMass(PointMass* p, float dt)
+static void UpdatePointMass(PointMass* p, float timeStep)
 {
-    vec2 velocity = vec2Add(p->velocity, p->acceleration);
-    vec2 position = vec2Add(p->position, vec2Scale(velocity, dt));
+    vec2 velocity = vec2Add(p->velocity, vec2Scale(p->acceleration, timeStep));
+    vec2 position = vec2Add(p->position, vec2Scale(velocity, timeStep));
 
     if (vec2LengthSq(velocity) < 0.001f * 0.001f)
     {
@@ -30,18 +33,28 @@ static void UpdatePointMass(PointMass* p, float dt)
     }
     else
     {
-        velocity = vec2Scale(velocity, p->damping);
+        velocity = vec2Scale(velocity, fmaxf(0.0f, 1.0f - p->damping * timeStep));
+    }
+
+    vec2 acceleration = p->acceleration;
+    if (vec2LengthSq(acceleration) < 0.001f * 0.001f)
+    {
+        acceleration = vec2New(0, 0);
+    }
+    else
+    {
+        acceleration = vec2Scale(acceleration, fmaxf(0.0f, 1.0f - p->damping * timeStep));
     }
 
     p->position     = position;
     p->velocity     = velocity;
-    p->acceleration = vec2New(0, 0);
-    p->damping      = 0.98f;
+    p->acceleration = acceleration;
+    p->damping      = DEFAULT_POINT_DAMPING;
 }
 
-static void PointMassApplyForce(PointMass* p, vec2 force)
+static void PointMassApplyForce(PointMass* p, vec2 force, float timeStep)
 {
-    p->acceleration = vec2Add(p->acceleration, force);
+    p->acceleration = vec2Add(p->acceleration, vec2Scale(force, p->invMass * timeStep));
 }
 
 static void PointMassIncreaseDamping(PointMass* p, float factor)
@@ -57,22 +70,23 @@ static Spring NewSpring(PointMass* p0, PointMass* p1, float stiffness, float dam
 
         .targetLength = vec2Distance(p0->position, p1->position) * 0.95f,
         .stiffness = stiffness,
-        .damping = damping
+        .damping = damping,
+        .force = 280.0f,
     };
 }
 
-static void UpdateSpring(Spring* spring, float dt)
+static void UpdateSpring(Spring* spring, float timeStep)
 {
     vec2 diff = vec2Sub(spring->p0->position, spring->p1->position);
     float len = vec2Length(diff);
     if (len > spring->targetLength)
     {
-        diff = vec2Scale(diff, (len - spring->targetLength) / len);
+        float changeRate = (len - spring->targetLength) / len;
         vec2 dvel = vec2Sub(spring->p1->velocity, spring->p0->velocity);
-        vec2 force = vec2Sub(vec2Scale(diff, spring->stiffness), vec2Scale(dvel, spring->damping));
+        vec2 force = vec2Sub(vec2Scale(diff, changeRate * spring->stiffness), vec2Scale(dvel, fmaxf(0.0f, 1.0f - spring->damping * timeStep)));
 
-        PointMassApplyForce(spring->p0, vec2Neg(force));
-        PointMassApplyForce(spring->p1, force);
+        PointMassApplyForce(spring->p0, vec2Scale(vec2Neg(force), spring->force), timeStep);
+        PointMassApplyForce(spring->p1, vec2Scale(force, spring->force), timeStep);
     }
 }
 
@@ -81,9 +95,10 @@ static WarpGrid NewWarpGrid(rect bounds, vec2 spacing)
     int cols = (int)(bounds.width / spacing.x) + 1;
     int rows = (int)(bounds.height / spacing.y) + 1;
 
-    Array(Spring) springs = ArrayNew(Spring, 4 * cols * rows);
-    Array(PointMass) points = ArrayNew(PointMass, cols * rows);
-    Array(PointMass) fixedPoints = ArrayNew(PointMass, cols * rows);
+    int pointCount = cols * rows;
+    Array(Spring) springs = ArrayNew(Spring, 4 * pointCount);
+    Array(PointMass) points = ArrayNew(PointMass, pointCount);
+    Array(PointMass) fixedPoints = ArrayNew(PointMass, pointCount);
 
     if (!points || !springs || !fixedPoints)
     {
@@ -94,6 +109,9 @@ static WarpGrid NewWarpGrid(rect bounds, vec2 spacing)
         return (WarpGrid) { 0 };
     }
 
+    ArraySetCount(points, pointCount);
+    ArraySetCount(fixedPoints, pointCount);
+
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
@@ -101,29 +119,20 @@ static WarpGrid NewWarpGrid(rect bounds, vec2 spacing)
             int  index = i * cols + j;
             vec2 position = (vec2){ bounds.x + j * spacing.x, bounds.y + i * spacing.y };
             
-            ArrayPush(points, NewPointMass(position, 1.0f));
-            ArrayPush(fixedPoints, NewPointMass(position, 0.0f));
-        }
-    }
-
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < cols; j++)
-        {
-            int index = i * cols + j;
+            points[index] = NewPointMass(position, 1.0f);
+            fixedPoints[index] = NewPointMass(position, 0.0f);
 
             if ((i == 0) || (j == 0) || (i == rows - 1) || (j == cols - 1)) // anchor the border of the grid
             {
-                ArrayPush(springs, NewSpring(&fixedPoints[index], &points[index], 0.1f, 0.1f));
+                ArrayPush(springs, NewSpring(&fixedPoints[index], &points[index], 0.2f, 10.0f));
             }
             else if ((i % 3 == 0) && (j % 3 == 0)) // loosely anchor 1/9th of the point masses
             {
-                ArrayPush(springs, NewSpring(&fixedPoints[index], &points[index], 0.002f, 0.02f));
+                ArrayPush(springs, NewSpring(&fixedPoints[index], &points[index], 0.004f, 40.0f));
             }
 
-            const float stiffness = 0.28f;
-            const float damping = 0.06f;
-
+            const float stiffness = 0.5f;
+            const float damping = 30.0f;
             if (j > 0)
             {
                 ArrayPush(springs, NewSpring(&points[i * cols + (j - 1)], &points[index], stiffness, damping));
@@ -131,7 +140,7 @@ static WarpGrid NewWarpGrid(rect bounds, vec2 spacing)
 
             if (i > 0)
             {
-                ArrayPush(springs, NewSpring(&points[(i - 1) * rows + j], &points[index], stiffness, damping));
+                ArrayPush(springs, NewSpring(&points[(i - 1) * cols + j], &points[index], stiffness, damping));
             }
         }
     }
@@ -150,22 +159,24 @@ static WarpGrid FreeWarpGrid(WarpGrid grid)
     return (WarpGrid) { 0 };
 }
 
-static void UpdateWarpGrid(WarpGrid grid, float dt)
+static void UpdateWarpGrid(WarpGrid grid, float timeStep)
 {
     for (int i = 0, n = ArrayCount(grid.springs); i < n; i++)
     {
-        UpdateSpring(&grid.springs[i], dt);
+        UpdateSpring(&grid.springs[i], timeStep);
     }
 
     for (int i = 0, n = ArrayCount(grid.points); i < n; i++)
     {
-        UpdatePointMass(&grid.points[i], dt);
+        UpdatePointMass(&grid.points[i], timeStep);
     }
 }
 
 static void RenderWarpGrid(WarpGrid grid)
 {
-    Color color = (Color){ 30, 30, 139, 85 };   // dark blue
+    BeginBlendMode(BLEND_ADDITIVE);
+
+    Color color = (Color){ 30, 30, 139, 156 };   // dark blue
 
     int cols = grid.cols;
     int rows = grid.rows;
@@ -181,42 +192,41 @@ static void RenderWarpGrid(WarpGrid grid)
             vec2 up = grid.points[(i - 1) * cols + j].position;
             DrawLineEx(up, current, j % 3 == 0 ? 6.0f : 2.0f, color);
 
-            if (i > 1 && j > 1)
-            {
-                vec2 upLeft = grid.points[(i - 1) * cols + (j - 1)].position;
-                DrawLineEx(vec2Scale(vec2Add(upLeft, up), 0.5f), vec2Scale(vec2Add(current, up), 0.5f), 2.0f, color);   // vertical line
-                DrawLineEx(vec2Scale(vec2Add(upLeft, left), 0.5f), vec2Scale(vec2Add(current, up), 0.5f), 2.0f, color);   // horizontal line
-            }
+            vec2 upLeft = grid.points[(i - 1) * cols + (j - 1)].position;
+            DrawLineEx(vec2Scale(vec2Add(upLeft, up), 0.5f), vec2Scale(vec2Add(current, up), 0.5f), 2.0f, color);   // vertical line
+            DrawLineEx(vec2Scale(vec2Add(upLeft, left), 0.5f), vec2Scale(vec2Add(current, left), 0.5f), 2.0f, color);   // horizontal line
         }
     }
+
+    EndBlendMode();
 }
 
-static void WarpGridApplyDirectedForce(WarpGrid grid, vec2 force, vec2 position, float radius)
+static void WarpGridApplyDirectedForce(WarpGrid grid, vec2 force, vec2 position, float radius, float timeStep)
 {
     for (int i = 0, n = ArrayCount(grid.points); i < n; i++)
     {
         PointMass point = grid.points[i];
         if (vec2DistanceSq(position, point.position) < radius * radius)
         {
-             PointMassApplyForce(&grid.points[i], vec2Scale(force, 10.0f / (10 + vec2Distance(position, point.position))));
+             PointMassApplyForce(&grid.points[i], vec2Scale(force, 10.0f / (10 + vec2Distance(position, point.position))), timeStep);
         }
     }
 }
 
-static void WarpGridApplyImplosiveForce(WarpGrid grid, float force, vec2 position, float radius)
+static void WarpGridApplyImplosiveForce(WarpGrid grid, float force, vec2 position, float radius, float timeStep)
 {
     for (int i = 0, n = ArrayCount(grid.points); i < n; i++)
     {
         PointMass point = grid.points[i];
         if (vec2DistanceSq(position, point.position) < radius * radius)
         {
-            PointMassApplyForce(&grid.points[i], vec2Scale(vec2Sub(position, point.position), 10.0f * force / (100 + vec2DistanceSq(position, point.position))));
-            PointMassIncreaseDamping(&grid.points[i], 0.6f);
+            PointMassApplyForce(&grid.points[i], vec2Scale(vec2Sub(position, point.position), 10.0f * force / (100 + vec2DistanceSq(position, point.position))), timeStep);
+            PointMassIncreaseDamping(&grid.points[i], 1.0f / 0.6f);
         }
     }
 }
 
-static void WarpGridApplyExplosiveForce(WarpGrid grid, float force, vec2 position, float radius)
+static void WarpGridApplyExplosiveForce(WarpGrid grid, float force, vec2 position, float radius, float timeStep)
 {
     int count = 0;
     for (int i = 0, n = ArrayCount(grid.points); i < n; i++)
@@ -229,131 +239,9 @@ static void WarpGridApplyExplosiveForce(WarpGrid grid, float force, vec2 positio
             vec2 forceDirection = vec2Sub(point.position, position);
             vec2 appliedForce = vec2Scale(forceDirection, 10.0f * force / (100.0f + dist));
 
-            PointMassApplyForce(&grid.points[i], appliedForce);
-            PointMassIncreaseDamping(&grid.points[i], 0.6f);
+            PointMassApplyForce(&grid.points[i], appliedForce, timeStep);
+            PointMassIncreaseDamping(&grid.points[i], 1.0f / 0.6f);
         }
-    }
-}
-
-static MeshGrid NewMeshGrid(rect bounds, vec2 spacing, float springForce, float damping)
-{
-    int cols = (int)(bounds.width / spacing.x) + 1;
-    int rows = (int)(bounds.height / spacing.y) + 1;
-
-    Array(vec2) velocities  = ArrayNew(vec2, cols * rows);
-    Array(vec2) points      = ArrayNew(vec2, cols * rows);
-    Array(vec2) fixedPoints = ArrayNew(vec2, cols * rows);
-
-    if (!points || !velocities || !fixedPoints)
-    {
-        ArrayFree(points);
-        ArrayFree(velocities);
-        ArrayFree(fixedPoints);
-
-        return (MeshGrid) { 0 };
-    }
-
-    for (int i = 0; i < rows; i++)
-    {
-        for (int j = 0; j < cols; j++)
-        {
-            int  index = i * cols + j;
-            vec2 position = (vec2) { bounds.x + j * spacing.x, bounds.y + i * spacing.y };
-
-            ArrayPush(points, position);
-            ArrayPush(fixedPoints, position);
-            ArrayPush(velocities, vec2New(0, 0));
-        }
-    }
-
-    return (MeshGrid) {
-        .cols = cols, 
-        .rows = rows, 
-            
-        .springForce = springForce, 
-        .damping = damping, 
-            
-        .velocities = velocities, 
-        .points = points, 
-        .fixedPoints = fixedPoints
-    };
-}
-
-static MeshGrid FreeMeshGrid(MeshGrid grid)
-{
-    ArrayFree(grid.points);
-    ArrayFree(grid.velocities);
-    ArrayFree(grid.fixedPoints);
-
-    return (MeshGrid) { 0 };
-}
-
-static void UpdateMeshGrid(MeshGrid* grid, float dt)
-{
-    float damping     = grid->damping;
-    float springForce = grid->springForce;
-
-    Array(vec2) velocities  = grid->velocities;
-    Array(vec2) points      = grid->points;
-    Array(vec2) fixedPoints = grid->fixedPoints;
-
-    for (int i = 0, n = grid->cols * grid->rows; i < n; i++)
-    {
-        vec2 point = points[i];
-        vec2 displacement = vec2Sub(point, fixedPoints[i]);
-        vec2 velocity = vec2Scale(vec2Sub(velocities[i], vec2Scale(displacement, springForce * dt)), fmaxf(0.0f, 1.0f - damping * dt));
-
-        points[i] = vec2Add(point, vec2Scale(velocity, dt));
-        velocities[i] = velocity;
-    }
-}
-
-static void RenderMeshGrid(MeshGrid grid)
-{
-    Color color = (Color) { 30, 30, 139, 156 };   // dark blue
-
-    int cols = grid.cols;
-    int rows = grid.rows;
-    for (int i = 1; i < rows; i++)
-    {
-        for (int j = 1; j < cols; j++)
-        {
-            vec2 current = grid.points[i * cols + j];
-
-            vec2 left = grid.points[i * cols + (j - 1)];
-            DrawLineEx(left, current, i % 3 == 0 ? 2.0f : 2.0f, color);
-
-            vec2 up = grid.points[(i - 1) * cols + j];
-            DrawLineEx(up, current, j % 3 == 0 ? 2.0f : 2.0f, color);
-        }
-    }
-}
-
-static void MeshGridApplyImplosiveForce(MeshGrid* grid, float force, vec2 position, float dt)
-{
-    Array(vec2) points = grid->points;
-    Array(vec2) velocities = grid->velocities;
-    for (int i = 0, n = ArrayCount(grid->points); i < n; i++)
-    {
-        vec2 point = grid->points[i];
-        vec2 pointToVertex = vec2Sub(point, position);
-        float attenuatedForce = force / fmaxf(1.0f, vec2LengthSq(pointToVertex));
-        float velocity = attenuatedForce * dt;
-        velocities[i] = vec2Add(velocities[i], vec2Scale(vec2Neg(vec2Normalize(pointToVertex)), velocity));
-    }
-}
-
-static void MeshGridApplyExplosiveForce(MeshGrid* grid, float force, vec2 position, float dt)
-{
-    Array(vec2) points = grid->points;
-    Array(vec2) velocities = grid->velocities;
-    for (int i = 0, n = ArrayCount(grid->points); i < n; i++)
-    {
-        vec2 point = grid->points[i];
-        vec2 pointToVertex = vec2Sub(point, position);
-        float attenuatedForce = force / fmaxf(1.0f, vec2LengthSq(pointToVertex));
-        float velocity = attenuatedForce * dt;
-        velocities[i] = vec2Add(velocities[i], vec2Scale(vec2Normalize(pointToVertex), velocity));
     }
 }
 
@@ -777,9 +665,8 @@ World WorldNew(void)
 {
     World world = { 0 };
 
-    world.grid = NewWarpGrid((rect) { -GetScreenWidth(), -GetScreenHeight(), 2.0f * GetScreenWidth(), 2.0f * GetScreenHeight() }, (vec2) { 60.0f, 60.0f });
-    world.meshGrid = NewMeshGrid((rect) { -GetScreenWidth() * 1.1f, -GetScreenHeight() * 1.1f, 2.2f * GetScreenWidth(), 2.2f * GetScreenHeight() }, (vec2) { 60.0f, 60.0f }, 20.0f, 1.0f);
-
+    world.grid = NewWarpGrid((rect) { -GetScreenWidth() * 1.1f, -GetScreenHeight() * 1.1f, 2.2f * GetScreenWidth(), 2.2f * GetScreenHeight() }, (vec2) { 128.0f, 128.0f });
+    
     world.player.active = true;
     world.player.color = WHITE;
     world.player.position = (vec2) { 0.0f, 0.0f };
@@ -814,7 +701,6 @@ World WorldNew(void)
 void WorldFree(World* world)
 {
     FreeWarpGrid(world->grid);
-    FreeMeshGrid(world->meshGrid);
 
     FreeListFree(world->bullets);
     FreeListFree(world->seekers);
@@ -827,8 +713,8 @@ void WorldFree(World* world)
 void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, bool fire, float dt)
 {
     // Update warp grid
-    //UpdateWarpGrid(world->grid, dt);
-    UpdateMeshGrid(&world->meshGrid, dt);
+    UpdateWarpGrid(world->grid, dt);
+    //UpdateMeshGrid(&world->meshGrid, dt);
 
     if (world->gameOverTimer > 0.0f)
     {
@@ -845,7 +731,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
 
     world->player.velocity = vec2Lerp(world->player.velocity, vec2Normalize((vec2){ horizontal, vertical }), 5.0f * dt);
     world->player = UpdateEntityWithBound(world->player, (vec2){ GetScreenWidth(), GetScreenHeight() }, dt);
-    MeshGridApplyExplosiveForce(&world->meshGrid, world->player.movespeed, world->player.position, dt);
+    WarpGridApplyExplosiveForce(world->grid, 4.0f * world->player.movespeed, world->player.position, 50.0f, dt);
     if (vec2LengthSq(world->player.velocity) > 0.1f && fmodf(GetTotalTime(), 0.025f) <= 0.01f)
     {
         float speed;
@@ -882,7 +768,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         {
             Entity bullet = UpdateEntity(FreeListGet(world->bullets, i), dt);
 
-            MeshGridApplyExplosiveForce(&world->meshGrid, 4.0f * bullet.movespeed, bullet.position, dt);
+            //MeshGridApplyExplosiveForce(&world->meshGrid, 4.0f * bullet.movespeed, bullet.position, dt);
+            WarpGridApplyExplosiveForce(world->grid, 2000.0f, bullet.position, 200.0f, dt);
 
             if (bullet.position.x < -GetScreenWidth()
                 || bullet.position.x > GetScreenWidth()
@@ -910,7 +797,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             }
             else
             {
-                MeshGridApplyExplosiveForce(&world->meshGrid, 2.0f * s->movespeed, s->position, dt);
+                //MeshGridApplyExplosiveForce(&world->meshGrid, 2.0f * s->movespeed, s->position, dt);
+                WarpGridApplyExplosiveForce(world->grid, 4.0f * s->movespeed, s->position, 30.0f, dt);
 
                 vec2 dir = vec2Normalize(vec2Sub(world->player.position, s->position));
                 vec2 acl = vec2Scale(dir, 10.0f * dt);
@@ -950,7 +838,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
                     s->velocity = (vec2){ cosf(direction), sinf(direction) };
                     s->position = vec2Add(s->position, vec2Scale(s->velocity, real_speed * dt));
 
-                    MeshGridApplyExplosiveForce(&world->meshGrid, 2.0f * s->movespeed, s->position, dt);
+                    WarpGridApplyExplosiveForce(world->grid, 4.0f * s->movespeed, s->position, 30.0f, dt);
+                    //MeshGridApplyExplosiveForce(&world->meshGrid, 2.0f * s->movespeed, s->position, dt);
                 }
             }
         }
@@ -1084,8 +973,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             }
             else
             {
-                MeshGridApplyImplosiveForce(&world->meshGrid, 10000.0f, s->position, dt);
-                //WarpGridApplyImplosiveForce(world->grid, (float)sinf(rand() % 101 / 100.0f * GetTotalTime()) * 10 + 20, s->position, 400);
+                //MeshGridApplyImplosiveForce(&world->meshGrid, 10000.0f, s->position, dt);
+                WarpGridApplyImplosiveForce(world->grid, 36000.0f, s->position, 1500, dt);
 
                 if (UpdateBlackhole(s, &world->player))
                 {
@@ -1163,8 +1052,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
 
 void WorldRender(World world)
 {
-    //RenderWarpGrid(world.grid);
-    RenderMeshGrid(world.meshGrid);
+    RenderWarpGrid(world.grid);
+    //RenderMeshGrid(world.meshGrid);
 
     if (world.gameOverTimer > 0)
     {

@@ -1,18 +1,6 @@
 #pragma once
 
-#include "./MaiTypes.h"
-
-#if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
-#   define GUIDEF __declspec(dllexport) extern  // We are building raygui as a Win32 shared library (.dll).
-#elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
-#   define GUIDEF __declspec(dllimport)         // We are using raygui as a Win32 shared library (.dll)
-#else
-#   ifdef __cplusplus
-#       define GUIDEF extern "C"        // Functions visible from other files (no name mangling of functions in C++)
-#   else
-#       define GUIDEF extern            // Functions visible from other files
-#   endif
-#endif
+#include "./MaiDef.h"
 
 //----------------------------------------------------------------------------------
 // Defines and Macros
@@ -191,81 +179,90 @@ typedef enum {
 // Module Functions Declaration
 //----------------------------------------------------------------------------------
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Global gui modification functions
-GUIDEF void GuiEnable(void);                                         // Enable gui controls (global state)
-GUIDEF void GuiDisable(void);                                        // Disable gui controls (global state)
-GUIDEF void GuiLock(void);                                           // Lock gui controls (global state)
-GUIDEF void GuiUnlock(void);                                         // Unlock gui controls (global state)
-GUIDEF void GuiFade(float alpha);                                    // Set gui controls alpha (global state), alpha goes from 0.0f to 1.0f
+MAILIB_API void GuiEnable(void);                                         // Enable gui controls (global state)
+MAILIB_API void GuiDisable(void);                                        // Disable gui controls (global state)
+MAILIB_API void GuiLock(void);                                           // Lock gui controls (global state)
+MAILIB_API void GuiUnlock(void);                                         // Unlock gui controls (global state)
+MAILIB_API void GuiFade(float alpha);                                    // Set gui controls alpha (global state), alpha goes from 0.0f to 1.0f
 
-GUIDEF void GuiSetState(int state);                                  // Set gui state (global state)
-GUIDEF int GuiGetState(void);                                        // Get gui state (global state)
+MAILIB_API void GuiSetState(int state);                                  // Set gui state (global state)
+MAILIB_API int GuiGetState(void);                                        // Get gui state (global state)
 
-GUIDEF void GuiSetFont(Font font);                                   // Set gui custom font (global state)
-GUIDEF Font GuiGetFont(void);                                        // Get gui custom font (global state)
+MAILIB_API void GuiSetFont(Font font);                                   // Set gui custom font (global state)
+MAILIB_API Font GuiGetFont(void);                                        // Get gui custom font (global state)
 
 // Style set/get functions
-GUIDEF void GuiSetStyle(int control, int property, int value);       // Set one style property
-GUIDEF int GuiGetStyle(int control, int property);                   // Get one style property
+MAILIB_API void GuiSetStyle(int control, int property, int value);       // Set one style property
+MAILIB_API int GuiGetStyle(int control, int property);                   // Get one style property
 
 // Container/separator controls, useful for controls organization
-GUIDEF bool GuiWindowBox(rect bounds, const char *title);                                       // Window Box control, shows a window that can be closed
-GUIDEF void GuiGroupBox(rect bounds, const char *text);                                         // Group Box control with text name
-GUIDEF void GuiLine(rect bounds, const char *text);                                             // Line separator control, could contain text
-GUIDEF void GuiPanel(rect bounds);                                                              // Panel control, useful to group controls
-GUIDEF rect GuiScrollPanel(rect bounds, rect content, vec2 *scroll);               // Scroll Panel control
+MAILIB_API bool GuiWindowBox(rect bounds, const char *title);                                       // Window Box control, shows a window that can be closed
+MAILIB_API void GuiGroupBox(rect bounds, const char *text);                                         // Group Box control with text name
+MAILIB_API void GuiLine(rect bounds, const char *text);                                             // Line separator control, could contain text
+MAILIB_API void GuiPanel(rect bounds);                                                              // Panel control, useful to group controls
+MAILIB_API rect GuiScrollPanel(rect bounds, rect content, vec2 *scroll);               // Scroll Panel control
 
 // Basic controls set
-GUIDEF void GuiLabel(rect bounds, const char *text);                                            // Label control, shows text
-GUIDEF bool GuiButton(rect bounds, const char *text);                                           // Button control, returns true when clicked
-GUIDEF bool GuiLabelButton(rect bounds, const char *text);                                      // Label button control, show true when clicked
-GUIDEF bool GuiImageButton(rect bounds, const char *text, Texture texture);                   // Image button control, returns true when clicked
-GUIDEF bool GuiImageButtonEx(rect bounds, const char *text, Texture texture, rect texSource);    // Image button extended control, returns true when clicked
-GUIDEF bool GuiToggle(rect bounds, const char *text, bool active);                              // Toggle Button control, returns true when active
-GUIDEF int GuiToggleGroup(rect bounds, const char *text, int active);                           // Toggle Group control, returns active toggle index
-GUIDEF bool GuiCheckBox(rect bounds, const char *text, bool checked);                           // Check Box control, returns true when active
-GUIDEF int GuiComboBox(rect bounds, const char *text, int active);                              // Combo Box control, returns selected item index
-GUIDEF bool GuiDropdownBox(rect bounds, const char *text, int *active, bool editMode);          // Dropdown Box control, returns selected item
-GUIDEF bool GuiSpinner(rect bounds, const char *text, int *value, int minValue, int maxValue, bool editMode);     // Spinner control, returns selected value
-GUIDEF bool GuiValueBox(rect bounds, const char *text, int *value, int minValue, int maxValue, bool editMode);    // Value Box control, updates input text with numbers
-GUIDEF bool GuiTextBox(rect bounds, char *text, int textSize, bool editMode);                   // Text Box control, updates input text
-GUIDEF bool GuiTextBoxMulti(rect bounds, char *text, int textSize, bool editMode);              // Text Box control with multiple lines
-GUIDEF float GuiSlider(rect bounds, const char *textLeft, const char *textRight, float value, float minValue, float maxValue);       // Slider control, returns selected value
-GUIDEF float GuiSliderBar(rect bounds, const char *textLeft, const char *textRight, float value, float minValue, float maxValue);    // Slider Bar control, returns selected value
-GUIDEF float GuiProgressBar(rect bounds, const char *textLeft, const char *textRight, float value, float minValue, float maxValue);  // Progress Bar control, shows current progress value
-GUIDEF void GuiStatusBar(rect bounds, const char *text);                                        // Status Bar control, shows info text
-GUIDEF void GuiDummyRec(rect bounds, const char *text);                                         // Dummy control for placeholders
-GUIDEF int GuiScrollBar(rect bounds, int value, int minValue, int maxValue);                    // Scroll Bar control
-GUIDEF vec2 GuiGrid(rect bounds, float spacing, int subdivs);                                // Grid control
+MAILIB_API void GuiLabel(rect bounds, const char *text);                                            // Label control, shows text
+MAILIB_API bool GuiButton(rect bounds, const char *text);                                           // Button control, returns true when clicked
+MAILIB_API bool GuiLabelButton(rect bounds, const char *text);                                      // Label button control, show true when clicked
+MAILIB_API bool GuiImageButton(rect bounds, const char *text, Texture texture);                   // Image button control, returns true when clicked
+MAILIB_API bool GuiImageButtonEx(rect bounds, const char *text, Texture texture, rect texSource);    // Image button extended control, returns true when clicked
+MAILIB_API bool GuiToggle(rect bounds, const char *text, bool active);                              // Toggle Button control, returns true when active
+MAILIB_API int GuiToggleGroup(rect bounds, const char *text, int active);                           // Toggle Group control, returns active toggle index
+MAILIB_API bool GuiCheckBox(rect bounds, const char *text, bool checked);                           // Check Box control, returns true when active
+MAILIB_API int GuiComboBox(rect bounds, const char *text, int active);                              // Combo Box control, returns selected item index
+MAILIB_API bool GuiDropdownBox(rect bounds, const char *text, int *active, bool editMode);          // Dropdown Box control, returns selected item
+MAILIB_API bool GuiSpinner(rect bounds, const char *text, int *value, int minValue, int maxValue, bool editMode);     // Spinner control, returns selected value
+MAILIB_API bool GuiValueBox(rect bounds, const char *text, int *value, int minValue, int maxValue, bool editMode);    // Value Box control, updates input text with numbers
+MAILIB_API bool GuiTextBox(rect bounds, char *text, int textSize, bool editMode);                   // Text Box control, updates input text
+MAILIB_API bool GuiTextBoxMulti(rect bounds, char *text, int textSize, bool editMode);              // Text Box control with multiple lines
+MAILIB_API float GuiSlider(rect bounds, const char *textLeft, const char *textRight, float value, float minValue, float maxValue);       // Slider control, returns selected value
+MAILIB_API float GuiSliderBar(rect bounds, const char *textLeft, const char *textRight, float value, float minValue, float maxValue);    // Slider Bar control, returns selected value
+MAILIB_API float GuiProgressBar(rect bounds, const char *textLeft, const char *textRight, float value, float minValue, float maxValue);  // Progress Bar control, shows current progress value
+MAILIB_API void GuiStatusBar(rect bounds, const char *text);                                        // Status Bar control, shows info text
+MAILIB_API void GuiDummyRec(rect bounds, const char *text);                                         // Dummy control for placeholders
+MAILIB_API int GuiScrollBar(rect bounds, int value, int minValue, int maxValue);                    // Scroll Bar control
+MAILIB_API vec2 GuiGrid(rect bounds, float spacing, int subdivs);                                // Grid control
 
 // Advance controls set
-GUIDEF int GuiListView(rect bounds, const char *text, int *scrollIndex, int active);            // List View control, returns selected list item index
-GUIDEF int GuiListViewEx(rect bounds, const char **text, int count, int *focus, int *scrollIndex, int active);      // List View with extended parameters
-GUIDEF int GuiMessageBox(rect bounds, const char *title, const char *message, const char *buttons);                 // Message Box control, displays a message
-GUIDEF int GuiTextInputBox(rect bounds, const char *title, const char *message, const char *buttons, char *text);   // Text Input Box control, ask for text
-GUIDEF Color GuiColorPicker(rect bounds, Color color);                                          // Color Picker control
+MAILIB_API int GuiListView(rect bounds, const char *text, int *scrollIndex, int active);            // List View control, returns selected list item index
+MAILIB_API int GuiListViewEx(rect bounds, const char **text, int count, int *focus, int *scrollIndex, int active);      // List View with extended parameters
+MAILIB_API int GuiMessageBox(rect bounds, const char *title, const char *message, const char *buttons);                 // Message Box control, displays a message
+MAILIB_API int GuiTextInputBox(rect bounds, const char *title, const char *message, const char *buttons, char *text);   // Text Input Box control, ask for text
+MAILIB_API Color GuiColorPicker(rect bounds, Color color);                                          // Color Picker control
 
 // Styles loading functions
-GUIDEF void GuiLoadStyle(const char *fileName);              // Load style file (.rgs)
-GUIDEF void GuiLoadStyleDefault(void);                       // Load style default over global style
+MAILIB_API void GuiLoadStyle(const char *fileName);              // Load style file (.rgs)
+MAILIB_API void GuiLoadStyleDefault(void);                       // Load style default over global style
 
 /*
 typedef GuiStyle (unsigned int *)
-GUIDEF GuiStyle LoadGuiStyle(const char *fileName);          // Load style from file (.rgs)
-GUIDEF void UnloadGuiStyle(GuiStyle style);                  // Unload style
+MAILIB_API GuiStyle LoadGuiStyle(const char *fileName);          // Load style from file (.rgs)
+MAILIB_API void UnloadGuiStyle(GuiStyle style);                  // Unload style
 */
 
-GUIDEF const char *GuiIconText(int iconId, const char *text); // Get text with icon id prepended (if supported)
+MAILIB_API const char *GuiIconText(int iconId, const char *text); // Get text with icon id prepended (if supported)
 
 #if defined(GUI_SUPPORT_ICONS)
 // Gui icons functionality
-GUIDEF void GuiDrawIcon(int iconId, vec2 position, int pixelSize, Color color);
+MAILIB_API void GuiDrawIcon(int iconId, vec2 position, int pixelSize, Color color);
 
-GUIDEF unsigned int *GuiGetIcons(void);                      // Get full icons data pointer
-GUIDEF unsigned int *GuiGetIconData(int iconId);             // Get icon bit data
-GUIDEF void GuiSetIconData(int iconId, unsigned int *data);  // Set icon bit data
+MAILIB_API unsigned int *GuiGetIcons(void);                      // Get full icons data pointer
+MAILIB_API unsigned int *GuiGetIconData(int iconId);             // Get icon bit data
+MAILIB_API void GuiSetIconData(int iconId, unsigned int *data);  // Set icon bit data
 
-GUIDEF void GuiSetIconPixel(int iconId, int x, int y);       // Set icon pixel value
-GUIDEF void GuiClearIconPixel(int iconId, int x, int y);     // Clear icon pixel value
-GUIDEF bool GuiCheckIconPixel(int iconId, int x, int y);     // Check icon pixel value
+MAILIB_API void GuiSetIconPixel(int iconId, int x, int y);       // Set icon pixel value
+MAILIB_API void GuiClearIconPixel(int iconId, int x, int y);     // Clear icon pixel value
+MAILIB_API bool GuiCheckIconPixel(int iconId, int x, int y);     // Check icon pixel value
 #endif
+
+#ifdef __cplusplus
+}
+#endif
+

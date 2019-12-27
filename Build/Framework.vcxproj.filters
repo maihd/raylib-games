@@ -30,7 +30,7 @@
     <ClInclude Include="..\Framework\Include\MaiMath.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiTypes.h">
+    <ClInclude Include="..\Framework\Include\MaiDef.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>

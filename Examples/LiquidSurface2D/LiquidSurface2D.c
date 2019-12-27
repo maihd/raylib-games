@@ -2,6 +2,8 @@
 #include <MaiMath.h>
 #include <MaiArray.h>
 
+#include <assert.h>
+
 const int DEFAULT_POINT_DAMPING = 3.0f;
 
 typedef struct LiquidPoint2D
@@ -39,6 +41,8 @@ typedef struct LiquidSurface2D
     Array(LiquidSpring2D) springs;
 } LiquidSurface2D;
 
+bool            IsLiquidSurface2DValid(LiquidSurface2D surface);
+
 LiquidSurface2D NewLiquidSurface2D(rect bounds, vec2 spacing);
 void            FreeLiquidSurface2D(LiquidSurface2D surface);
 
@@ -56,6 +60,10 @@ int main(void)
     //SetTargetFPS(60);
 
     LiquidSurface2D surface = NewLiquidSurface2D((rect) { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(16, 16));
+    if (!IsLiquidSurface2DValid(surface))
+    {
+        assert(0 && "Out of memory");
+    }
 
     float timer     = 0.0f;
     float timeStep  = 1.0f / 60.0f;
@@ -107,6 +115,11 @@ int main(void)
     return 0;
 }
 
+bool IsLiquidSurface2DValid(LiquidSurface2D surface)
+{
+    return !(surface.cols <= 0 || surface.rows <= 0 || !surface.points || !surface.fixedPoints || !surface.springs);
+}
+
 LiquidPoint2D NewLiquidPoint2D(vec2 position, float invMass)
 {
     return (LiquidPoint2D) {
@@ -134,6 +147,15 @@ LiquidSurface2D NewLiquidSurface2D(rect bounds, vec2 spacing)
     Array(LiquidPoint2D) fixedPoints = ArrayNew(LiquidPoint2D, pointCount);
     Array(LiquidSpring2D) springs = ArrayNew(LiquidSpring2D, 4 * pointCount);
 
+    if (!points || !fixedPoints || !springs)
+    {
+        ArrayFree(springs);
+        ArrayFree(fixedPoints);
+        ArrayFree(points);
+
+        return (LiquidSurface2D) { 0 };
+    }
+
     ArraySetCount(points, pointCount);
     ArraySetCount(fixedPoints, pointCount);
 
@@ -149,15 +171,15 @@ LiquidSurface2D NewLiquidSurface2D(rect bounds, vec2 spacing)
 
             if (i == 0 || j == 0 || i == rows - 1 || j == cols - 1)
             {
-                ArrayPush(springs, NewLiquidSpring2D(&fixedPoints[index], &points[index], 0.2f, 4.0f));
+                ArrayPush(springs, NewLiquidSpring2D(&fixedPoints[index], &points[index], 0.2f, 5.0f));
             }
             else if (i % 3 == 0 && j % 3 == 0)
             {
-                ArrayPush(springs, NewLiquidSpring2D(&fixedPoints[index], &points[index], 0.004f, 40.0f));
+                ArrayPush(springs, NewLiquidSpring2D(&fixedPoints[index], &points[index], 0.004f, 20.0f));
             }
 
             const float stiffness = 0.28f;
-            const float damping = 20.0f;
+            const float damping = 2.0f;
             if (j > 0)
             {
                 ArrayPush(springs, NewLiquidSpring2D(&points[i * cols + (j - 1)], &points[index], stiffness, damping));

@@ -9,12 +9,25 @@ do
     platforms { "x32", "x64", "Native" }
     configurations { "Debug", "Release" }
 
+    compileas "C"
+    staticruntime "on"
+
+    flags {
+        "NoPCH",
+        "OmitDefaultLibrary"
+    }
+
+    cdialect "c99"
+
     filter {} 
 end
 
 project "Framework"
 do
     kind "StaticLib"
+
+    links {
+    }
 
     includedirs { 
         path.join(ROOT_DIR, "Framework/Include"),
@@ -36,14 +49,14 @@ function template(name, projectPath)
         kind "ConsoleApp"
 
         links {
+            "Framework",
             "raylib_static",
             "winmm",
-            "Framework"
         }
 
         includedirs {
-            path.join(ROOT_DIR, "ThirdParty/Include"),
             path.join(ROOT_DIR, "Framework/Include"),
+            path.join(ROOT_DIR, "ThirdParty/Include"),
         }
 
         files {
@@ -58,6 +71,13 @@ function template(name, projectPath)
             "PLATFORM_DESKTOP"
         }
 
+        filter { "configurations:Debug"}
+        do
+            defines {
+                "DEBUG"
+            }
+        end
+
         filter { "platforms:x32" }
         do
             libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win32") }
@@ -66,13 +86,6 @@ function template(name, projectPath)
         filter { "platforms:x64" }
         do
             libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win64") }
-        end
-
-        filter { "configurations:Debug"}
-        do
-            defines {
-                "DEBUG"
-            }
         end
 
         filter { "configurations:Release"}

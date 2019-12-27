@@ -1,23 +1,6 @@
 #pragma once
 
-#include "MaiTypes.h"           // Required for structs: vec3, mat4
-
-#define MAIMATH_DEF static inline // Functions may be inlined, no external out-of-line definition
-
-//----------------------------------------------------------------------------------
-// Defines and Macros
-//----------------------------------------------------------------------------------
-#ifndef PI
-#   define PI 3.14159265358979323846
-#endif
-
-#ifndef DEG2RAD
-#   define DEG2RAD (PI/180.0f)
-#endif
-
-#ifndef RAD2DEG
-#   define RAD2DEG (180.0f/PI)
-#endif
+#include "./MaiDef.h"
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -30,14 +13,14 @@
 //----------------------------------------------------------------------------------
 
 // Clamp float value
-MAIMATH_DEF float clampf(float value, float min, float max)
+MAILIB_INLINE float clampf(float value, float min, float max)
 {
     const float res = value < min ? min : value;
     return res > max ? max : res;
 }
 
 // Calculate linear interpolation between two floats
-MAIMATH_DEF float lerpf(float start, float end, float amount)
+MAILIB_INLINE float lerpf(float start, float end, float amount)
 {
     return start + amount * (end - start);
 }
@@ -46,76 +29,64 @@ MAIMATH_DEF float lerpf(float start, float end, float amount)
 // Module Functions Definition - vec2 math
 //----------------------------------------------------------------------------------
 
-MAIMATH_DEF vec2 vec2New(float x, float y)
-{
-    vec2 result = { x, y };
-    return result;
-}
-
-MAIMATH_DEF vec2 vec2Repeat(float s)
-{
-    vec2 result = { s, s };
-    return result;
-}
-
 // Negate vector
-MAIMATH_DEF vec2 vec2Neg(vec2 v)
+MAILIB_INLINE vec2 vec2Neg(vec2 v)
 {
     vec2 result = { -v.x, -v.y };
     return result;
 }
 
 // Add two vectors (v1 + v2)
-MAIMATH_DEF vec2 vec2Add(vec2 v1, vec2 v2)
+MAILIB_INLINE vec2 vec2Add(vec2 v1, vec2 v2)
 {
     vec2 result = { v1.x + v2.x, v1.y + v2.y };
     return result;
 }
 
 // Subtract two vectors (v1 - v2)
-MAIMATH_DEF vec2 vec2Sub(vec2 v1, vec2 v2)
+MAILIB_INLINE vec2 vec2Sub(vec2 v1, vec2 v2)
 {
     vec2 result = { v1.x - v2.x, v1.y - v2.y };
     return result;
 }
 
 // Multiply vector by vector
-MAIMATH_DEF vec2 vec2Mul(vec2 v1, vec2 v2)
+MAILIB_INLINE vec2 vec2Mul(vec2 v1, vec2 v2)
 {
     vec2 result = { v1.x * v2.x, v1.y * v2.y };
     return result;
 }
 
 // Divide vector by vector
-MAIMATH_DEF vec2 vec2Div(vec2 v1, vec2 v2)
+MAILIB_INLINE vec2 vec2Div(vec2 v1, vec2 v2)
 {
     vec2 result = { v1.x / v2.x, v1.y / v2.y };
     return result;
 }
 
 // Calculate two vectors dot product
-MAIMATH_DEF float vec2Dot(vec2 v1, vec2 v2)
+MAILIB_INLINE float vec2Dot(vec2 v1, vec2 v2)
 {
     float result = v1.x * v2.x + v1.y * v2.y;
     return result;
 }
 
 // Calculate vector length
-MAIMATH_DEF float vec2Length(vec2 v)
+MAILIB_INLINE float vec2Length(vec2 v)
 {
     float result = sqrtf(v.x * v.x + v.y * v.y);
     return result;
 }
 
 // Calculate vector squared length
-MAIMATH_DEF float vec2LengthSq(vec2 v)
+MAILIB_INLINE float vec2LengthSq(vec2 v)
 {
     float result = v.x * v.x + v.y * v.y;
     return result;
 }
 
 // Calculate distance between two vectors
-MAIMATH_DEF float vec2Distance(vec2 v1, vec2 v2)
+MAILIB_INLINE float vec2Distance(vec2 v1, vec2 v2)
 {
     float dx = (v1.x - v2.x);
     float dy = (v1.y - v2.y);
@@ -125,7 +96,7 @@ MAIMATH_DEF float vec2Distance(vec2 v1, vec2 v2)
 }
 
 // Calculate distance between two vectors
-MAIMATH_DEF float vec2DistanceSq(vec2 v1, vec2 v2)
+MAILIB_INLINE float vec2DistanceSq(vec2 v1, vec2 v2)
 {
     float dx = (v1.x - v2.x);
     float dy = (v1.y - v2.y);
@@ -135,7 +106,7 @@ MAIMATH_DEF float vec2DistanceSq(vec2 v1, vec2 v2)
 }
 
 // Calculate angle from two vectors in X-axis
-MAIMATH_DEF float vec2Angle(vec2 v1, vec2 v2)
+MAILIB_INLINE float vec2Angle(vec2 v1, vec2 v2)
 {
     float result = atan2f(v2.y - v1.y, v2.x - v1.x) * (180.0f / PI);
     if (result < 0) result += 360.0f;
@@ -143,21 +114,21 @@ MAIMATH_DEF float vec2Angle(vec2 v1, vec2 v2)
 }
 
 // Scale vector (multiply by value)
-MAIMATH_DEF vec2 vec2Scale(vec2 v, float scale)
+MAILIB_INLINE vec2 vec2Scale(vec2 v, float scale)
 {
     vec2 result = { v.x*scale, v.y*scale };
     return result;
 }
 
 // Scale vector (multiply by value)
-MAIMATH_DEF vec2 vec2ScaleInv(vec2 v, float scale)
+MAILIB_INLINE vec2 vec2ScaleInv(vec2 v, float scale)
 {
     vec2 result = { v.x / scale, v.y / scale };
     return result;
 }
 
 // Normalize provided vector
-MAIMATH_DEF vec2 vec2Normalize(vec2 v)
+MAILIB_INLINE vec2 vec2Normalize(vec2 v)
 {
     float length = vec2Length(v);
     if (length == 0.0f)
@@ -170,7 +141,7 @@ MAIMATH_DEF vec2 vec2Normalize(vec2 v)
 }
 
 // Calculate linear interpolation between two vectors
-MAIMATH_DEF vec2 vec2Lerp(vec2 v1, vec2 v2, float amount)
+MAILIB_INLINE vec2 vec2Lerp(vec2 v1, vec2 v2, float amount)
 {
     vec2 result = { 0 };
 
@@ -180,17 +151,17 @@ MAIMATH_DEF vec2 vec2Lerp(vec2 v1, vec2 v2, float amount)
     return result;
 }
 
-MAIMATH_DEF vec2 vec2Min(vec2 v1, vec2 v2)
+MAILIB_INLINE vec2 vec2Min(vec2 v1, vec2 v2)
 {
     return (vec2){ fminf(v1.x, v2.x), fminf(v1.y, v2.y) };
 }
 
-MAIMATH_DEF vec2 vec2Max(vec2 v1, vec2 v2)
+MAILIB_INLINE vec2 vec2Max(vec2 v1, vec2 v2)
 {
     return (vec2) { fmaxf(v1.x, v2.x), fmaxf(v1.y, v2.y) };
 }
 
-MAIMATH_DEF vec2 vec2Clamp(vec2 v, vec2 min, vec2 max)
+MAILIB_INLINE vec2 vec2Clamp(vec2 v, vec2 min, vec2 max)
 {
     vec2 result = { 0 };
 
@@ -200,7 +171,7 @@ MAIMATH_DEF vec2 vec2Clamp(vec2 v, vec2 min, vec2 max)
     return result;
 }
 
-MAIMATH_DEF vec2 vec2CatmullRom(vec2 v1, vec2 v2, vec2 v3, vec2 v4, float amount)
+MAILIB_INLINE vec2 vec2CatmullRom(vec2 v1, vec2 v2, vec2 v3, vec2 v4, float amount)
 {
     float squared = amount * amount;
     float cubed = amount * squared;
@@ -220,50 +191,36 @@ MAIMATH_DEF vec2 vec2CatmullRom(vec2 v1, vec2 v2, vec2 v3, vec2 v4, float amount
 // Module Functions Definition - vec3 math
 //----------------------------------------------------------------------------------
 
-// Vector with components value 0.0f
-
-MAIMATH_DEF vec3 vec3New(float x, float y, float z)
-{
-    vec3 result = { x, y, z };
-    return result;
-}
-
-MAIMATH_DEF vec3 vec3Repeat(float s)
-{
-    vec3 result = { s, s, s };
-    return result;
-}
-
 // Add two vectors
-MAIMATH_DEF vec3 vec3Add(vec3 v1, vec3 v2)
+MAILIB_INLINE vec3 vec3Add(vec3 v1, vec3 v2)
 {
     vec3 result = { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
     return result;
 }
 
 // Subtract two vectors
-MAIMATH_DEF vec3 vec3Sub(vec3 v1, vec3 v2)
+MAILIB_INLINE vec3 vec3Sub(vec3 v1, vec3 v2)
 {
     vec3 result = { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
     return result;
 }
 
 // Multiply vector by vector
-MAIMATH_DEF vec3 vec3Mul(vec3 v1, vec3 v2)
+MAILIB_INLINE vec3 vec3Mul(vec3 v1, vec3 v2)
 {
     vec3 result = { v1.x*v2.x, v1.y*v2.y, v1.z*v2.z };
     return result;
 }
 
 // Calculate two vectors cross product
-MAIMATH_DEF vec3 vec3Cross(vec3 v1, vec3 v2)
+MAILIB_INLINE vec3 vec3Cross(vec3 v1, vec3 v2)
 {
     vec3 result = { v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x };
     return result;
 }
 
 // Calculate one vector perpendicular vector
-MAIMATH_DEF vec3 vec3Perpendicular(vec3 v)
+MAILIB_INLINE vec3 vec3Perpendicular(vec3 v)
 {
     vec3 result = { 0 };
 
@@ -289,28 +246,28 @@ MAIMATH_DEF vec3 vec3Perpendicular(vec3 v)
 }
 
 // Calculate vector length
-MAIMATH_DEF float vec3Length(const vec3 v)
+MAILIB_INLINE float vec3Length(const vec3 v)
 {
     float result = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
     return result;
 }
 
 // Calculate vector length
-MAIMATH_DEF float vec3LengthSq(const vec3 v)
+MAILIB_INLINE float vec3LengthSq(const vec3 v)
 {
     float result = v.x * v.x + v.y * v.y + v.z * v.z;
     return result;
 }
 
 // Calculate two vectors dot product
-MAIMATH_DEF float vec3Dot(vec3 v1, vec3 v2)
+MAILIB_INLINE float vec3Dot(vec3 v1, vec3 v2)
 {
     float result = (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
     return result;
 }
 
 // Calculate distance between two vectors
-MAIMATH_DEF float vec3Distance(vec3 v1, vec3 v2)
+MAILIB_INLINE float vec3Distance(vec3 v1, vec3 v2)
 {
     float dx = v2.x - v1.x;
     float dy = v2.y - v1.y;
@@ -320,7 +277,7 @@ MAIMATH_DEF float vec3Distance(vec3 v1, vec3 v2)
 }
 
 // Calculate distance between two vectors
-MAIMATH_DEF float vec3DistanceSq(vec3 v1, vec3 v2)
+MAILIB_INLINE float vec3DistanceSq(vec3 v1, vec3 v2)
 {
     float dx = v2.x - v1.x;
     float dy = v2.y - v1.y;
@@ -330,35 +287,35 @@ MAIMATH_DEF float vec3DistanceSq(vec3 v1, vec3 v2)
 }
 
 // Scale provided vector
-MAIMATH_DEF vec3 vec3Scale(vec3 v, float scale)
+MAILIB_INLINE vec3 vec3Scale(vec3 v, float scale)
 {
     vec3 result = { v.x*scale, v.y*scale, v.z*scale };
     return result;
 }
 
 // Negate provided vector (invert direction)
-MAIMATH_DEF vec3 vec3Negate(vec3 v)
+MAILIB_INLINE vec3 vec3Negate(vec3 v)
 {
     vec3 result = { -v.x, -v.y, -v.z };
     return result;
 }
 
 // Divide vector by a float value
-MAIMATH_DEF vec3 vec3Div(vec3 v, float div)
+MAILIB_INLINE vec3 vec3Div(vec3 v, float div)
 {
     vec3 result = { v.x / div, v.y / div, v.z / div };
     return result;
 }
 
 // Divide vector by vector
-MAIMATH_DEF vec3 vec3DivV(vec3 v1, vec3 v2)
+MAILIB_INLINE vec3 vec3DivV(vec3 v1, vec3 v2)
 {
     vec3 result = { v1.x/v2.x, v1.y/v2.y, v1.z/v2.z };
     return result;
 }
 
 // Normalize provided vector
-MAIMATH_DEF vec3 vec3Normalize(vec3 v)
+MAILIB_INLINE vec3 vec3Normalize(vec3 v)
 {
     vec3 result = v;
 
@@ -377,7 +334,7 @@ MAIMATH_DEF vec3 vec3Normalize(vec3 v)
 // Orthonormalize provided vectors
 // Makes vectors normalized and orthogonal to each other
 // Gram-Schmidt function implementation
-MAIMATH_DEF void vec3OrthoNormalize(vec3 *v1, vec3 *v2)
+MAILIB_INLINE void vec3OrthoNormalize(vec3 *v1, vec3 *v2)
 {
     *v1 = vec3Normalize(*v1);
     vec3 vn = vec3Cross(*v1, *v2);
@@ -386,7 +343,7 @@ MAIMATH_DEF void vec3OrthoNormalize(vec3 *v1, vec3 *v2)
 }
 
 // Transforms a vec3 by a given mat4
-MAIMATH_DEF vec3 vec3Transform(vec3 v, mat4 mat)
+MAILIB_INLINE vec3 vec3Transform(vec3 v, mat4 mat)
 {
     vec3 result = { 0 };
     float x = v.x;
@@ -401,7 +358,7 @@ MAIMATH_DEF vec3 vec3Transform(vec3 v, mat4 mat)
 }
 
 // Transform a vector by quaternion rotation
-MAIMATH_DEF vec3 vec3RotateByquat(vec3 v, quat q)
+MAILIB_INLINE vec3 vec3RotateByquat(vec3 v, quat q)
 {
     vec3 result = { 0 };
 
@@ -413,7 +370,7 @@ MAIMATH_DEF vec3 vec3RotateByquat(vec3 v, quat q)
 }
 
 // Calculate linear interpolation between two vectors
-MAIMATH_DEF vec3 vec3Lerp(vec3 v1, vec3 v2, float amount)
+MAILIB_INLINE vec3 vec3Lerp(vec3 v1, vec3 v2, float amount)
 {
     vec3 result = { 0 };
 
@@ -425,7 +382,7 @@ MAIMATH_DEF vec3 vec3Lerp(vec3 v1, vec3 v2, float amount)
 }
 
 // Calculate reflected vector to normal
-MAIMATH_DEF vec3 vec3Reflect(vec3 v, vec3 normal)
+MAILIB_INLINE vec3 vec3Reflect(vec3 v, vec3 normal)
 {
     // I is the original vector
     // N is the normal of the incident plane
@@ -433,7 +390,7 @@ MAIMATH_DEF vec3 vec3Reflect(vec3 v, vec3 normal)
 
     vec3 result = { 0 };
 
-    float dotProduct = vec3DotProduct(v, normal);
+    float dotProduct = vec3Dot(v, normal);
 
     result.x = v.x - (2.0f*normal.x)*dotProduct;
     result.y = v.y - (2.0f*normal.y)*dotProduct;
@@ -443,7 +400,7 @@ MAIMATH_DEF vec3 vec3Reflect(vec3 v, vec3 normal)
 }
 
 // Return min value for each pair of components
-MAIMATH_DEF vec3 vec3Min(vec3 v1, vec3 v2)
+MAILIB_INLINE vec3 vec3Min(vec3 v1, vec3 v2)
 {
     vec3 result = { 0 };
 
@@ -455,7 +412,7 @@ MAIMATH_DEF vec3 vec3Min(vec3 v1, vec3 v2)
 }
 
 // Return max value for each pair of components
-MAIMATH_DEF vec3 vec3Max(vec3 v1, vec3 v2)
+MAILIB_INLINE vec3 vec3Max(vec3 v1, vec3 v2)
 {
     vec3 result = { 0 };
 
@@ -468,7 +425,7 @@ MAIMATH_DEF vec3 vec3Max(vec3 v1, vec3 v2)
 
 // Compute barycenter coordinates (u, v, w) for point p with respect to triangle (a, b, c)
 // NOTE: Assumes P is on the plane of the triangle
-MAIMATH_DEF vec3 vec3Barycenter(vec3 p, vec3 a, vec3 b, vec3 c)
+MAILIB_INLINE vec3 vec3Barycenter(vec3 p, vec3 a, vec3 b, vec3 c)
 {
     //Vector v0 = b - a, v1 = c - a, v2 = p - a;
 
@@ -497,64 +454,50 @@ MAIMATH_DEF vec3 vec3Barycenter(vec3 p, vec3 a, vec3 b, vec3 c)
 // Module Functions Definition - vec4 math
 //----------------------------------------------------------------------------------
 
-// Vector with components value 0.0f
-
-MAIMATH_DEF vec4 vec4New(float x, float y, float z, float w)
-{
-    vec4 result = { x, y, z, w };
-    return result;
-}
-
-MAIMATH_DEF vec4 vec4Repeat(float s)
-{
-    vec4 result = { s, s, s, s };
-    return result;
-}
-
 // Add two vectors
-MAIMATH_DEF vec4 vec4Add(vec4 v1, vec4 v2)
+MAILIB_INLINE vec4 vec4Add(vec4 v1, vec4 v2)
 {
     vec4 result = { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
     return result;
 }
 
 // Subtract two vectors
-MAIMATH_DEF vec4 vec4Sub(vec4 v1, vec4 v2)
+MAILIB_INLINE vec4 vec4Sub(vec4 v1, vec4 v2)
 {
     vec4 result = { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w };
     return result;
 }
 
 // Multiply vector by vector
-MAIMATH_DEF vec4 vec4Mul(vec4 v1, vec4 v2)
+MAILIB_INLINE vec4 vec4Mul(vec4 v1, vec4 v2)
 {
     vec4 result = { v1.x * v2.x, v1.y * v2.y, v1.z * v2.z, v1.w * v2.w };
     return result;
 }
 
 // Calculate vector length
-MAIMATH_DEF float vec4Length(const vec4 v)
+MAILIB_INLINE float vec4Length(const vec4 v)
 {
     float result = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w);
     return result;
 }
 
 // Calculate vector length
-MAIMATH_DEF float vec4LengthSq(const vec4 v)
+MAILIB_INLINE float vec4LengthSq(const vec4 v)
 {
     float result = v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w;
     return result;
 }
 
 // Calculate two vectors dot product
-MAIMATH_DEF float vec4Dot(vec4 v1, vec4 v2)
+MAILIB_INLINE float vec4Dot(vec4 v1, vec4 v2)
 {
     float result = (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w);
     return result;
 }
 
 // Calculate distance between two vectors
-MAIMATH_DEF float vec4Distance(vec4 v1, vec4 v2)
+MAILIB_INLINE float vec4Distance(vec4 v1, vec4 v2)
 {
     float dx = v2.x - v1.x;
     float dy = v2.y - v1.y;
@@ -565,7 +508,7 @@ MAIMATH_DEF float vec4Distance(vec4 v1, vec4 v2)
 }
 
 // Calculate distance between two vectors
-MAIMATH_DEF float vec4DistanceSq(vec4 v1, vec4 v2)
+MAILIB_INLINE float vec4DistanceSq(vec4 v1, vec4 v2)
 {
     float dx = v2.x - v1.x;
     float dy = v2.y - v1.y;
@@ -576,35 +519,35 @@ MAIMATH_DEF float vec4DistanceSq(vec4 v1, vec4 v2)
 }
 
 // Scale provided vector
-MAIMATH_DEF vec4 vec4Scale(vec4 v, float scale)
+MAILIB_INLINE vec4 vec4Scale(vec4 v, float scale)
 {
     vec4 result = { v.x * scale, v.y * scale, v.z * scale, v.w * scale };
     return result;
 }
 
 // Scale provided vector
-MAIMATH_DEF vec4 vec4ScaleInv(vec4 v, float scale)
+MAILIB_INLINE vec4 vec4ScaleInv(vec4 v, float scale)
 {
     vec4 result = { v.x / scale, v.y / scale, v.z / scale, v.w / scale };
     return result;
 }
 
 // Negate provided vector (invert direction)
-MAIMATH_DEF vec4 vec4Neg(vec4 v)
+MAILIB_INLINE vec4 vec4Neg(vec4 v)
 {
     vec4 result = { -v.x, -v.y, -v.z, -v.w };
     return result;
 }
 
 // Divide vector by vector
-MAIMATH_DEF vec4 vec4Div(vec4 v1, vec4 v2)
+MAILIB_INLINE vec4 vec4Div(vec4 v1, vec4 v2)
 {
     vec4 result = { v1.x / v2.x, v1.y / v2.y, v1.z / v2.z, v1.w / v2.w };
     return result;
 }
 
 // Normalize provided vector
-MAIMATH_DEF vec4 vec4Normalize(vec4 v)
+MAILIB_INLINE vec4 vec4Normalize(vec4 v)
 {
     vec4 result = v;
 
@@ -622,7 +565,7 @@ MAIMATH_DEF vec4 vec4Normalize(vec4 v)
 }
 
 // Transforms a vec4 by a given mat4
-MAIMATH_DEF vec4 vec4Transform(vec4 v, mat4 mat)
+MAILIB_INLINE vec4 vec4Transform(vec4 v, mat4 mat)
 {
     vec4 result = { 0 };
     float x = v.x;
@@ -639,7 +582,7 @@ MAIMATH_DEF vec4 vec4Transform(vec4 v, mat4 mat)
 }
 
 // Calculate linear interpolation between two vectors
-MAIMATH_DEF vec4 vec4Lerp(vec4 v1, vec4 v2, float amount)
+MAILIB_INLINE vec4 vec4Lerp(vec4 v1, vec4 v2, float amount)
 {
     vec4 result = { 
         .x = v1.x + amount * (v2.x - v1.x),
@@ -652,7 +595,7 @@ MAIMATH_DEF vec4 vec4Lerp(vec4 v1, vec4 v2, float amount)
 }
 
 // Return min value for each pair of components
-MAIMATH_DEF vec4 vec4Min(vec4 v1, vec4 v2)
+MAILIB_INLINE vec4 vec4Min(vec4 v1, vec4 v2)
 {
     vec4 result = { 
         .x = fminf(v1.x, v2.x),
@@ -665,7 +608,7 @@ MAIMATH_DEF vec4 vec4Min(vec4 v1, vec4 v2)
 }
 
 // Return max value for each pair of components
-MAIMATH_DEF vec4 vec4Max(vec4 v1, vec4 v2)
+MAILIB_INLINE vec4 vec4Max(vec4 v1, vec4 v2)
 {
     vec4 result = { 
         .x = fmaxf(v1.x, v2.x),
@@ -678,7 +621,7 @@ MAIMATH_DEF vec4 vec4Max(vec4 v1, vec4 v2)
 }
 
 // Return max value for each pair of components
-MAIMATH_DEF vec4 vec4Clamp(vec4 v, vec4 min, vec4 max)
+MAILIB_INLINE vec4 vec4Clamp(vec4 v, vec4 min, vec4 max)
 {
     vec4 result = { 
         .x = clampf(v.x, min.x, max.x),
@@ -695,7 +638,7 @@ MAIMATH_DEF vec4 vec4Clamp(vec4 v, vec4 min, vec4 max)
 //----------------------------------------------------------------------------------
 
 // Compute matrix determinant
-MAIMATH_DEF float mat4Determinant(mat4 mat)
+MAILIB_INLINE float mat4Determinant(mat4 mat)
 {
     float result = { 0 };
 
@@ -716,14 +659,14 @@ MAIMATH_DEF float mat4Determinant(mat4 mat)
 }
 
 // Returns the trace of the matrix (sum of the values along the diagonal)
-MAIMATH_DEF float mat4Trace(mat4 mat)
+MAILIB_INLINE float mat4Trace(mat4 mat)
 {
     float result = (mat.m0 + mat.m5 + mat.m10 + mat.m15);
     return result;
 }
 
 // Transposes provided matrix
-MAIMATH_DEF mat4 mat4Transpose(mat4 mat)
+MAILIB_INLINE mat4 mat4Transpose(mat4 mat)
 {
     mat4 result = { 0 };
 
@@ -748,7 +691,7 @@ MAIMATH_DEF mat4 mat4Transpose(mat4 mat)
 }
 
 // Invert provided matrix
-MAIMATH_DEF mat4 mat4Invert(mat4 mat)
+MAILIB_INLINE mat4 mat4Invert(mat4 mat)
 {
     mat4 result = { 0 };
 
@@ -795,7 +738,7 @@ MAIMATH_DEF mat4 mat4Invert(mat4 mat)
 }
 
 // Normalize provided matrix
-MAIMATH_DEF mat4 mat4Normalize(mat4 mat)
+MAILIB_INLINE mat4 mat4Normalize(mat4 mat)
 {
     mat4 result = { 0 };
 
@@ -822,7 +765,7 @@ MAIMATH_DEF mat4 mat4Normalize(mat4 mat)
 }
 
 // Returns identity matrix
-MAIMATH_DEF mat4 mat4Identity(void)
+MAILIB_INLINE mat4 mat4Identity(void)
 {
     mat4 result = { 1.0f, 0.0f, 0.0f, 0.0f,
                       0.0f, 1.0f, 0.0f, 0.0f,
@@ -833,7 +776,7 @@ MAIMATH_DEF mat4 mat4Identity(void)
 }
 
 // Add two matrices
-MAIMATH_DEF mat4 mat4Add(mat4 left, mat4 right)
+MAILIB_INLINE mat4 mat4Add(mat4 left, mat4 right)
 {
     mat4 result = mat4Identity();
 
@@ -858,7 +801,7 @@ MAIMATH_DEF mat4 mat4Add(mat4 left, mat4 right)
 }
 
 // Subtract two matrices (left - right)
-MAIMATH_DEF mat4 mat4Subtract(mat4 left, mat4 right)
+MAILIB_INLINE mat4 mat4Subtract(mat4 left, mat4 right)
 {
     mat4 result = mat4Identity();
 
@@ -883,7 +826,7 @@ MAIMATH_DEF mat4 mat4Subtract(mat4 left, mat4 right)
 }
 
 // Returns translation matrix
-MAIMATH_DEF mat4 mat4Translate(float x, float y, float z)
+MAILIB_INLINE mat4 mat4Translate(float x, float y, float z)
 {
     mat4 result = { 1.0f, 0.0f, 0.0f, x,
                       0.0f, 1.0f, 0.0f, y,
@@ -895,7 +838,7 @@ MAIMATH_DEF mat4 mat4Translate(float x, float y, float z)
 
 // Create rotation matrix from axis and angle
 // NOTE: Angle should be provided in radians
-MAIMATH_DEF mat4 mat4Rotate(vec3 axis, float angle)
+MAILIB_INLINE mat4 mat4Rotate(vec3 axis, float angle)
 {
     mat4 result = { 0 };
 
@@ -939,7 +882,7 @@ MAIMATH_DEF mat4 mat4Rotate(vec3 axis, float angle)
 }
 
 // Returns xyz-rotation matrix (angles in radians)
-MAIMATH_DEF mat4 mat4RotateXYZ(vec3 ang)
+MAILIB_INLINE mat4 mat4RotateXYZ(vec3 ang)
 {
     mat4 result = mat4Identity();
 
@@ -966,7 +909,7 @@ MAIMATH_DEF mat4 mat4RotateXYZ(vec3 ang)
 }
 
 // Returns x-rotation matrix (angle in radians)
-MAIMATH_DEF mat4 mat4RotateX(float angle)
+MAILIB_INLINE mat4 mat4RotateX(float angle)
 {
     mat4 result = mat4Identity();
 
@@ -982,7 +925,7 @@ MAIMATH_DEF mat4 mat4RotateX(float angle)
 }
 
 // Returns y-rotation matrix (angle in radians)
-MAIMATH_DEF mat4 mat4RotateY(float angle)
+MAILIB_INLINE mat4 mat4RotateY(float angle)
 {
     mat4 result = mat4Identity();
 
@@ -998,7 +941,7 @@ MAIMATH_DEF mat4 mat4RotateY(float angle)
 }
 
 // Returns z-rotation matrix (angle in radians)
-MAIMATH_DEF mat4 mat4RotateZ(float angle)
+MAILIB_INLINE mat4 mat4RotateZ(float angle)
 {
     mat4 result = mat4Identity();
 
@@ -1014,7 +957,7 @@ MAIMATH_DEF mat4 mat4RotateZ(float angle)
 }
 
 // Returns scaling matrix
-MAIMATH_DEF mat4 mat4Scale(float x, float y, float z)
+MAILIB_INLINE mat4 mat4Scale(float x, float y, float z)
 {
     mat4 result = { x, 0.0f, 0.0f, 0.0f,
                       0.0f, y, 0.0f, 0.0f,
@@ -1026,7 +969,7 @@ MAIMATH_DEF mat4 mat4Scale(float x, float y, float z)
 
 // Returns two matrix multiplication
 // NOTE: When multiplying matrices... the order matters!
-MAIMATH_DEF mat4 mat4Multiply(mat4 left, mat4 right)
+MAILIB_INLINE mat4 mat4Multiply(mat4 left, mat4 right)
 {
     mat4 result = { 0 };
 
@@ -1051,7 +994,7 @@ MAIMATH_DEF mat4 mat4Multiply(mat4 left, mat4 right)
 }
 
 // Returns perspective projection matrix
-MAIMATH_DEF mat4 mat4Frustum(double left, double right, double bottom, double top, double near, double far)
+MAILIB_INLINE mat4 mat4Frustum(double left, double right, double bottom, double top, double near, double far)
 {
     mat4 result = { 0 };
 
@@ -1084,7 +1027,7 @@ MAIMATH_DEF mat4 mat4Frustum(double left, double right, double bottom, double to
 
 // Returns perspective projection matrix
 // NOTE: Angle should be provided in radians
-MAIMATH_DEF mat4 mat4Perspective(double fovy, double aspect, double near, double far)
+MAILIB_INLINE mat4 mat4Perspective(double fovy, double aspect, double near, double far)
 {
     double top = near*tan(fovy*0.5);
     double right = top*aspect;
@@ -1094,7 +1037,7 @@ MAIMATH_DEF mat4 mat4Perspective(double fovy, double aspect, double near, double
 }
 
 // Returns orthographic projection matrix
-MAIMATH_DEF mat4 mat4Ortho(double left, double right, double bottom, double top, double near, double far)
+MAILIB_INLINE mat4 mat4Ortho(double left, double right, double bottom, double top, double near, double far)
 {
     mat4 result = { 0 };
 
@@ -1123,7 +1066,7 @@ MAIMATH_DEF mat4 mat4Ortho(double left, double right, double bottom, double top,
 }
 
 // Returns camera look-at matrix (view matrix)
-MAIMATH_DEF mat4 mat4LookAt(vec3 eye, vec3 target, vec3 up)
+MAILIB_INLINE mat4 mat4LookAt(vec3 eye, vec3 target, vec3 up)
 {
     mat4 result = { 0 };
 
@@ -1160,34 +1103,15 @@ MAIMATH_DEF mat4 mat4LookAt(vec3 eye, vec3 target, vec3 up)
 // Module Functions Definition - quat math
 //----------------------------------------------------------------------------------
 
-// Returns identity quaternion
-MAIMATH_DEF quat quatNew(float x, float y, float z, float w)
-{
-    quat result = { x, y, z, w };
-    return result;
-}
-
-MAIMATH_DEF quat quatRepeat(float s)
-{
-    quat result = { s, s, s, s };
-    return result;
-}
-
-MAIMATH_DEF quat quatIdentity(void)
-{
-    quat result = { 0.0f, 0.0f, 0.0f, 1.0f };
-    return result;
-}
-
 // Computes the length of a quaternion
-MAIMATH_DEF float quatLength(quat q)
+MAILIB_INLINE float quatLength(quat q)
 {
     float result = (float)sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
     return result;
 }
 
 // Normalize provided quaternion
-MAIMATH_DEF quat quatNormalize(quat q)
+MAILIB_INLINE quat quatNormalize(quat q)
 {
     quat result = { 0 };
 
@@ -1205,7 +1129,7 @@ MAIMATH_DEF quat quatNormalize(quat q)
 }
 
 // Invert provided quaternion
-MAIMATH_DEF quat quatInvert(quat q)
+MAILIB_INLINE quat quatInvert(quat q)
 {
     quat result = q;
     float length = quatLength(q);
@@ -1225,7 +1149,7 @@ MAIMATH_DEF quat quatInvert(quat q)
 }
 
 // Calculate two quaternion multiplication
-MAIMATH_DEF quat quatMul(quat q1, quat q2)
+MAILIB_INLINE quat quatMul(quat q1, quat q2)
 {
     quat result = { 0 };
 
@@ -1241,7 +1165,7 @@ MAIMATH_DEF quat quatMul(quat q1, quat q2)
 }
 
 // Calculate linear interpolation between two quaternions
-MAIMATH_DEF quat quatLerp(quat q1, quat q2, float amount)
+MAILIB_INLINE quat quatLerp(quat q1, quat q2, float amount)
 {
     quat result = { 0 };
 
@@ -1254,7 +1178,7 @@ MAIMATH_DEF quat quatLerp(quat q1, quat q2, float amount)
 }
 
 // Calculate slerp-optimized interpolation between two quaternions
-MAIMATH_DEF quat quatNlerp(quat q1, quat q2, float amount)
+MAILIB_INLINE quat quatNlerp(quat q1, quat q2, float amount)
 {
     quat result = quatLerp(q1, q2, amount);
     result = quatNormalize(result);
@@ -1263,7 +1187,7 @@ MAIMATH_DEF quat quatNlerp(quat q1, quat q2, float amount)
 }
 
 // Calculates spherical linear interpolation between two quaternions
-MAIMATH_DEF quat quatSlerp(quat q1, quat q2, float amount)
+MAILIB_INLINE quat quatSlerp(quat q1, quat q2, float amount)
 {
     quat result = { 0 };
 
@@ -1299,7 +1223,7 @@ MAIMATH_DEF quat quatSlerp(quat q1, quat q2, float amount)
 }
 
 // Calculate quaternion based on the rotation from one vector to another
-MAIMATH_DEF quat quatFromVec3ToVec3(vec3 from, vec3 to)
+MAILIB_INLINE quat quatFromVec3ToVec3(vec3 from, vec3 to)
 {
     quat result = { 0 };
 
@@ -1321,7 +1245,7 @@ MAIMATH_DEF quat quatFromVec3ToVec3(vec3 from, vec3 to)
 }
 
 // Returns a quaternion for a given rotation matrix
-MAIMATH_DEF quat quatFromMat4(mat4 mat)
+MAILIB_INLINE quat quatFromMat4(mat4 mat)
 {
     quat result = { 0 };
 
@@ -1377,7 +1301,7 @@ MAIMATH_DEF quat quatFromMat4(mat4 mat)
 }
 
 // Returns a matrix for a given quaternion
-MAIMATH_DEF mat4 quatToMat4(quat q)
+MAILIB_INLINE mat4 quatToMat4(quat q)
 {
     mat4 result = { 0 };
 
@@ -1424,7 +1348,7 @@ MAIMATH_DEF mat4 quatToMat4(quat q)
 
 // Returns rotation quaternion for an angle and axis
 // NOTE: angle must be provided in radians
-MAIMATH_DEF quat quatFromAxisAngle(vec3 axis, float angle)
+MAILIB_INLINE quat quatFromAxisAngle(vec3 axis, float angle)
 {
     quat result = { 0.0f, 0.0f, 0.0f, 1.0f };
 
@@ -1448,7 +1372,7 @@ MAIMATH_DEF quat quatFromAxisAngle(vec3 axis, float angle)
 }
 
 // Returns the rotation angle and axis for a given quaternion
-MAIMATH_DEF void quatToAxisAngle(quat q, vec3 *outAxis, float *outAngle)
+MAILIB_INLINE void quatToAxisAngle(quat q, vec3 *outAxis, float *outAngle)
 {
     if (fabs(q.w) > 1.0f) q = quatNormalize(q);
 
@@ -1476,7 +1400,7 @@ MAIMATH_DEF void quatToAxisAngle(quat q, vec3 *outAxis, float *outAngle)
 }
 
 // Returns he quaternion equivalent to Euler angles
-MAIMATH_DEF quat quatFromEuler(float roll, float pitch, float yaw)
+MAILIB_INLINE quat quatFromEuler(float roll, float pitch, float yaw)
 {
     quat q = { 0 };
 
@@ -1497,7 +1421,7 @@ MAIMATH_DEF quat quatFromEuler(float roll, float pitch, float yaw)
 
 // Return the Euler angles equivalent to quaternion (roll, pitch, yaw)
 // NOTE: Angles are returned in a vec3 struct in degrees
-MAIMATH_DEF vec3 quatToEuler(quat q)
+MAILIB_INLINE vec3 quatToEuler(quat q)
 {
     vec3 result = { 0 };
 
@@ -1521,7 +1445,7 @@ MAIMATH_DEF vec3 quatToEuler(quat q)
 }
 
 // Transform a quaternion given a transformation matrix
-MAIMATH_DEF quat quatTransform(quat q, mat4 mat)
+MAILIB_INLINE quat quatTransform(quat q, mat4 mat)
 {
     quat result = { 0 };
 

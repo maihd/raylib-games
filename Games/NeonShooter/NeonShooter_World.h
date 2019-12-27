@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MaiTypes.h>
+#include <MaiDef.h>
 #include <MaiArray.h>
 #include <MaiFreeList.h>
 
@@ -41,6 +41,7 @@ typedef struct Spring
     float targetLength;
     float stiffness;
     float damping;
+    float force;
 } Spring;
 
 typedef struct WarpGrid
@@ -54,23 +55,9 @@ typedef struct WarpGrid
     Array(PointMass) fixedPoints;
 } WarpGrid;
 
-typedef struct MeshGrid 
-{
-    int cols;
-    int rows;
-
-    float springForce;
-    float damping;
-    
-    Array(vec2) velocities;
-    Array(vec2) points;
-    Array(vec2) fixedPoints;
-} MeshGrid;
-
 typedef struct World
 {
     WarpGrid grid;
-    MeshGrid meshGrid;
 
     Entity          player;
 

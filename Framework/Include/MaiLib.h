@@ -1,14 +1,6 @@
 #pragma once
 
-#include "./MaiTypes.h"
-
-#if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
-#   define MAILIB_API __declspec(dllexport)
-#elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
-#   define MAILIB_API __declspec(dllimport)
-#else
-#   define MAILIB_API extern
-#endif
+#include "./MaiDef.h"
 
 #if defined(__cplusplus)
 extern "C" {            // Prevents name mangling of functions

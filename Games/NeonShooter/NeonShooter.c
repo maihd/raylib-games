@@ -1,6 +1,9 @@
 #include <MaiLib.h>
 #include <MaiMath.h>
 
+#include <time.h>
+#include <stdlib.h>
+
 #include "NeonShooter_World.h"
 #include "NeonShooter_Assets.h"
 #include "NeonShooter_GameAudio.h"
@@ -10,9 +13,13 @@ int main(void)
 {
     const int SCREEN_WIDTH = 1280;
     const int SCREEN_HEIGHT = 720;
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Neon shooter");
 
+    srand((u32)(time(0)));
+
+    SetConfigFlags(FLAG_VSYNC_HINT);
     SetTargetFPS(60);
+    
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Neon shooter");
 
     GameAudioInit();
     InitCacheTextures();
@@ -100,104 +107,130 @@ int main(void)
     Shader bloomShader = LoadShaderCode(0, bloomShaderSource);
     RenderTexture frame = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+    float   timer    = 0.0f;
+    float   timeStep = 1.0f / 60.0f;
+
+    int     fpsCount    = 0;
+    int     fpsValue    = 0;
+    float   fpsTimer    = 0.0f;
+    float   fpsInterval = 1.0f;
+
     while (!PollWindowEvents())
     {
         GameAudioUpdate();
 
-        float axis_vertical = 0.0f;
-        float axis_horizontal = 0.0f;
+        fpsTimer += GetDeltaTime();
+        if (fpsTimer >= fpsInterval)
+        {
+            fpsTimer -= fpsInterval;
 
-        const float LERP_RATE = 0.5f;
-
-        if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
-        {
-            axis_vertical = lerpf(axis_vertical, -1.0f, LERP_RATE);
-        }
-        else if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
-        {
-            axis_vertical = lerpf(axis_vertical, 1.0f, LERP_RATE);
-        }
-        else
-        {
-            axis_vertical = lerpf(axis_vertical, 0.0f, LERP_RATE);
+            fpsValue = (int)(fpsCount / fpsInterval);
+            fpsCount = 0;
         }
 
-        if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
+        timer += GetDeltaTime();
+        while (timer >= timeStep)
         {
-            axis_horizontal = lerpf(axis_horizontal, -1.0f, LERP_RATE);
-        }
-        else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_R))
-        {
-            axis_horizontal = lerpf(axis_horizontal, 1.0f, LERP_RATE);
-        }
-        else
-        {
-            axis_horizontal = lerpf(axis_horizontal, 0.0f, LERP_RATE);
-        }
+            float axis_vertical = 0.0f;
+            float axis_horizontal = 0.0f;
 
-        float mx = GetMouseX();
-        float my = GetMouseY();
-        bool fire = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
-        {
-            vec2 clip = vec2New(2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f);
+            const float LERP_RATE = 0.5f;
 
-            vec2 mpos = vec2New(clip.x * GetScreenWidth(), clip.y * GetScreenHeight());
-
-            vec2 taim = vec2Normalize(vec2Sub(mpos, world.player.position));
-
-            aim = vec2Lerp(aim, taim, 0.8f);
-        }
-
-        if (IsGamepadAvailable(0))
-        {
-            float axis_left_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X);
-            float axis_left_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y);
-            axis_vertical = lerpf(axis_vertical, fabsf(axis_left_y) > 0.05f ? axis_left_y : 0.0f, LERP_RATE);
-            axis_horizontal = lerpf(axis_horizontal, fabsf(axis_left_x) > 0.05f ? axis_left_x : 0.0f, LERP_RATE);
-
-            float axis_right_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X);
-            float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
-            float x = fabsf(axis_right_x) > 0.1f ? axis_right_x : 0.0f;
-            float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
-            if (vec2Length(vec2New(x, y)) < 0.01f)
+            if (IsKeyDown(KEY_W) || IsKeyDown(KEY_UP))
             {
-                //aim = vec2New(0, 0);
+                axis_vertical = lerpf(axis_vertical, -1.0f, LERP_RATE);
+            }
+            else if (IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN))
+            {
+                axis_vertical = lerpf(axis_vertical, 1.0f, LERP_RATE);
             }
             else
             {
-                fire = true;
-
-
-                float cur_angle = atan2f(aim.y, aim.x);
-                float aim_angle = atan2f(y, x);
-
-                cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
-                aim = vec2New(cosf(cur_angle), sinf(cur_angle));
-
-
-                aim.x = lerpf(aim.x, x, 0.6f);
-                aim.y = lerpf(aim.y, y, 0.6f);
+                axis_vertical = lerpf(axis_vertical, 0.0f, LERP_RATE);
             }
+
+            if (IsKeyDown(KEY_A) || IsKeyDown(KEY_LEFT))
+            {
+                axis_horizontal = lerpf(axis_horizontal, -1.0f, LERP_RATE);
+            }
+            else if (IsKeyDown(KEY_D) || IsKeyDown(KEY_R))
+            {
+                axis_horizontal = lerpf(axis_horizontal, 1.0f, LERP_RATE);
+            }
+            else
+            {
+                axis_horizontal = lerpf(axis_horizontal, 0.0f, LERP_RATE);
+            }
+
+            float mx = GetMouseX();
+            float my = GetMouseY();
+            bool fire = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
+            {
+                vec2 clip = vec2New(2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f);
+
+                vec2 mpos = vec2New(clip.x * GetScreenWidth(), clip.y * GetScreenHeight());
+
+                vec2 taim = vec2Normalize(vec2Sub(mpos, world.player.position));
+
+                aim = vec2Lerp(aim, taim, 0.8f);
+            }
+
+            if (IsGamepadAvailable(0))
+            {
+                float axis_left_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_X);
+                float axis_left_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_LEFT_Y);
+                axis_vertical = lerpf(axis_vertical, fabsf(axis_left_y) > 0.05f ? axis_left_y : 0.0f, LERP_RATE);
+                axis_horizontal = lerpf(axis_horizontal, fabsf(axis_left_x) > 0.05f ? axis_left_x : 0.0f, LERP_RATE);
+
+                float axis_right_x = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_X);
+                float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
+                float x = fabsf(axis_right_x) > 0.1f ? axis_right_x : 0.0f;
+                float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
+                if (vec2Length(vec2New(x, y)) < 0.01f)
+                {
+                    //aim = vec2New(0, 0);
+                }
+                else
+                {
+                    fire = true;
+
+
+                    float cur_angle = atan2f(aim.y, aim.x);
+                    float aim_angle = atan2f(y, x);
+
+                    cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
+                    aim = vec2New(cosf(cur_angle), sinf(cur_angle));
+
+
+                    aim.x = lerpf(aim.x, x, 0.6f);
+                    aim.y = lerpf(aim.y, y, 0.6f);
+                }
+            }
+
+            vec2 axes = vec2New(axis_horizontal, axis_vertical);
+            if (vec2Length(axes) < 0.01f)
+            {
+                axes = vec2New(0, 0);
+            }
+            else
+            {
+                float len = clampf(vec2Length(axes), 0, 1);
+                float angle = atan2f(axes.y, axes.x);
+
+                axes = vec2New(cosf(angle) * len, sinf(angle) * len);
+            }
+
+            axis_vertical = axes.y;
+            axis_horizontal = axes.x;
+
+            fpsCount++;
+
+            timer -= timeStep;
+
+            WorldUpdate(&world, axis_horizontal, axis_vertical, aim, fire, timeStep);
+
+            UpdateParticles(&world, timeStep);
         }
-
-        vec2 axes = vec2New(axis_horizontal, axis_vertical);
-        if (vec2Length(axes) < 0.01f)
-        {
-            axes = vec2New(0, 0);
-        }
-        else
-        {
-            float len = clampf(vec2Length(axes), 0, 1);
-            float angle = atan2f(axes.y, axes.x);
-
-            axes = vec2New(cosf(angle) * len, sinf(angle) * len);
-        }
-
-        axis_vertical = axes.y;
-        axis_horizontal = axes.x;
-
-        WorldUpdate(&world, axis_horizontal, axis_vertical, aim, fire, GetDeltaTime());
-        UpdateParticles(&world, GetDeltaTime());
 
         BeginDrawing();
         {
@@ -224,7 +257,8 @@ int main(void)
             DrawTextureRec(frame.texture, (rect) { 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, vec2New(0, 0), WHITE);
             EndShaderMode();
 
-            DrawFPS(0, 0);
+            DrawText(TextFormat("CPU FPS: %d", fpsValue), 0, 0, 18, RAYWHITE);
+            DrawText(TextFormat("GPU FPS: %d", GetFPS()), 0, 24, 18, RAYWHITE);
         }
         EndDrawing();
     }

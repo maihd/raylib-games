@@ -2,12 +2,24 @@
 
 #include <stdarg.h>
 
+#if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
+#   define MAILIB_API __declspec(dllexport)
+#elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
+#   define MAILIB_API __declspec(dllimport)
+#else
+#   define MAILIB_API extern
+#endif
+
+#ifdef _MSC_VER
+#   define MAILIB_INLINE static __forceinline 
+#else
+#   define MAILIB_INLINE static inline
+#endif
+
 //----------------------------------------------------------------------------------
 // Some basic Defines
 //----------------------------------------------------------------------------------
-#ifndef PI
-#   define PI 3.14159265358979323846f
-#endif
+#define PI 3.14159265358979323846f
 
 #define DEG2RAD (PI/180.0f)
 #define RAD2DEG (180.0f/PI)
@@ -18,43 +30,33 @@
 #define MAX_SHADER_LOCATIONS    32      // Maximum number of predefined locations stored in shader struct
 #define MAX_MATERIAL_MAPS       12      // Maximum number of texture maps stored in shader struct
 
-// NOTE: MSC C++ compiler does not support compound literals (C99 feature)
-// Plain structures in C++ (without constructors) can be initialized from { } initializers.
-#if defined(__cplusplus)
-#   define CLITERAL    Color
-#else
-#   define CLITERAL    (Color)
-#endif
-
 // Some Basic Colors
-// NOTE: Custom raylib color palette for amazing visuals on WHITE background
-#define LIGHTGRAY  CLITERAL{ 200, 200, 200, 255 }   // Light Gray
-#define GRAY       CLITERAL{ 130, 130, 130, 255 }   // Gray
-#define DARKGRAY   CLITERAL{ 80, 80, 80, 255 }      // Dark Gray
-#define YELLOW     CLITERAL{ 253, 249, 0, 255 }     // Yellow
-#define GOLD       CLITERAL{ 255, 203, 0, 255 }     // Gold
-#define ORANGE     CLITERAL{ 255, 161, 0, 255 }     // Orange
-#define PINK       CLITERAL{ 255, 109, 194, 255 }   // Pink
-#define RED        CLITERAL{ 230, 41, 55, 255 }     // Red
-#define MAROON     CLITERAL{ 190, 33, 55, 255 }     // Maroon
-#define GREEN      CLITERAL{ 0, 228, 48, 255 }      // Green
-#define LIME       CLITERAL{ 0, 158, 47, 255 }      // Lime
-#define DARKGREEN  CLITERAL{ 0, 117, 44, 255 }      // Dark Green
-#define SKYBLUE    CLITERAL{ 102, 191, 255, 255 }   // Sky Blue
-#define BLUE       CLITERAL{ 0, 121, 241, 255 }     // Blue
-#define DARKBLUE   CLITERAL{ 0, 82, 172, 255 }      // Dark Blue
-#define PURPLE     CLITERAL{ 200, 122, 255, 255 }   // Purple
-#define VIOLET     CLITERAL{ 135, 60, 190, 255 }    // Violet
-#define DARKPURPLE CLITERAL{ 112, 31, 126, 255 }    // Dark Purple
-#define BEIGE      CLITERAL{ 211, 176, 131, 255 }   // Beige
-#define BROWN      CLITERAL{ 127, 106, 79, 255 }    // Brown
-#define DARKBROWN  CLITERAL{ 76, 63, 47, 255 }      // Dark Brown
-
-#define WHITE      CLITERAL{ 255, 255, 255, 255 }   // White
-#define BLACK      CLITERAL{ 0, 0, 0, 255 }         // Black
-#define BLANK      CLITERAL{ 0, 0, 0, 0 }           // Blank (Transparent)
-#define MAGENTA    CLITERAL{ 255, 0, 255, 255 }     // Magenta
-#define RAYWHITE   CLITERAL{ 245, 245, 245, 255 }   // My own White (raylib logo)
+#define LIGHTGRAY  ColorNew(200, 200, 200, 255)   // Light Gray
+#define GRAY       ColorNew(130, 130, 130, 255)   // Gray
+#define DARKGRAY   ColorNew(80, 80, 80, 255)      // Dark Gray
+#define YELLOW     ColorNew(253, 249, 0, 255)     // Yellow
+#define GOLD       ColorNew(255, 203, 0, 255)     // Gold
+#define ORANGE     ColorNew(255, 161, 0, 255)     // Orange
+#define PINK       ColorNew(255, 109, 194, 255)   // Pink
+#define RED        ColorNew(230, 41, 55, 255)     // Red
+#define MAROON     ColorNew(190, 33, 55, 255)     // Maroon
+#define GREEN      ColorNew(0, 228, 48, 255)      // Green
+#define LIME       ColorNew(0, 158, 47, 255)      // Lime
+#define DARKGREEN  ColorNew(0, 117, 44, 255)      // Dark Green
+#define SKYBLUE    ColorNew(102, 191, 255, 255)   // Sky Blue
+#define BLUE       ColorNew(0, 121, 241, 255)     // Blue
+#define DARKBLUE   ColorNew(0, 82, 172, 255)      // Dark Blue
+#define PURPLE     ColorNew(200, 122, 255, 255)   // Purple
+#define VIOLET     ColorNew(135, 60, 190, 255)    // Violet
+#define DARKPURPLE ColorNew(112, 31, 126, 255)    // Dark Purple
+#define BEIGE      ColorNew(211, 176, 131, 255)   // Beige
+#define BROWN      ColorNew(127, 106, 79, 255)    // Brown
+#define DARKBROWN  ColorNew(76, 63, 47, 255)      // Dark Brown
+#define WHITE      ColorNew(255, 255, 255, 255)   // White
+#define BLACK      ColorNew(0, 0, 0, 255)         // Black
+#define BLANK      ColorNew(0, 0, 0, 0)           // Blank (Transparent)
+#define MAGENTA    ColorNew(255, 0, 255, 255)     // Magenta
+#define RAYWHITE   ColorNew(245, 245, 245, 255)   // My own White (raylib logo)
 
 //----------------------------------------------------------------------------------
 // Structures Definition
@@ -766,3 +768,70 @@ typedef enum {
 // Callbacks to be implemented by users
 typedef void (*TraceLogCallback)(int logType, const char *text, ArgList args);
 
+//--------------------------
+// Useful constructors
+//--------------------------
+
+MAILIB_INLINE vec2 vec2New(float x, float y)
+{
+    vec2 result = { x, y };
+    return result;
+}
+
+MAILIB_INLINE vec2 vec2Repeat(float s)
+{
+    vec2 result = { s, s };
+    return result;
+}
+
+MAILIB_INLINE vec3 vec3New(float x, float y, float z)
+{
+    vec3 result = { x, y, z };
+    return result;
+}
+
+MAILIB_INLINE vec3 vec3Repeat(float s)
+{
+    vec3 result = { s, s, s };
+    return result;
+}
+
+MAILIB_INLINE vec4 vec4New(float x, float y, float z, float w)
+{
+    vec4 result = { x, y, z, w };
+    return result;
+}
+
+MAILIB_INLINE vec4 vec4Repeat(float s)
+{
+    vec4 result = { s, s, s, s };
+    return result;
+}
+
+MAILIB_INLINE quat quatNew(float x, float y, float z, float w)
+{
+    quat result = { x, y, z, w };
+    return result;
+}
+
+MAILIB_INLINE quat quatRepeat(float s)
+{
+    quat result = { s, s, s, s };
+    return result;
+}
+
+MAILIB_INLINE quat quatIdentity(void)
+{
+    quat result = { 0.0f, 0.0f, 0.0f, 1.0f };
+    return result;
+}
+
+MAILIB_INLINE rect rectNew(float x, float y, float width, float height)
+{
+    return (rect){ x, y, width, height };
+}
+
+MAILIB_INLINE Color ColorNew(byte r, byte g, byte b, byte a)
+{
+    return (Color){ r, g, b, a };
+}

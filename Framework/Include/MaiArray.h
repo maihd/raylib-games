@@ -1,20 +1,22 @@
 #pragma once
 
+#include "./MaiDef.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // INTERNAL
-void*   Array_NewMemory(int capacity, int elementSize);
+MAILIB_API void*    Array_NewMemory(int capacity, int elementSize);
 
 // INTERNAL
-int     Array_FreeMemory(void*  array);
+MAILIB_API int      Array_FreeMemory(void*  array);
 
 // INTERNAL
-int     Array_GrowMemory(void** array, int capacity, int elementSize);
+MAILIB_API int      Array_GrowMemory(void** array, int capacity, int elementSize);
 
 // INTERNAL
-int     Array_MoveMemory(void*  array, int start, int end, int count, int elementSize);
+MAILIB_API int      Array_MoveMemory(void*  array, int start, int end, int count, int elementSize);
 
 #ifdef __cplusplus
 }
