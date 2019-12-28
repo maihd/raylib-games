@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdarg.h>
-
 #if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
 #   define MAILIB_API __declspec(dllexport)
 #elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
@@ -74,11 +72,20 @@ typedef unsigned int        u32;
 typedef signed long long    i64;
 typedef unsigned long long  u64;
 
-typedef va_list             ArgList;
+
+#include <stdarg.h>
+#define ArgList         va_list
+#define BeginArgList    va_start
+#define EndArgList      va_end
+#define GetArg          va_arg
 
 #if !defined(__cplusplus) && !defined(bool)
 enum { false, true };
 typedef byte bool;
+#endif
+
+#ifndef Array
+#define Array(T) T*
 #endif
 
 // ivec2 type

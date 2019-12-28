@@ -22,7 +22,9 @@ MAILIB_API int      Array_MoveMemory(void*  array, int start, int end, int count
 }
 #endif
 
+#ifndef Array
 #define Array(T)                        T*
+#endif
 
 #define ArrayNew(T, capacity)           (Array(T))(((capacity) <= 0 ? 0 : Array_NewMemory(capacity, sizeof(T))))
 #define ArrayFree(array)                if (Array_FreeMemory(array)) (array) = 0
