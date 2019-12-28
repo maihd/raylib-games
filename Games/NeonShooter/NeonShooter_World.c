@@ -71,7 +71,7 @@ static Spring NewSpring(PointMass* p0, PointMass* p1, float stiffness, float dam
         .targetLength = vec2Distance(p0->position, p1->position) * 0.99f,
         .stiffness = stiffness,
         .damping = damping,
-        .force = 280.0f,
+        .force = 60.0f,
     };
 }
 
@@ -699,7 +699,7 @@ World WorldNew(void)
 {
     World world = { 0 };
 
-    world.grid = NewWarpGrid((rect) { -GetScreenWidth() * 1.1f, -GetScreenHeight() * 1.1f, 2.2f * GetScreenWidth(), 2.2f * GetScreenHeight() }, (vec2) { 64.0f, 64.0f });
+    world.grid = NewWarpGrid((rect) { -GetScreenWidth() * 1.1f, -GetScreenHeight() * 1.1f, 2.2f * GetScreenWidth(), 2.2f * GetScreenHeight() }, (vec2) { 128.0f, 128.0f });
     
     world.player.active = true;
     world.player.color = WHITE;
@@ -802,7 +802,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         {
             Entity bullet = UpdateEntity(FreeListGet(world->bullets, i), dt);
 
-            WarpGridApplyExplosiveForce(world->grid, 8000.0f, bullet.position, 64.0f, dt);
+            WarpGridApplyExplosiveForce(world->grid, 4000.0f, bullet.position, 128.0f, dt);
 
             if (bullet.position.x < -GetScreenWidth()
                 || bullet.position.x > GetScreenWidth()
@@ -1005,7 +1005,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             }
             else
             {
-                WarpGridApplyImplosiveForce(world->grid, 1500.0f, s->position, 1024.0f, dt);
+                WarpGridApplyImplosiveForce(world->grid, 2000.0f, s->position, 1024.0f, dt);
 
                 if (UpdateBlackhole(s, &world->player))
                 {
