@@ -9,7 +9,11 @@
 #include "NeonShooter_GameAudio.h"
 #include "NeonShooter_ParticleSystem.h"
 
-int main(void)
+#ifdef RELEASE
+#define main __stdcall WinMain
+#endif
+
+int main()
 {
     const int SCREEN_WIDTH = 1280;
     const int SCREEN_HEIGHT = 720;

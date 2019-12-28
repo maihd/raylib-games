@@ -6,18 +6,31 @@ do
     language "C"
     location (BUILD_DIR)
 
-    platforms { "x32", "x64", "Native" }
+    platforms { "x32", "x64" }
     configurations { "Debug", "Release" }
 
+    cdialect "c99"
     compileas "C"
-    staticruntime "on"
+    staticruntime "On"
 
     flags {
         "NoPCH",
         "OmitDefaultLibrary"
     }
 
-    cdialect "c99"
+    filter { "configurations:Debug"}
+    do
+        defines {
+            "DEBUG"
+        }
+    end
+
+    filter { "configurations:Release"}
+    do
+        defines {
+            "RELEASE"
+        }
+    end
 
     filter {} 
 end
@@ -43,10 +56,24 @@ do
     filter {}
 end
 
-function template(name, projectPath)
+function template(name, projectPath, shouldHideConsole)
     project (name)
     do
-        kind "ConsoleApp"
+        if not shouldHideConsole then
+            kind "ConsoleApp"
+        else 
+            filter { "configurations:Debug" }
+            do
+                kind "ConsoleApp"
+            end
+
+            filter { "configurations:Release" }
+            do
+                kind "WindowedApp"
+            end
+            
+            filter {}
+        end
 
         links {
             "Framework",
@@ -71,13 +98,6 @@ function template(name, projectPath)
             "PLATFORM_DESKTOP"
         }
 
-        filter { "configurations:Debug"}
-        do
-            defines {
-                "DEBUG"
-            }
-        end
-
         filter { "platforms:x32" }
         do
             libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win32") }
@@ -86,13 +106,6 @@ function template(name, projectPath)
         filter { "platforms:x64" }
         do
             libdirs { path.join(ROOT_DIR, "ThirdParty/Library/Win64") }
-        end
-
-        filter { "configurations:Release"}
-        do
-            defines {
-                "RELEASE"
-            }
         end
 
         filter {}
@@ -104,7 +117,7 @@ function example(name)
 end
 
 function game(name)
-    template(name, path.join("Games", name))
+    template(name, path.join("Games", name), true)
 end
 
 example "BasicWindow"
@@ -118,3 +131,4 @@ example "LiquidSurface2D"
 example "MeshDeformation2D"
 
 game "NeonShooter"
+game "SlimeSlayer2D"

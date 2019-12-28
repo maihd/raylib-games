@@ -19,10 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8CC5E409-F850-52CE-0162-D5C26D6CAECE}</ProjectGuid>
+    <ProjectGuid>{45750A2E-B135-8664-7A70-CFE1E6EFCA40}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LiquidSurface2D</RootNamespace>
+    <RootNamespace>SlimeSlayer2D</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -68,29 +68,29 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x32\Debug\</OutDir>
-    <IntDir>obj\x32\Debug\LiquidSurface2D\</IntDir>
-    <TargetName>LiquidSurface2D</TargetName>
+    <IntDir>obj\x32\Debug\SlimeSlayer2D\</IntDir>
+    <TargetName>SlimeSlayer2D</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x64\Debug\</OutDir>
-    <IntDir>obj\x64\Debug\LiquidSurface2D\</IntDir>
-    <TargetName>LiquidSurface2D</TargetName>
+    <IntDir>obj\x64\Debug\SlimeSlayer2D\</IntDir>
+    <TargetName>SlimeSlayer2D</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x32\Release\</OutDir>
-    <IntDir>obj\x32\Release\LiquidSurface2D\</IntDir>
-    <TargetName>LiquidSurface2D</TargetName>
+    <IntDir>obj\x32\Release\SlimeSlayer2D\</IntDir>
+    <TargetName>SlimeSlayer2D</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\x64\Release\</OutDir>
-    <IntDir>obj\x64\Release\LiquidSurface2D\</IntDir>
-    <TargetName>LiquidSurface2D</TargetName>
+    <IntDir>obj\x64\Release\SlimeSlayer2D\</IntDir>
+    <TargetName>SlimeSlayer2D</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -139,7 +139,7 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>raylib_static.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\ThirdParty\Library\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -156,13 +156,13 @@
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>raylib_static.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\ThirdParty\Library\Win64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Examples\LiquidSurface2D\LiquidSurface2D.c" />
+    <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Framework.vcxproj">
