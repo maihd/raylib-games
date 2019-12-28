@@ -162,7 +162,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_Assets.h" />
+    <ClInclude Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_Player.h" />
+    <ClInclude Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_Slime.h" />
+    <ClInclude Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_TileAnimation.h" />
+    <ClInclude Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_TileSheet.h" />
+    <ClInclude Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_World.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D.c" />
+    <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_Assets.c" />
+    <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_Player.c" />
+    <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_Slime.c" />
+    <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_TileAnimation.c" />
+    <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_TileSheet.c" />
+    <ClCompile Include="..\Games\SlimeSlayer2D\SlimeSlayer2D_World.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Framework.vcxproj">

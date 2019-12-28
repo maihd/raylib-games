@@ -2,70 +2,8 @@
 #include <MaiMath.h>
 #include <MaiArray.h>
 
-typedef struct TileSheet
-{
-    int cols;
-    int rows;
-
-    Texture texture;
-} TileSheet;
-
-typedef struct TileAnimation
-{
-    TileSheet       sheet;
-    Array(ivec2)    frames;
-
-    float           timer;
-    float           duration;
-
-    bool            loop;
-    bool            running;
-} TileAnimation;
-
-typedef enum PlayerState
-{
-    PLAYER_NONE,
-    PLAYER_IDLE,
-    PLAYER_WALK,
-    PLAYER_ATTACK,
-    PLAYER_HURT,
-    PLAYER_DIE,
-} PlayerState;
-
-typedef struct PlayerInput
-{
-    float direction;
-    bool  attack;
-} PlayerInput;
-
-typedef struct Player
-{
-    int             state;
-
-    float           moveSpeed;
-    vec2            velocity;
-
-    vec2            position;
-    vec2            scale;
-
-    Color           tint;
-    TileAnimation   animation;
-} Player;
-
-TileSheet LoadTileSheet(const char* path, int cols, int rows);
-TileSheet LoadTileSheetWithTileSize(const char* path, int tileWidth, int tileHeight);
-void      UnloadTileSheet(TileSheet sheet);
-
-void      DrawTile(TileSheet sheet, int col, int row, vec2 position, vec2 pivot, bool flippedX, Color tint);
-
-TileAnimation LoadTileAnimation(TileSheet sheet, float duration, bool loop, bool running, int frameCount, ...);
-TileAnimation LoadTileAnimationWithFrames(TileSheet sheet, float duration, bool loop, bool running, Array(ivec2) frames);
-void          UnloadTileAnimaiton(TileAnimation animation);
-
-void UpdateTileAnimation(TileAnimation* animation, float timeStep);
-void DrawTileAnimation(TileAnimation animation, vec2 position, vec2 pivot, bool flippedX, Color tint);
-
-const char* GetAssetsPath(const char* targetPath);
+#include "SlimeSlayer2D_Assets.h"
+#include "SlimeSlayer2D_TileAnimation.h"
 
 #ifdef RELEASE
 #   define main __stdcall WinMain
@@ -125,6 +63,7 @@ int main(void)
         }
 
         posX = posX + velX * GetDeltaTime();
+
         if (fabsf(velX) > 0)
         {
             UpdateTileAnimation(&walkAnimation, GetDeltaTime());
@@ -133,7 +72,7 @@ int main(void)
         {
             UpdateTileAnimation(&idleAnimation, GetDeltaTime());
         }
-        
+
         BeginDrawing();
         {
             ClearBackground(BLACK);
@@ -160,144 +99,4 @@ int main(void)
 
     CloseWindow();
     return 0;
-}
-
-TileSheet LoadTileSheet(const char* path, int cols, int rows)
-{
-    Texture texture = LoadTexture(path);
-    if (texture.id)
-    {
-        return (TileSheet){
-            .cols = cols,
-            .rows = rows,
-            .texture = texture
-        };
-    }
-    else
-    {
-        return (TileSheet) { 0 };
-    }
-}
-
-TileSheet LoadTileSheetWithTileSize(const char* path, int tileWidth, int tileHeight)
-{
-    Texture texture = LoadTexture(path);
-    if (texture.id)
-    {
-        return (TileSheet) {
-            .cols = texture.width / tileWidth,
-            .rows = texture.height / tileHeight,
-            .texture = texture
-        };
-    }
-    else
-    {
-        return (TileSheet) { 0 };
-    }
-}
-
-void UnloadTileSheet(TileSheet sheet)
-{
-    UnloadTexture(sheet.texture);
-}
-
-void DrawTile(TileSheet sheet, int col, int row, vec2 position, vec2 pivot, bool flippedX, Color tint)
-{
-    float tileWidth = 1.0f / sheet.cols * sheet.texture.width;
-    float tileHeight = 1.0f / sheet.rows * sheet.texture.height;
-
-    rect tileRect = rectNew(col * tileWidth, row * tileHeight, (flippedX ? -1.0f : 1.0f) * tileWidth, tileHeight);
-    rect drawRect = rectNew(position.x, position.y, tileWidth, tileHeight);
-    
-    DrawTexturePro(sheet.texture, tileRect, drawRect, vec2New(pivot.x * tileWidth, pivot.y * tileHeight), 0.0f, tint);
-}
-
-TileAnimation LoadTileAnimation(TileSheet sheet, float duration, bool loop, bool running, int frameCount, ...)
-{
-    Array(ivec2) frames = ArrayNew(ivec2, frameCount);
-    if (!frames)
-    {
-        return (TileAnimation) { 0 };
-    }
-
-    ArraySetCount(frames, frameCount);
-
-    ArgList arglist;
-    BeginArgList(arglist, frameCount);
-    for (int i = 0; i < frameCount; i++)
-    {
-        ivec2 frame = GetArg(arglist, ivec2);
-        frames[i] = frame;
-    }
-    EndArgList(arglist);
-
-    return (TileAnimation) {
-        .sheet = sheet,
-        .frames = frames,
-
-        .duration = duration,
-        .loop = loop,
-        .running = running,
-
-        .timer = 0.0f,
-    };
-}
-
-TileAnimation LoadTileAnimationWithFrames(TileSheet sheet, float duration, bool loop, bool running, Array(ivec2) frames)
-{
-    if (!frames)
-    {
-        return (TileAnimation) { 0 };
-    }
-
-    return (TileAnimation) {
-        .sheet = sheet,
-        .frames = frames,
-
-        .duration = duration,
-        .loop = loop,
-        .running = running,
-
-        .timer = 0.0f,
-    };
-}
-
-void UnloadTileAnimaiton(TileAnimation animation)
-{
-    ArrayFree(animation.frames);
-}
-
-void UpdateTileAnimation(TileAnimation* animation, float timeStep)
-{
-    if (animation->running)
-    {
-        TileAnimation newAnimation = *animation;
-        newAnimation.timer += timeStep;
-        if (newAnimation.timer >= newAnimation.duration)
-        {
-            newAnimation.timer -= newAnimation.duration;
-            newAnimation.running = newAnimation.loop;
-        }
-
-        *animation = newAnimation;
-    }
-}
-
-void DrawTileAnimation(TileAnimation animation, vec2 position, vec2 pivot, bool flippedX, Color tint)
-{
-    int current = (int)(animation.timer / animation.duration * ArrayCount(animation.frames));
-    ivec2 frame = animation.frames[current];
-
-    DrawTile(animation.sheet, frame.x, frame.y, position, pivot, flippedX, tint);
-}
-
-const char* GetAssetsPath(const char* targetPath) 
-{
-#ifdef RELEASE
-    const char* ASSET_PATH = "Assets";
-#else
-    const char* ASSET_PATH = "../Binary/SlimeSlayer2D/Assets";
-#endif
-
-    return TextFormat("%s/%s", ASSET_PATH, targetPath);
 }
