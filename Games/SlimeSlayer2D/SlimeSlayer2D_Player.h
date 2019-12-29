@@ -1,5 +1,6 @@
 #pragma once
 
+#include <MaiDef.h>
 #include "SlimeSlayer2D_TileAnimation.h"
 
 typedef enum PlayerState
@@ -14,20 +15,50 @@ typedef enum PlayerState
 
 typedef struct PlayerInput
 {
-    float direction;
+    float moveDirection;
+    float hurtDirection;
+
     bool  attack;
+    bool  hurt;
 } PlayerInput;
+
+typedef struct PlayerOutput
+{
+    bool hitboxingAttack;
+} PlayerOutput;
 
 typedef struct Player
 {
     int             state;
+    bool            flippedX;
 
     float           moveSpeed;
-    vec2            velocity;
+    float           direction;
+
+    float           attackRange;
+    float           attackDelay;
 
     vec2            position;
     vec2            scale;
 
     Color           tint;
     TileAnimation   animation;
+
+    TileAnimation   idleAnimation;
+    TileAnimation   walkAnimation;
+    TileAnimation   hurtAnimation;
+    TileAnimation   attackAnimation;
+    TileAnimation   dieAnimation;
 } Player;
+
+Player          PlayerNew(vec2 position, float moveSpeed, Color tint, 
+    TileAnimation idleAnimation, 
+    TileAnimation walkAnimation, 
+    TileAnimation hurtAnimation, 
+    TileAnimation attackAnimation, 
+    TileAnimation dieAnimation);
+
+void            PlayerFree(Player player);
+
+PlayerOutput    PlayerUpdate(Player* player, PlayerInput input, float timeStep);
+void            PlayerRender(Player player);

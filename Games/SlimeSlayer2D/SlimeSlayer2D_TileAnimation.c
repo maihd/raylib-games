@@ -1,3 +1,4 @@
+#include <MaiMath.h>
 #include <MaiArray.h>
 
 #include "SlimeSlayer2D_TileAnimation.h"
@@ -23,13 +24,13 @@ TileAnimation LoadTileAnimation(TileSheet sheet, float duration, bool loop, bool
 
     return (TileAnimation) {
         .sheet = sheet,
-            .frames = frames,
+        .frames = frames,
 
-            .duration = duration,
-            .loop = loop,
-            .running = running,
+        .duration = duration,
+        .loop = loop,
+        .running = running,
 
-            .timer = 0.0f,
+        .timer = 0.0f,
     };
 }
 
@@ -42,17 +43,17 @@ TileAnimation LoadTileAnimationWithFrames(TileSheet sheet, float duration, bool 
 
     return (TileAnimation) {
         .sheet = sheet,
-            .frames = frames,
+        .frames = frames,
 
-            .duration = duration,
-            .loop = loop,
-            .running = running,
+        .duration = duration,
+        .loop = loop,
+        .running = running,
 
-            .timer = 0.0f,
+        .timer = 0.0f,
     };
 }
 
-void UnloadTileAnimaiton(TileAnimation animation)
+void UnloadTileAnimation(TileAnimation animation)
 {
     ArrayFree(animation.frames);
 }
@@ -65,8 +66,11 @@ void UpdateTileAnimation(TileAnimation* animation, float timeStep)
         newAnimation.timer += timeStep;
         if (newAnimation.timer >= newAnimation.duration)
         {
-            newAnimation.timer -= newAnimation.duration;
             newAnimation.running = newAnimation.loop;
+            if (newAnimation.running)
+            {
+                newAnimation.timer -= newAnimation.duration;
+            }
         }
 
         *animation = newAnimation;
@@ -75,7 +79,8 @@ void UpdateTileAnimation(TileAnimation* animation, float timeStep)
 
 void DrawTileAnimation(TileAnimation animation, vec2 position, vec2 pivot, bool flippedX, Color tint)
 {
-    int current = (int)(animation.timer / animation.duration * ArrayCount(animation.frames));
+    int frameCount = ArrayCount(animation.frames);
+    int current = (int)clampf(animation.timer / animation.duration * frameCount, 0.0f, frameCount - 1);
     ivec2 frame = animation.frames[current];
 
     DrawTile(animation.sheet, frame.x, frame.y, position, pivot, flippedX, tint);

@@ -68,8 +68,8 @@ MAILIB_API int      Array_MoveMemory(void*  array, int start, int end, int count
         if (index > -1 && index < ArrayCount(array)) {                                                          \
             if (index < ArrayCount(array) - 1) {                                                                \
                 Array_MoveMemory(array, index, index + 1, ArrayCount(array) - index - 1, sizeof((array)[0]));   \
-                ((int*)(array) - 2)[0]--;                                                                       \
             }                                                                                                   \
+            ((int*)(array) - 2)[0]--;                                                                           \
         }                                                                                                       \
     } while (0)
 
@@ -78,8 +78,8 @@ MAILIB_API int      Array_MoveMemory(void*  array, int start, int end, int count
         if (index > -1 && index < ArrayCount(array)) {                                                      \
             if (index < ArrayCount(array) - 1) {                                                            \
                 array[index] = array[ArrayCount(array) - 1];                                                \
-                ((int*)(array) - 2)[0]--;                                                                   \
             }                                                                                               \
+            ((int*)(array) - 2)[0]--;                                                                       \
         }                                                                                                   \
     } while (0)
 
