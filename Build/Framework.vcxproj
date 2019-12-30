@@ -96,8 +96,6 @@
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -111,8 +109,6 @@
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -126,8 +122,6 @@
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -141,8 +135,6 @@
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>

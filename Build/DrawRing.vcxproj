@@ -100,8 +100,6 @@
       <PreprocessorDefinitions>DEBUG;GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -117,8 +115,6 @@
       <PreprocessorDefinitions>DEBUG;GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -134,8 +130,6 @@
       <PreprocessorDefinitions>RELEASE;GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
@@ -151,8 +145,6 @@
       <PreprocessorDefinitions>RELEASE;GRAPHICS_API_OPENGL_33;PLATFORM_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <OmitDefaultLibName>true</OmitDefaultLibName>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>

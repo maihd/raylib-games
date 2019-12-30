@@ -11,11 +11,10 @@ do
 
     cdialect "c99"
     compileas "C"
-    staticruntime "On"
+    --staticruntime "On"
 
     flags {
-        "NoPCH",
-        "OmitDefaultLibrary"
+        "NoPCH"
     }
 
     filter { "configurations:Debug"}
