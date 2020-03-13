@@ -130,4 +130,3 @@ example "LiquidSurface2D"
 example "MeshDeformation2D"
 
 game "NeonShooter"
-game "SlimeSlayer2D"
