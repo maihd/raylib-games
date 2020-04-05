@@ -1,1 +1,1 @@
-# DONE. MOVE TO https://github.com/maihd/mailib
+# Games and examples make with raylib
