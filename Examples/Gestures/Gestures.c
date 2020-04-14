@@ -10,13 +10,15 @@ int main(void)
         MAX_GESTURES = 21,
     };
 
+    typedef char GestureName[128];
+
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Gestures");
 
     Vector2 touchPosition = { 0, 0 };
     Rectangle touchArea = { 220, 10, SCREEN_WIDTH - 230, SCREEN_HEIGHT - 10 };
 
     int gesturesCount = 0;
-    char gestures[MAX_GESTURES][64];
+    GestureName gestures[MAX_GESTURES];
 
     int currentGesture = GESTURE_NONE;
     int lastGesture = GESTURE_NONE;
