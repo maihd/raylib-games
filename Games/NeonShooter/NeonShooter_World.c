@@ -823,10 +823,14 @@ void WorldUpdate(World* world, float horizontal, float vertical, Vector2 aim_dir
     // Update is in progress, locking the list
     world->lock = true;
    
-    Vector2 moveDirection = Vector2Normalize((Vector2) { horizontal, vertical });
-    if (horizontal == 0.0f || vertical == 0.0f)
+    Vector2 moveDirection;
+    if (horizontal == 0.0f && vertical == 0.0f)
     {
         moveDirection = (Vector2) { 0.0f, 0.0f };
+    }
+    else
+    {
+        moveDirection = Vector2Normalize((Vector2) { horizontal, vertical });
     }
 
     world->player.velocity = Vector2Lerp(world->player.velocity, moveDirection, 5.0f * dt);
