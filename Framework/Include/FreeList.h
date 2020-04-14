@@ -1,7 +1,6 @@
 #pragma once
 
-#include "./MaiDef.h"
-#include "./MaiArray.h"
+#include "./Array.h"
 
 #define FreeListStruct(T)           FreeList(T) { Array(T) elements; Array(int) freeElements; }
 

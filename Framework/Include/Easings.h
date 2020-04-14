@@ -1,111 +1,122 @@
 #pragma once
 
-#include "./MaiDef.h"
 #include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-MAILIB_INLINE float EaseLinear(float start, float end, float time, float duration)
+#ifdef _MSC_VER
+#define EASINGS_INLINE static __forceinline
+#elif defined(__cplusplus)
+#define EASINGS_INLINE inline
+#else
+#define EASINGS_INLINE static
+#endif
+
+#ifndef PI
+#define PI 3.14159265358979323846f
+#endif // !PI
+
+EASINGS_INLINE float EaseLinear(float start, float end, float time, float duration)
 {
     return (end - start) * time / duration + start;
 }
 
-MAILIB_INLINE float EaseQuadIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuadIn(float start, float end, float time, float duration)
 {
     return (end - start) * (time /= duration) * time + start;
 }
 
-MAILIB_INLINE float EaseQuadOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuadOut(float start, float end, float time, float duration)
 {
     return (start - end) * (time /= duration) * (time - 2.0f) + start;
 }
 
-MAILIB_INLINE float EaseQuadInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuadInOut(float start, float end, float time, float duration)
 {
     return (time /= duration * 0.5f) < 1.0f
         ? ((end - start) * 0.5f * time * time + start)
         : ((start - end) * 0.5f * ((time - 1.0f) * (time - 3.0f) - 1.0f) + start);
 }
 
-MAILIB_INLINE float EaseCubicIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseCubicIn(float start, float end, float time, float duration)
 {
     return start + (end - start) * (time /= duration) * time * time;
 }
 
-MAILIB_INLINE float EaseCubicOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseCubicOut(float start, float end, float time, float duration)
 {
     return start + (end - start) * ((time = time / duration - 1.0f) * time * time + 1.0f);
 }
 
-MAILIB_INLINE float EaseCubicInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseCubicInOut(float start, float end, float time, float duration)
 {
     return (time /= duration * 0.5f) < 1.0f
 	    ? start + (end - start) * 0.5f * time * time * time
 	    : start + (end - start) * 0.5f * ((time -= 2.0f) * time * time + 2.0f);
 }
 
-MAILIB_INLINE float EaseQuartIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuartIn(float start, float end, float time, float duration)
 {
     return (end - start) * (time /= duration) * time * time * time + start;
 }
 
-MAILIB_INLINE float EaseQuartOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuartOut(float start, float end, float time, float duration)
 {
     return (start - end) * ((time = time / duration - 1.0f) * time * time * time - 1.0f) + start; 
 }
 
-MAILIB_INLINE float EaseQuartInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuartInOut(float start, float end, float time, float duration)
 {
     return (time /= duration * 0.5f) < 1.0f
 	    ? ((end - start) * 0.5f * time * time * time * time + start)
 	    : ((start - end) * 0.5f * ((time -= 2.0f) * time * time * time - 2.0f) + start);
 }
 
-MAILIB_INLINE float EaseQuintIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuintIn(float start, float end, float time, float duration)
 {
     return start + (end - start) * (time /= duration) * time * time * time * time;
 }
 
-MAILIB_INLINE float EaseQuintOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuintOut(float start, float end, float time, float duration)
 {
     return start + (end - start) * ((time = time / duration - 1.0f) * time * time * time * time + 1.0f); 
 }
 
-MAILIB_INLINE float EaseQuintInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseQuintInOut(float start, float end, float time, float duration)
 {
     return (time /= duration * 0.5f) < 1.0f
 	    ? start + (end - start) * 0.5f * time * time * time * time * time
 	    : start + (end - start) * 0.5f * ((time -= 2.0f) * time * time * time * time + 2.0f);
 }
 
-MAILIB_INLINE float EaseSineIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseSineIn(float start, float end, float time, float duration)
 {
     return (start - end) * cosf(time / duration * PI * 0.5f) + end;
 }
 
-MAILIB_INLINE float EaseSineOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseSineOut(float start, float end, float time, float duration)
 {
     return (end - start) * sinf(time / duration * PI * 0.5f) + start;
 }
 
-MAILIB_INLINE float EaseSineInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseSineInOut(float start, float end, float time, float duration)
 {
     return (start - end) * 0.5f * (cosf(PI * time / duration) - 1.0f) + start;
 }
 
-MAILIB_INLINE float EaseExpoIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseExpoIn(float start, float end, float time, float duration)
 {
     return time == 0 ? start : start + (end - start) * powf(2.0f, 10.0f * (time / duration - 1.0f)); 
 }
 
-MAILIB_INLINE float EaseExpoOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseExpoOut(float start, float end, float time, float duration)
 {
     return time == duration ? end : start + (end - start) * (1.0f - powf(2.0f, -10.0f * time / duration));
 }
 
-MAILIB_INLINE float EaseExpoInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseExpoInOut(float start, float end, float time, float duration)
 {
     if (time == 0)
     {
@@ -125,24 +136,24 @@ MAILIB_INLINE float EaseExpoInOut(float start, float end, float time, float dura
     }
 }
 
-MAILIB_INLINE float EaseCircleIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseCircleIn(float start, float end, float time, float duration)
 {
     return start + (start - end) * (sqrtf(1.0f - (time /= duration) * time) - 1.0f);
 }
 
-MAILIB_INLINE float EaseCircleOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseCircleOut(float start, float end, float time, float duration)
 {
     return start + (end - start) * (sqrtf(1 - (time = time / duration - 1.0f) * time));
 }
 
-MAILIB_INLINE float EaseCircleInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseCircleInOut(float start, float end, float time, float duration)
 {
     return (time /= duration * 0.5f) < 1.0f
         ? start + (start - end) * 0.5f * (sqrtf(1.0f - time * time) - 1.0f)
         : start + (end - start) * 0.5f * (sqrtf(1.0f - (time -= 2.0f) * time) + 1.0f);
 }
 
-MAILIB_INLINE float EaseElasticIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseElasticIn(float start, float end, float time, float duration)
 {
     if (time == 0)
     {
@@ -161,7 +172,7 @@ MAILIB_INLINE float EaseElasticIn(float start, float end, float time, float dura
     return -(a * p * q) + start;
 }
 
-MAILIB_INLINE float EaseElasticOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseElasticOut(float start, float end, float time, float duration)
 {
     if (time == 0)
     {
@@ -180,7 +191,7 @@ MAILIB_INLINE float EaseElasticOut(float start, float end, float time, float dur
     return (a * p * q) + end;
 }
 
-MAILIB_INLINE float EaseElasticInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseElasticInOut(float start, float end, float time, float duration)
 {
     if (time == 0)
     {
@@ -208,7 +219,7 @@ MAILIB_INLINE float EaseElasticInOut(float start, float end, float time, float d
     }
 }
 
-MAILIB_INLINE float EaseBounceOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseBounceOut(float start, float end, float time, float duration)
 {
     const float c = (end - start);
     if ((time /= duration) < 1.0f / 2.75f)
@@ -229,12 +240,12 @@ MAILIB_INLINE float EaseBounceOut(float start, float end, float time, float dura
     }
 }
 
-MAILIB_INLINE float EaseBounceIn(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseBounceIn(float start, float end, float time, float duration)
 {
     return end - EaseBounceOut(start, end, duration - time, duration);
 }
 
-MAILIB_INLINE float EaseBounceInOut(float start, float end, float time, float duration)
+EASINGS_INLINE float EaseBounceInOut(float start, float end, float time, float duration)
 {
     if (time < duration * 0.5f)
     {

@@ -1,4 +1,4 @@
-#include <MaiLib.h>
+#include <raylib.h>
 
 typedef struct
 {
@@ -17,10 +17,6 @@ int main(void)
 {
     const int SCREEN_WIDTH = 800;
     const int SCREEN_HEIGHT = 450;
-
-    vec2 vector;
-    vector = (vec2){ 0, 0 };
-    vector = (vec2){ 1, 2 };
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "AppState");
 

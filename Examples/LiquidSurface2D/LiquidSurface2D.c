@@ -1,6 +1,6 @@
-#include <MaiLib.h>
-#include <MaiMath.h>
-#include <MaiArray.h>
+#include <raylib.h>
+#include <raymath.h>
+#include <Array.h>
 
 #include <assert.h>
 
@@ -8,9 +8,9 @@ const int DEFAULT_POINT_DAMPING = 3.0f;
 
 typedef struct LiquidPoint2D
 {
-    vec2 position;
-    vec2 velocity;
-    vec2 acceleration;
+    Vector2 position;
+    Vector2 velocity;
+    Vector2 acceleration;
     
     float invMass;
     float damping;
@@ -43,13 +43,13 @@ typedef struct LiquidSurface2D
 
 bool            IsLiquidSurface2DValid(LiquidSurface2D surface);
 
-LiquidSurface2D NewLiquidSurface2D(rect bounds, vec2 spacing);
+LiquidSurface2D NewLiquidSurface2D(Rectangle bounds, Vector2 spacing);
 void            FreeLiquidSurface2D(LiquidSurface2D surface);
 
 void            UpdateLiquidSurface2D(LiquidSurface2D surface, float dt);
 void            RenderLiquidSurface2D(LiquidSurface2D surface, Color lineColor);
 
-void            ApplyForceOnLiquidSurface2D(LiquidSurface2D surface, float force, vec2 position, float radius, float dt);
+void            ApplyForceOnLiquidSurface2D(LiquidSurface2D surface, float force, Vector2 position, float radius, float dt);
 
 int main(void)
 {
@@ -59,7 +59,7 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Liquid Surface 2D");
     //SetTargetFPS(60);
 
-    LiquidSurface2D surface = NewLiquidSurface2D((rect) { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(16, 16));
+    LiquidSurface2D surface = NewLiquidSurface2D((Rectangle) { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, (Vector2) { 16, 16 });
     if (!IsLiquidSurface2DValid(surface))
     {
         assert(0 && "Out of memory");
@@ -73,9 +73,9 @@ int main(void)
     float fpsTimer    = 0.0f;
     float fpsInterval = 1.0f;
 
-    while (!PollWindowEvents())
+    while (!WindowShouldClose())
     {
-        timer += GetDeltaTime();
+        timer += GetFrameTime();
         while (timer >= timeStep)
         {
             timer -= timeStep;
@@ -89,7 +89,7 @@ int main(void)
             UpdateLiquidSurface2D(surface, timeStep);
         }
 
-        fpsTimer += GetDeltaTime();
+        fpsTimer += GetFrameTime();
         if (fpsTimer >= fpsInterval)
         {
             fpsTimer -= fpsInterval;
@@ -120,10 +120,10 @@ bool IsLiquidSurface2DValid(LiquidSurface2D surface)
     return !(surface.cols <= 0 || surface.rows <= 0 || !surface.points || !surface.fixedPoints || !surface.springs);
 }
 
-LiquidPoint2D NewLiquidPoint2D(vec2 position, float invMass)
+LiquidPoint2D NewLiquidPoint2D(Vector2 position, float invMass)
 {
     return (LiquidPoint2D) {
-        position, vec2New(0, 0), vec2New(0, 0), invMass, DEFAULT_POINT_DAMPING
+        position, (Vector2) { 0, 0 }, (Vector2) { 0, 0 }, invMass, DEFAULT_POINT_DAMPING
     };
 }
 
@@ -132,12 +132,12 @@ LiquidSpring2D NewLiquidSpring2D(LiquidPoint2D* p0, LiquidPoint2D* p1, float sti
     return (LiquidSpring2D) {
         p0, p1,
 
-        vec2Distance(p0->position, p1->position) * 0.95f,
+        Vector2Distance(p0->position, p1->position) * 0.95f,
         stiffness, damping, 250.0f
     };
 }
 
-LiquidSurface2D NewLiquidSurface2D(rect bounds, vec2 spacing)
+LiquidSurface2D NewLiquidSurface2D(Rectangle bounds, Vector2 spacing)
 {
     int cols = (int)(bounds.width / spacing.x) + 2;
     int rows = (int)(bounds.height / spacing.y) + 2;
@@ -165,7 +165,7 @@ LiquidSurface2D NewLiquidSurface2D(rect bounds, vec2 spacing)
         {
             int index = i * cols + j;
 
-            vec2 position = vec2New(bounds.x + j * spacing.x, bounds.y + i * spacing.y);
+            Vector2 position = { bounds.x + j * spacing.x, bounds.y + i * spacing.y };
             points[index] = NewLiquidPoint2D(position, 1.0f);
             fixedPoints[index] = NewLiquidPoint2D(position, 1.0f);
 
@@ -212,16 +212,16 @@ void UpdateLiquidSurface2D(LiquidSurface2D surface, float timeStep)
     {
         LiquidSpring2D spring = surface.springs[i];
 
-        vec2 diff = vec2Sub(spring.p0->position, spring.p1->position);
-        float len = vec2Length(diff);
+        Vector2 diff = Vector2Subtract(spring.p0->position, spring.p1->position);
+        float len = Vector2Length(diff);
         if (len > spring.targetLength)
         {
             float changeRate = (len - spring.targetLength) / len;
-            vec2 diffVelocity = vec2Sub(spring.p1->velocity, spring.p0->velocity);
-            vec2 force = vec2Sub(vec2Scale(diff, spring.stiffness * changeRate), vec2Scale(diffVelocity, fmaxf(0.0f, 1.0f - spring.damping * timeStep)));
+            Vector2 diffVelocity = Vector2Subtract(spring.p1->velocity, spring.p0->velocity);
+            Vector2 force = Vector2Subtract(Vector2Scale(diff, spring.stiffness * changeRate), Vector2Scale(diffVelocity, fmaxf(0.0f, 1.0f - spring.damping * timeStep)));
             
-            spring.p0->acceleration = vec2Add(spring.p0->acceleration, vec2Scale(vec2Neg(force), spring.force * spring.p0->invMass * timeStep));
-            spring.p1->acceleration = vec2Add(spring.p1->acceleration, vec2Scale(force, spring.force * spring.p1->invMass * timeStep));
+            spring.p0->acceleration = Vector2Add(spring.p0->acceleration, Vector2Scale(Vector2Negate(force), spring.force * spring.p0->invMass * timeStep));
+            spring.p1->acceleration = Vector2Add(spring.p1->acceleration, Vector2Scale(force, spring.force * spring.p1->invMass * timeStep));
         }
     }
 
@@ -229,11 +229,11 @@ void UpdateLiquidSurface2D(LiquidSurface2D surface, float timeStep)
     {
         LiquidPoint2D point = surface.points[i];
 
-        point.velocity = vec2Add(point.velocity, vec2Scale(point.acceleration, timeStep));
-        point.position = vec2Add(point.position, vec2Scale(point.velocity, timeStep));
+        point.velocity = Vector2Add(point.velocity, Vector2Scale(point.acceleration, timeStep));
+        point.position = Vector2Add(point.position, Vector2Scale(point.velocity, timeStep));
 
-        point.acceleration = vec2Scale(point.acceleration, fmaxf(0.0f, 1.0f - point.damping * timeStep));
-        point.velocity = vec2Scale(point.velocity, fmaxf(0.0f, 1.0f - point.damping * timeStep));
+        point.acceleration = Vector2Scale(point.acceleration, fmaxf(0.0f, 1.0f - point.damping * timeStep));
+        point.velocity = Vector2Scale(point.velocity, fmaxf(0.0f, 1.0f - point.damping * timeStep));
 
         point.damping = DEFAULT_POINT_DAMPING;
 
@@ -250,9 +250,9 @@ void RenderLiquidSurface2D(LiquidSurface2D surface, Color lineColor)
     {
         for (int j = 1; j < cols; j++)
         {
-            vec2 p0 = surface.points[i * cols + j].position;
-            vec2 p1 = surface.points[(i - 1) * cols + j].position;
-            vec2 p2 = surface.points[i * cols + (j - 1)].position;
+            Vector2 p0 = surface.points[i * cols + j].position;
+            Vector2 p1 = surface.points[(i - 1) * cols + j].position;
+            Vector2 p2 = surface.points[i * cols + (j - 1)].position;
 
             DrawLineEx(p0, p1, 1.0f, lineColor);
             DrawLineEx(p0, p2, 1.0f, lineColor);
@@ -260,19 +260,19 @@ void RenderLiquidSurface2D(LiquidSurface2D surface, Color lineColor)
     }
 }
 
-void ApplyForceOnLiquidSurface2D(LiquidSurface2D surface, float force, vec2 position, float radius, float timeStep)
+void ApplyForceOnLiquidSurface2D(LiquidSurface2D surface, float force, Vector2 position, float radius, float timeStep)
 {
     for (int i = 0, n = ArrayCount(surface.points); i < n; i++)
     {
         LiquidPoint2D point = surface.points[i];
-        vec2  diff = vec2Sub(point.position, position);
-        float distSq = vec2LengthSq(diff);
-        if (distSq < radius * radius)
+        Vector2 diff = Vector2Subtract(point.position, position);
+        float dist = Vector2Length(diff);
+        if (dist < radius)
         {
-            float accuratedForce = 100.0f * force / (10000.0f + distSq);
-            vec2  directionForce = vec2Scale(diff, accuratedForce);
+            float accuratedForce = force / (100.0f + dist);
+            Vector2 directionForce = Vector2Scale(diff, accuratedForce);
 
-            point.acceleration = vec2Add(point.acceleration, vec2Scale(directionForce, point.invMass * timeStep));
+            point.acceleration = Vector2Add(point.acceleration, Vector2Scale(directionForce, point.invMass * timeStep));
             point.damping = point.damping * (1.0f / 0.6f);
             
             surface.points[i] = point;

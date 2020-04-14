@@ -1,6 +1,6 @@
 #pragma once
 
-#include <MaiDef.h>
+#include <raylib.h>
 
 const char* GetAssetPath(const char* target);
 

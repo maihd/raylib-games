@@ -1,5 +1,5 @@
-#include <MaiLib.h>
-#include <MaiArray.h>
+#include <raylib.h>
+#include <Array.h>
 
 int main(void)
 {
@@ -12,20 +12,14 @@ int main(void)
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Gestures");
 
-    vec2 touchPosition = { 0, 0 };
-    rect touchArea = { 220, 10, SCREEN_WIDTH - 230, SCREEN_HEIGHT - 10 };
+    Vector2 touchPosition = { 0, 0 };
+    Rectangle touchArea = { 220, 10, SCREEN_WIDTH - 230, SCREEN_HEIGHT - 10 };
 
     int gesturesCount = 0;
     char gestures[MAX_GESTURES][64];
 
     int currentGesture = GESTURE_NONE;
     int lastGesture = GESTURE_NONE;
-
-    Array(int) intArray = ArrayNew(int, 0);
-
-    intArray = ArrayPush(intArray, 10);
-    
-    ArrayFree(intArray);
 
     SetTargetFPS(60);
 

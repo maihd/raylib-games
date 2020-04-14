@@ -1,8 +1,9 @@
-#include <MaiLib.h>
-#include <MaiMath.h>
+#include <raylib.h>
+#include <raymath.h>
 
 #include <time.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "NeonShooter_World.h"
 #include "NeonShooter_Assets.h"
@@ -13,24 +14,43 @@
 #define main __stdcall WinMain
 #endif
 
+static float clampf(float value, float min, float max)
+{
+    const float res = value < min ? min : value;
+    return res > max ? max : res;
+}
+
+// Calculate linear interpolation between two floats
+static float lerpf(float start, float end, float amount)
+{
+    return start + amount * (end - start);
+}
+
+
+static int frameCount;
+int GetFrameCount(void)
+{
+    return frameCount;
+}
+
 int main()
 {
     const int SCREEN_WIDTH = 1280;
     const int SCREEN_HEIGHT = 720;
 
-    srand((u32)(time(0)));
+    srand((uint32_t)(time(0)));
+    
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Neon shooter");
 
     SetConfigFlags(FLAG_VSYNC_HINT);
     SetTargetFPS(60);
-    
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Neon shooter");
 
     GameAudioInit();
     InitCacheTextures();
     InitParticles(); 
 
     World world = WorldNew();
-    vec2 aim;
+    Vector2 aim;
     bool fire;
 
 #if 0
@@ -119,11 +139,15 @@ int main()
     float   fpsTimer    = 0.0f;
     float   fpsInterval = 1.0f;
 
-    while (!PollWindowEvents())
+    while (!WindowShouldClose())
     {
+        frameCount++;
+
         GameAudioUpdate();
 
-        fpsTimer += GetDeltaTime();
+        float deltaTime = GetFrameTime();
+
+        fpsTimer += deltaTime;
         if (fpsTimer >= fpsInterval)
         {
             fpsTimer -= fpsInterval;
@@ -132,7 +156,7 @@ int main()
             fpsCount = 0;
         }
 
-        timer += GetDeltaTime();
+        timer += deltaTime;
         while (timer >= timeStep)
         {
             float axis_vertical = 0.0f;
@@ -170,13 +194,13 @@ int main()
             float my = GetMouseY();
             bool fire = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
             {
-                vec2 clip = vec2New(2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f);
+                Vector2 clip = (Vector2) { 2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f };
 
-                vec2 mpos = vec2New(clip.x * GetScreenWidth(), clip.y * GetScreenHeight());
+                Vector2 mpos = (Vector2) { clip.x * GetScreenWidth(), clip.y * GetScreenHeight() };
 
-                vec2 taim = vec2Normalize(vec2Sub(mpos, world.player.position));
+                Vector2 taim = Vector2Normalize(Vector2Subtract(mpos, world.player.position));
 
-                aim = vec2Lerp(aim, taim, 0.8f);
+                aim = Vector2Lerp(aim, taim, 0.8f);
             }
 
             if (IsGamepadAvailable(0))
@@ -190,38 +214,36 @@ int main()
                 float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
                 float x = fabsf(axis_right_x) > 0.1f ? axis_right_x : 0.0f;
                 float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
-                if (vec2Length(vec2New(x, y)) < 0.01f)
+                if (Vector2Length((Vector2) { x, y }) < 0.01f)
                 {
-                    //aim = vec2New(0, 0);
+                    //aim = (Vector2){0, 0};
                 }
                 else
                 {
                     fire = true;
 
-
                     float cur_angle = atan2f(aim.y, aim.x);
                     float aim_angle = atan2f(y, x);
 
                     cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
-                    aim = vec2New(cosf(cur_angle), sinf(cur_angle));
-
+                    aim = (Vector2) { cosf(cur_angle), sinf(cur_angle) };
 
                     aim.x = lerpf(aim.x, x, 0.6f);
                     aim.y = lerpf(aim.y, y, 0.6f);
                 }
             }
 
-            vec2 axes = vec2New(axis_horizontal, axis_vertical);
-            if (vec2Length(axes) < 0.01f)
+            Vector2 axes = { axis_horizontal, axis_vertical };
+            if (Vector2Length(axes) < 0.01f)
             {
-                axes = vec2New(0, 0);
+                axes = (Vector2) { 0, 0 };
             }
             else
             {
-                float len = clampf(vec2Length(axes), 0, 1);
+                float len = clampf(Vector2Length(axes), 0, 1);
                 float angle = atan2f(axes.y, axes.x);
 
-                axes = vec2New(cosf(angle) * len, sinf(angle) * len);
+                axes = (Vector2) { cosf(angle) * len, sinf(angle) * len };
             }
 
             axis_vertical = axes.y;
@@ -244,8 +266,8 @@ int main()
             ClearBackground(BLACK);
 
             Camera2D camera = {
-                (vec2) {GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f},
-                vec2New(0, 0),
+                (Vector2) { GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f },
+                (Vector2) { 0, 0 },
                 0,
                 0.5f,
             };
@@ -258,7 +280,7 @@ int main()
             EndTextureMode();
 
             BeginShaderMode(bloomShader);
-            DrawTextureRec(frame.texture, (rect) { 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, vec2New(0, 0), WHITE);
+            DrawTextureRec(frame.texture, (Rectangle) { 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, (Vector2) { 0, 0 }, WHITE);
             EndShaderMode();
 
             DrawText(TextFormat("CPU FPS: %d", fpsValue), 0, 0, 18, RAYWHITE);

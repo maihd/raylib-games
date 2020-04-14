@@ -9,48 +9,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Framework\Include\MaiArray.h">
+    <ClInclude Include="..\Framework\Include\Array.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiDef.h">
+    <ClInclude Include="..\Framework\Include\Easings.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiEasings.h">
+    <ClInclude Include="..\Framework\Include\FreeList.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiFreeList.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiGui.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiHashTable.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiJobs.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiLib.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Framework\Include\MaiMath.h">
+    <ClInclude Include="..\Framework\Include\RayGui.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Framework\Sources\MaiArray.c">
+    <ClCompile Include="..\Framework\Sources\Array.c">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\Framework\Sources\MaiGui.c">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Framework\Sources\MaiHashTable.c">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Framework\Sources\MaiJobs.c">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Framework\Sources\MaiLib.c">
+    <ClCompile Include="..\Framework\Sources\RayGui.c">
       <Filter>Sources</Filter>
     </ClCompile>
   </ItemGroup>

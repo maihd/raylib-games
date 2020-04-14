@@ -43,6 +43,7 @@ do
 
     includedirs { 
         path.join(ROOT_DIR, "Framework/Include"),
+        path.join(ROOT_DIR, "ThirdParty/Include"),
     }
 
     files {

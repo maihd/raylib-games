@@ -1,7 +1,12 @@
 #include "NeonShooter_Assets.h"
 
-#include <MaiLib.h>
-#include <MaiArray.h>
+#include <Array.h>
+#include <raylib.h>
+#include <stdint.h>
+
+typedef uint8_t  u8;
+typedef uint32_t u32;
+typedef uint64_t u64;
 
 typedef struct
 {

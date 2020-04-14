@@ -1,6 +1,6 @@
-#include <MaiLib.h>
-#include <MaiMath.h>
-#include <MaiArray.h>
+#include <raylib.h>
+#include <raymath.h>
+#include <Array.h>
 
 typedef struct DeformMesh2D
 {
@@ -13,18 +13,18 @@ typedef struct DeformMesh2D
     float damping;
     float springForce;
 
-    Array(vec2) velocities;
-    Array(vec2) originVertices;
-    Array(vec2) displacedVertices;
+    Array(Vector2) velocities;
+    Array(Vector2) originVertices;
+    Array(Vector2) displacedVertices;
 } DeformMesh2D;
 
-DeformMesh2D    NewDeformMesh2D(rect bounds, vec2 spacing, float springForce, float damping);
+DeformMesh2D    NewDeformMesh2D(Rectangle bounds, Vector2 spacing, float springForce, float damping);
 void            FreeDeformMesh2D(DeformMesh2D mesh);
 
 void            UpdateDeformMesh2D(DeformMesh2D mesh, float dt);
 void            RenderDeformMesh2D(DeformMesh2D mesh, Color lineColor);
 
-void            ApplyForceOnDeformMesh2D(DeformMesh2D mesh, float force, vec2 position, float dt);
+void            ApplyForceOnDeformMesh2D(DeformMesh2D mesh, float force, Vector2 position, float dt);
 
 int main(void)
 {
@@ -34,15 +34,15 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Mesh Deformation 2D");
     SetTargetFPS(60);
 
-    DeformMesh2D mesh = NewDeformMesh2D((rect){ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, vec2New(64, 64), 20.0f, 5.0f);
+    DeformMesh2D mesh = NewDeformMesh2D((Rectangle) { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT }, (Vector2) { 64, 64 }, 20.0f, 5.0f);
 
     while (!WindowShouldClose())
     {
-        UpdateDeformMesh2D(mesh, GetDeltaTime());
+        UpdateDeformMesh2D(mesh, GetFrameTime());
 
         if (IsMouseButtonDown(MOUSE_LEFT_BUTTON))
         {
-            ApplyForceOnDeformMesh2D(mesh, 100.0f, GetMousePosition(), GetDeltaTime());
+            ApplyForceOnDeformMesh2D(mesh, 100.0f, GetMousePosition(), GetFrameTime());
         }
 
         BeginDrawing();
@@ -62,24 +62,24 @@ int main(void)
     return 0;
 }
 
-DeformMesh2D NewDeformMesh2D(rect bounds, vec2 spacing, float springForce, float damping)
+DeformMesh2D NewDeformMesh2D(Rectangle bounds, Vector2 spacing, float springForce, float damping)
 {
     int cols = (int)(bounds.width / spacing.x) + 2;
     int rows = (int)(bounds.height / spacing.y) + 2;
 
     int vertexCount = cols * rows;
-    Array(vec2) velocities = ArrayNew(vec2, vertexCount);
-    Array(vec2) originVertices = ArrayNew(vec2, vertexCount);
-    Array(vec2) displacedVertices = ArrayNew(vec2, vertexCount);
+    Array(Vector2) velocities = ArrayNew(Vector2, vertexCount);
+    Array(Vector2) originVertices = ArrayNew(Vector2, vertexCount);
+    Array(Vector2) displacedVertices = ArrayNew(Vector2, vertexCount);
 
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
             int index = i * cols + j;
-            vec2 vertex = vec2New(bounds.x + j * spacing.x, bounds.y + i * spacing.y);
+            Vector2 vertex = { bounds.x + j * spacing.x, bounds.y + i * spacing.y };
 
-            velocities[index] = vec2New(0, 0);
+            velocities[index] = (Vector2) { 0, 0 };
             originVertices[index] = vertex;
             displacedVertices[index] = vertex;
         }
@@ -110,18 +110,18 @@ void FreeDeformMesh2D(DeformMesh2D mesh)
 
 void UpdateDeformMesh2D(DeformMesh2D mesh, float dt)
 {
-    Array(vec2) velocities = mesh.velocities;
-    Array(vec2) originVertices = mesh.originVertices;
-    Array(vec2) displacedVertices = mesh.displacedVertices;
+    Array(Vector2) velocities = mesh.velocities;
+    Array(Vector2) originVertices = mesh.originVertices;
+    Array(Vector2) displacedVertices = mesh.displacedVertices;
 
     for (int i = 0, n = mesh.width * mesh.height; i < n; i++)
     {
-        vec2 point = displacedVertices[i];
-        vec2 displacement = vec2Sub(point, originVertices[i]);
-        vec2 velocity = vec2Scale(vec2Sub(velocities[i], vec2Scale(displacement, mesh.springForce * dt)), fmaxf(0.0f, 1.0f - mesh.damping * dt));
+        Vector2 point = displacedVertices[i];
+        Vector2 displacement = Vector2Subtract(point, originVertices[i]);
+        Vector2 velocity = Vector2Scale(Vector2Subtract(velocities[i], Vector2Scale(displacement, mesh.springForce * dt)), fmaxf(0.0f, 1.0f - mesh.damping * dt));
         
         velocities[i] = velocity;
-        displacedVertices[i] = vec2Add(point, vec2Scale(velocity, dt));
+        displacedVertices[i] = Vector2Add(point, Vector2Scale(velocity, dt));
     }
 }
 
@@ -134,10 +134,10 @@ void RenderDeformMesh2D(DeformMesh2D mesh, Color lineColor)
     {
         for (int j = 1; j < cols; j++)
         {
-            vec2 p0 = mesh.displacedVertices[i * cols + j];
-            vec2 p1 = mesh.displacedVertices[(i - 1) * cols + j];
-            vec2 p2 = mesh.displacedVertices[i * cols + (j - 1)];
-            vec2 p3 = mesh.displacedVertices[(i - 1) * cols + (j - 1)];
+            Vector2 p0 = mesh.displacedVertices[i * cols + j];
+            Vector2 p1 = mesh.displacedVertices[(i - 1) * cols + j];
+            Vector2 p2 = mesh.displacedVertices[i * cols + (j - 1)];
+            Vector2 p3 = mesh.displacedVertices[(i - 1) * cols + (j - 1)];
 
 #if 0
             DrawLineEx(vec2Scale(vec2Add(p3, p1), 0.5f), vec2Scale(vec2Add(p2, p0), 0.5f), 1.0f, lineColor);
@@ -202,15 +202,15 @@ void RenderDeformMesh2D(DeformMesh2D mesh, Color lineColor)
     }
 }
 
-void ApplyForceOnDeformMesh2D(DeformMesh2D mesh, float force, vec2 position, float dt)
+void ApplyForceOnDeformMesh2D(DeformMesh2D mesh, float force, Vector2 position, float dt)
 {
     for (int i = 0, n = mesh.width * mesh.height; i < n; i++)
     {
-        vec2 point = mesh.displacedVertices[i];
-        vec2 pointToVertex = vec2Sub(point, position);
+        Vector2 point = mesh.displacedVertices[i];
+        Vector2 pointToVertex = Vector2Subtract(point, position);
         
-        float accuratedForce = force / (1.0f + vec2Length(pointToVertex));
+        float accuratedForce = force / (1.0f + Vector2Length(pointToVertex));
 
-        mesh.velocities[i] = vec2Add(mesh.velocities[i], vec2Scale(vec2Normalize(pointToVertex), accuratedForce * dt));
+        mesh.velocities[i] = Vector2Add(mesh.velocities[i], Vector2Scale(Vector2Normalize(pointToVertex), accuratedForce * dt));
     }
 }

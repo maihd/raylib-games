@@ -1,8 +1,9 @@
 #pragma once
 
-#include <MaiDef.h>
-#include <MaiArray.h>
-#include <MaiFreeList.h>
+#include <raylib.h>
+
+#include <Array.h>
+#include <FreeList.h>
 
 typedef struct Entity
 {
@@ -10,9 +11,9 @@ typedef struct Entity
 
     float   scale;
     float   rotation;
-    vec2    position;
+    Vector2 position;
 
-    vec2    velocity;
+    Vector2 velocity;
     float   movespeed;
 
     Color   color;
@@ -25,9 +26,9 @@ FreeListStruct(Entity);
 
 typedef struct PointMass
 {
-    vec2 position;
-    vec2 velocity;
-    vec2 acceleration;
+    Vector2 position;
+    Vector2 velocity;
+    Vector2 acceleration;
 
     float invMass;
     float damping;
@@ -84,6 +85,6 @@ typedef struct World
 World   WorldNew(void);
 void    WorldFree(World* world);
 
-void    WorldUpdate(World* world, float horizontalInput, float verticalInput, vec2 aimDir, bool fire, float deltaTime);
+void    WorldUpdate(World* world, float horizontalInput, float verticalInput, Vector2 aimDir, bool fire, float deltaTime);
 void    WorldRender(World world);
 

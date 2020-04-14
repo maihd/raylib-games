@@ -1,10 +1,139 @@
-#pragma once
+/**********************************************************************************************
+*
+*   raymath v1.2 - Math functions to work with Vector3, Matrix and Quaternions
+*
+*   CONFIGURATION:
+*
+*   #define RAYMATH_IMPLEMENTATION
+*       Generates the implementation of the library into the included file.
+*       If not defined, the library is in header only mode and can be included in other headers
+*       or source files without problems. But only ONE file should hold the implementation.
+*
+*   #define RAYMATH_HEADER_ONLY
+*       Define static inline functions code, so #include header suffices for use.
+*       This may use up lots of memory.
+*
+*   #define RAYMATH_STANDALONE
+*       Avoid raylib.h header inclusion in this file.
+*       Vector3 and Matrix data types are defined internally in raymath module.
+*
+*
+*   LICENSE: zlib/libpng
+*
+*   Copyright (c) 2015-2019 Ramon Santamaria (@raysan5)
+*
+*   This software is provided "as-is", without any express or implied warranty. In no event
+*   will the authors be held liable for any damages arising from the use of this software.
+*
+*   Permission is granted to anyone to use this software for any purpose, including commercial
+*   applications, and to alter it and redistribute it freely, subject to the following restrictions:
+*
+*     1. The origin of this software must not be misrepresented; you must not claim that you
+*     wrote the original software. If you use this software in a product, an acknowledgment
+*     in the product documentation would be appreciated but is not required.
+*
+*     2. Altered source versions must be plainly marked as such, and must not be misrepresented
+*     as being the original software.
+*
+*     3. This notice may not be removed or altered from any source distribution.
+*
+**********************************************************************************************/
 
-#include "./MaiDef.h"
+#ifndef RAYMATH_H
+#define RAYMATH_H
+
+//#define RAYMATH_STANDALONE      // NOTE: To use raymath as standalone lib, just uncomment this line
+//#define RAYMATH_HEADER_ONLY     // NOTE: To compile functions as static inline, uncomment this line
+
+#ifndef RAYMATH_STANDALONE
+    #include <raylib.h>           // Required for structs: Vector3, Matrix
+#endif
+
+#if defined(RAYMATH_IMPLEMENTATION) && defined(RAYMATH_HEADER_ONLY)
+    #error "Specifying both RAYMATH_IMPLEMENTATION and RAYMATH_HEADER_ONLY is contradictory"
+#endif
+
+#if defined(RAYMATH_IMPLEMENTATION)
+    #if defined(_WIN32) && defined(BUILD_LIBTYPE_SHARED)
+        #define RMDEF __declspec(dllexport) extern inline // We are building raylib as a Win32 shared library (.dll).
+    #elif defined(_WIN32) && defined(USE_LIBTYPE_SHARED)
+        #define RMDEF __declspec(dllimport)         // We are using raylib as a Win32 shared library (.dll)
+    #else
+        #define RMDEF extern inline // Provide external definition
+    #endif
+#elif defined(RAYMATH_HEADER_ONLY)
+    #define RMDEF static inline // Functions may be inlined, no external out-of-line definition
+#else
+    #if defined(__TINYC__)
+        #define RMDEF static inline // plain inline not supported by tinycc (See issue #435)
+    #else
+        #define RMDEF inline        // Functions may be inlined or external definition used
+    #endif
+#endif
+
+//----------------------------------------------------------------------------------
+// Defines and Macros
+//----------------------------------------------------------------------------------
+#ifndef PI
+    #define PI 3.14159265358979323846
+#endif
+
+#ifndef DEG2RAD
+    #define DEG2RAD (PI/180.0f)
+#endif
+
+#ifndef RAD2DEG
+    #define RAD2DEG (180.0f/PI)
+#endif
+
+// Return float vector for Matrix
+#ifndef MatrixToFloat
+    #define MatrixToFloat(mat) (MatrixToFloatV(mat).v)
+#endif
+
+// Return float vector for Vector3
+#ifndef Vector3ToFloat
+    #define Vector3ToFloat(vec) (Vector3ToFloatV(vec).v)
+#endif
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
+
+#if defined(RAYMATH_STANDALONE)
+    // Vector2 type
+    typedef struct Vector2 {
+        float x;
+        float y;
+    } Vector2;
+
+    // Vector3 type
+    typedef struct Vector3 {
+        float x;
+        float y;
+        float z;
+    } Vector3;
+
+    // Quaternion type
+    typedef struct Quaternion {
+        float x;
+        float y;
+        float z;
+        float w;
+    } Quaternion;
+
+    // Matrix type (OpenGL style 4x4 - right handed, column major)
+    typedef struct Matrix {
+        float m0, m4, m8, m12;
+        float m1, m5, m9, m13;
+        float m2, m6, m10, m14;
+        float m3, m7, m11, m15;
+    } Matrix;
+#endif
+
+// NOTE: Helper types to be used instead of array return types for *ToFloat functions
+typedef struct float3 { float v[3]; } float3;
+typedef struct float16 { float v[16]; } float16;
 
 #include <math.h>       // Required for: sinf(), cosf(), tan(), fabs()
 
@@ -13,137 +142,125 @@
 //----------------------------------------------------------------------------------
 
 // Clamp float value
-MAILIB_INLINE float clampf(float value, float min, float max)
+RMDEF float Clamp(float value, float min, float max)
 {
     const float res = value < min ? min : value;
     return res > max ? max : res;
 }
 
 // Calculate linear interpolation between two floats
-MAILIB_INLINE float lerpf(float start, float end, float amount)
+RMDEF float Lerp(float start, float end, float amount)
 {
-    return start + amount * (end - start);
+    return start + amount*(end - start);
 }
 
 //----------------------------------------------------------------------------------
-// Module Functions Definition - vec2 math
+// Module Functions Definition - Vector2 math
 //----------------------------------------------------------------------------------
 
-// Negate vector
-MAILIB_INLINE vec2 vec2Neg(vec2 v)
+// Vector with components value 0.0f
+RMDEF Vector2 Vector2Zero(void)
 {
-    vec2 result = { -v.x, -v.y };
+    Vector2 result = { 0.0f, 0.0f };
+    return result;
+}
+
+// Vector with components value 1.0f
+RMDEF Vector2 Vector2One(void)
+{
+    Vector2 result = { 1.0f, 1.0f };
     return result;
 }
 
 // Add two vectors (v1 + v2)
-MAILIB_INLINE vec2 vec2Add(vec2 v1, vec2 v2)
+RMDEF Vector2 Vector2Add(Vector2 v1, Vector2 v2)
 {
-    vec2 result = { v1.x + v2.x, v1.y + v2.y };
+    Vector2 result = { v1.x + v2.x, v1.y + v2.y };
     return result;
 }
 
 // Subtract two vectors (v1 - v2)
-MAILIB_INLINE vec2 vec2Sub(vec2 v1, vec2 v2)
+RMDEF Vector2 Vector2Subtract(Vector2 v1, Vector2 v2)
 {
-    vec2 result = { v1.x - v2.x, v1.y - v2.y };
-    return result;
-}
-
-// Multiply vector by vector
-MAILIB_INLINE vec2 vec2Mul(vec2 v1, vec2 v2)
-{
-    vec2 result = { v1.x * v2.x, v1.y * v2.y };
-    return result;
-}
-
-// Divide vector by vector
-MAILIB_INLINE vec2 vec2Div(vec2 v1, vec2 v2)
-{
-    vec2 result = { v1.x / v2.x, v1.y / v2.y };
-    return result;
-}
-
-// Calculate two vectors dot product
-MAILIB_INLINE float vec2Dot(vec2 v1, vec2 v2)
-{
-    float result = v1.x * v2.x + v1.y * v2.y;
+    Vector2 result = { v1.x - v2.x, v1.y - v2.y };
     return result;
 }
 
 // Calculate vector length
-MAILIB_INLINE float vec2Length(vec2 v)
+RMDEF float Vector2Length(Vector2 v)
 {
-    float result = sqrtf(v.x * v.x + v.y * v.y);
+    float result = sqrtf((v.x*v.x) + (v.y*v.y));
     return result;
 }
 
-// Calculate vector squared length
-MAILIB_INLINE float vec2LengthSq(vec2 v)
+// Calculate two vectors dot product
+RMDEF float Vector2DotProduct(Vector2 v1, Vector2 v2)
 {
-    float result = v.x * v.x + v.y * v.y;
-    return result;
-}
-
-// Calculate distance between two vectors
-MAILIB_INLINE float vec2Distance(vec2 v1, vec2 v2)
-{
-    float dx = (v1.x - v2.x);
-    float dy = (v1.y - v2.y);
-
-    float result = sqrtf(dx * dx + dy * dy);
+    float result = (v1.x*v2.x + v1.y*v2.y);
     return result;
 }
 
 // Calculate distance between two vectors
-MAILIB_INLINE float vec2DistanceSq(vec2 v1, vec2 v2)
+RMDEF float Vector2Distance(Vector2 v1, Vector2 v2)
 {
-    float dx = (v1.x - v2.x);
-    float dy = (v1.y - v2.y);
-
-    float result = dx * dx + dy * dy;
+    float result = sqrtf((v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y));
     return result;
 }
 
 // Calculate angle from two vectors in X-axis
-MAILIB_INLINE float vec2Angle(vec2 v1, vec2 v2)
+RMDEF float Vector2Angle(Vector2 v1, Vector2 v2)
 {
-    float result = atan2f(v2.y - v1.y, v2.x - v1.x) * (180.0f / PI);
+    float result = atan2f(v2.y - v1.y, v2.x - v1.x)*(180.0f/PI);
     if (result < 0) result += 360.0f;
     return result;
 }
 
 // Scale vector (multiply by value)
-MAILIB_INLINE vec2 vec2Scale(vec2 v, float scale)
+RMDEF Vector2 Vector2Scale(Vector2 v, float scale)
 {
-    vec2 result = { v.x*scale, v.y*scale };
+    Vector2 result = { v.x*scale, v.y*scale };
     return result;
 }
 
-// Scale vector (multiply by value)
-MAILIB_INLINE vec2 vec2ScaleInv(vec2 v, float scale)
+// Multiply vector by vector
+RMDEF Vector2 Vector2MultiplyV(Vector2 v1, Vector2 v2)
 {
-    vec2 result = { v.x / scale, v.y / scale };
+    Vector2 result = { v1.x*v2.x, v1.y*v2.y };
+    return result;
+}
+
+// Negate vector
+RMDEF Vector2 Vector2Negate(Vector2 v)
+{
+    Vector2 result = { -v.x, -v.y };
+    return result;
+}
+
+// Divide vector by a float value
+RMDEF Vector2 Vector2Divide(Vector2 v, float div)
+{
+    Vector2 result = { v.x/div, v.y/div };
+    return result;
+}
+
+// Divide vector by vector
+RMDEF Vector2 Vector2DivideV(Vector2 v1, Vector2 v2)
+{
+    Vector2 result = { v1.x/v2.x, v1.y/v2.y };
     return result;
 }
 
 // Normalize provided vector
-MAILIB_INLINE vec2 vec2Normalize(vec2 v)
+RMDEF Vector2 Vector2Normalize(Vector2 v)
 {
-    float length = vec2Length(v);
-    if (length == 0.0f)
-    {
-        return v;
-    }
-
-    vec2 result = vec2Scale(v, 1.0f / vec2Length(v));
+    Vector2 result = Vector2Divide(v, Vector2Length(v));
     return result;
 }
 
 // Calculate linear interpolation between two vectors
-MAILIB_INLINE vec2 vec2Lerp(vec2 v1, vec2 v2, float amount)
+RMDEF Vector2 Vector2Lerp(Vector2 v1, Vector2 v2, float amount)
 {
-    vec2 result = { 0 };
+    Vector2 result = { 0 };
 
     result.x = v1.x + amount*(v2.x - v1.x);
     result.y = v1.y + amount*(v2.y - v1.y);
@@ -151,123 +268,101 @@ MAILIB_INLINE vec2 vec2Lerp(vec2 v1, vec2 v2, float amount)
     return result;
 }
 
-MAILIB_INLINE vec2 vec2Min(vec2 v1, vec2 v2)
+//----------------------------------------------------------------------------------
+// Module Functions Definition - Vector3 math
+//----------------------------------------------------------------------------------
+
+// Vector with components value 0.0f
+RMDEF Vector3 Vector3Zero(void)
 {
-    return (vec2){ fminf(v1.x, v2.x), fminf(v1.y, v2.y) };
-}
-
-MAILIB_INLINE vec2 vec2Max(vec2 v1, vec2 v2)
-{
-    return (vec2) { fmaxf(v1.x, v2.x), fmaxf(v1.y, v2.y) };
-}
-
-MAILIB_INLINE vec2 vec2Clamp(vec2 v, vec2 min, vec2 max)
-{
-    vec2 result = { 0 };
-
-    result.x = clampf(v.x, min.x, max.x);
-    result.y = clampf(v.y, min.y, max.y);
-
+    Vector3 result = { 0.0f, 0.0f, 0.0f };
     return result;
 }
 
-MAILIB_INLINE vec2 vec2CatmullRom(vec2 v1, vec2 v2, vec2 v3, vec2 v4, float amount)
+// Vector with components value 1.0f
+RMDEF Vector3 Vector3One(void)
 {
-    float squared = amount * amount;
-    float cubed = amount * squared;
-
-    float x = 0.5f * ((((2.0f * v2.x) + ((-v1.x + v3.x) * amount)) 
-        + (((((2.0f * v1.x) - (5.0f * v2.x)) + (4.0f * v3.x)) - v4.x) * squared)) 
-        + ((((-v1.x + (3.0f * v2.x)) - (3.0f * v3.x)) + v4.x) * cubed));
-
-    float y = 0.5f * ((((2.0f * v2.y) + ((-v1.y + v3.y) * amount)) 
-        + (((((2.0f * v1.y) - (5.0f * v2.y)) + (4.0f * v3.y)) - v4.y) * squared)) 
-        + ((((-v1.y + (3.0f * v2.y)) - (3.0f * v3.y)) + v4.y) * cubed));
-
-    return (vec2) { x, y };
+    Vector3 result = { 1.0f, 1.0f, 1.0f };
+    return result;
 }
 
-//----------------------------------------------------------------------------------
-// Module Functions Definition - vec3 math
-//----------------------------------------------------------------------------------
-
 // Add two vectors
-MAILIB_INLINE vec3 vec3Add(vec3 v1, vec3 v2)
+RMDEF Vector3 Vector3Add(Vector3 v1, Vector3 v2)
 {
-    vec3 result = { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+    Vector3 result = { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
     return result;
 }
 
 // Subtract two vectors
-MAILIB_INLINE vec3 vec3Sub(vec3 v1, vec3 v2)
+RMDEF Vector3 Vector3Subtract(Vector3 v1, Vector3 v2)
 {
-    vec3 result = { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+    Vector3 result = { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+    return result;
+}
+
+// Multiply vector by scalar
+RMDEF Vector3 Vector3Multiply(Vector3 v, float scalar)
+{
+    Vector3 result = { v.x*scalar, v.y*scalar, v.z*scalar };
     return result;
 }
 
 // Multiply vector by vector
-MAILIB_INLINE vec3 vec3Mul(vec3 v1, vec3 v2)
+RMDEF Vector3 Vector3MultiplyV(Vector3 v1, Vector3 v2)
 {
-    vec3 result = { v1.x*v2.x, v1.y*v2.y, v1.z*v2.z };
+    Vector3 result = { v1.x*v2.x, v1.y*v2.y, v1.z*v2.z };
     return result;
 }
 
 // Calculate two vectors cross product
-MAILIB_INLINE vec3 vec3Cross(vec3 v1, vec3 v2)
+RMDEF Vector3 Vector3CrossProduct(Vector3 v1, Vector3 v2)
 {
-    vec3 result = { v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x };
+    Vector3 result = { v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x };
     return result;
 }
 
 // Calculate one vector perpendicular vector
-MAILIB_INLINE vec3 vec3Perpendicular(vec3 v)
+RMDEF Vector3 Vector3Perpendicular(Vector3 v)
 {
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
 
     float min = (float) fabs(v.x);
-    vec3 cardinalAxis = {1.0f, 0.0f, 0.0f};
+    Vector3 cardinalAxis = {1.0f, 0.0f, 0.0f};
 
     if (fabs(v.y) < min)
     {
         min = (float) fabs(v.y);
-        vec3 tmp = {0.0f, 1.0f, 0.0f};
+        Vector3 tmp = {0.0f, 1.0f, 0.0f};
         cardinalAxis = tmp;
     }
 
     if (fabs(v.z) < min)
     {
-        vec3 tmp = {0.0f, 0.0f, 1.0f};
+        Vector3 tmp = {0.0f, 0.0f, 1.0f};
         cardinalAxis = tmp;
     }
 
-    result = vec3Cross(v, cardinalAxis);
+    result = Vector3CrossProduct(v, cardinalAxis);
 
     return result;
 }
 
 // Calculate vector length
-MAILIB_INLINE float vec3Length(const vec3 v)
+RMDEF float Vector3Length(const Vector3 v)
 {
     float result = sqrtf(v.x*v.x + v.y*v.y + v.z*v.z);
     return result;
 }
 
-// Calculate vector length
-MAILIB_INLINE float vec3LengthSq(const vec3 v)
-{
-    float result = v.x * v.x + v.y * v.y + v.z * v.z;
-    return result;
-}
-
 // Calculate two vectors dot product
-MAILIB_INLINE float vec3Dot(vec3 v1, vec3 v2)
+RMDEF float Vector3DotProduct(Vector3 v1, Vector3 v2)
 {
-    float result = (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z);
+    float result = (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
     return result;
 }
 
 // Calculate distance between two vectors
-MAILIB_INLINE float vec3Distance(vec3 v1, vec3 v2)
+RMDEF float Vector3Distance(Vector3 v1, Vector3 v2)
 {
     float dx = v2.x - v1.x;
     float dy = v2.y - v1.y;
@@ -276,51 +371,41 @@ MAILIB_INLINE float vec3Distance(vec3 v1, vec3 v2)
     return result;
 }
 
-// Calculate distance between two vectors
-MAILIB_INLINE float vec3DistanceSq(vec3 v1, vec3 v2)
-{
-    float dx = v2.x - v1.x;
-    float dy = v2.y - v1.y;
-    float dz = v2.z - v1.z;
-    float result = dx*dx + dy * dy + dz * dz;
-    return result;
-}
-
 // Scale provided vector
-MAILIB_INLINE vec3 vec3Scale(vec3 v, float scale)
+RMDEF Vector3 Vector3Scale(Vector3 v, float scale)
 {
-    vec3 result = { v.x*scale, v.y*scale, v.z*scale };
+    Vector3 result = { v.x*scale, v.y*scale, v.z*scale };
     return result;
 }
 
 // Negate provided vector (invert direction)
-MAILIB_INLINE vec3 vec3Negate(vec3 v)
+RMDEF Vector3 Vector3Negate(Vector3 v)
 {
-    vec3 result = { -v.x, -v.y, -v.z };
+    Vector3 result = { -v.x, -v.y, -v.z };
     return result;
 }
 
 // Divide vector by a float value
-MAILIB_INLINE vec3 vec3Div(vec3 v, float div)
+RMDEF Vector3 Vector3Divide(Vector3 v, float div)
 {
-    vec3 result = { v.x / div, v.y / div, v.z / div };
+    Vector3 result = { v.x / div, v.y / div, v.z / div };
     return result;
 }
 
 // Divide vector by vector
-MAILIB_INLINE vec3 vec3DivV(vec3 v1, vec3 v2)
+RMDEF Vector3 Vector3DivideV(Vector3 v1, Vector3 v2)
 {
-    vec3 result = { v1.x/v2.x, v1.y/v2.y, v1.z/v2.z };
+    Vector3 result = { v1.x/v2.x, v1.y/v2.y, v1.z/v2.z };
     return result;
 }
 
 // Normalize provided vector
-MAILIB_INLINE vec3 vec3Normalize(vec3 v)
+RMDEF Vector3 Vector3Normalize(Vector3 v)
 {
-    vec3 result = v;
+    Vector3 result = v;
 
     float length, ilength;
-    length = vec3Length(v);
+    length = Vector3Length(v);
     if (length == 0.0f) length = 1.0f;
     ilength = 1.0f/length;
 
@@ -334,18 +419,18 @@ MAILIB_INLINE vec3 vec3Normalize(vec3 v)
 // Orthonormalize provided vectors
 // Makes vectors normalized and orthogonal to each other
 // Gram-Schmidt function implementation
-MAILIB_INLINE void vec3OrthoNormalize(vec3 *v1, vec3 *v2)
+RMDEF void Vector3OrthoNormalize(Vector3 *v1, Vector3 *v2)
 {
-    *v1 = vec3Normalize(*v1);
-    vec3 vn = vec3Cross(*v1, *v2);
-    vn = vec3Normalize(vn);
-    *v2 = vec3Cross(vn, *v1);
+    *v1 = Vector3Normalize(*v1);
+    Vector3 vn = Vector3CrossProduct(*v1, *v2);
+    vn = Vector3Normalize(vn);
+    *v2 = Vector3CrossProduct(vn, *v1);
 }
 
-// Transforms a vec3 by a given mat4
-MAILIB_INLINE vec3 vec3Transform(vec3 v, mat4 mat)
+// Transforms a Vector3 by a given Matrix
+RMDEF Vector3 Vector3Transform(Vector3 v, Matrix mat)
 {
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
     float x = v.x;
     float y = v.y;
     float z = v.z;
@@ -358,9 +443,9 @@ MAILIB_INLINE vec3 vec3Transform(vec3 v, mat4 mat)
 }
 
 // Transform a vector by quaternion rotation
-MAILIB_INLINE vec3 vec3RotateByquat(vec3 v, quat q)
+RMDEF Vector3 Vector3RotateByQuaternion(Vector3 v, Quaternion q)
 {
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
 
     result.x = v.x*(q.x*q.x + q.w*q.w - q.y*q.y - q.z*q.z) + v.y*(2*q.x*q.y - 2*q.w*q.z) + v.z*(2*q.x*q.z + 2*q.w*q.y);
     result.y = v.x*(2*q.w*q.z + 2*q.x*q.y) + v.y*(q.w*q.w - q.x*q.x + q.y*q.y - q.z*q.z) + v.z*(-2*q.w*q.x + 2*q.y*q.z);
@@ -370,9 +455,9 @@ MAILIB_INLINE vec3 vec3RotateByquat(vec3 v, quat q)
 }
 
 // Calculate linear interpolation between two vectors
-MAILIB_INLINE vec3 vec3Lerp(vec3 v1, vec3 v2, float amount)
+RMDEF Vector3 Vector3Lerp(Vector3 v1, Vector3 v2, float amount)
 {
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
 
     result.x = v1.x + amount*(v2.x - v1.x);
     result.y = v1.y + amount*(v2.y - v1.y);
@@ -382,15 +467,15 @@ MAILIB_INLINE vec3 vec3Lerp(vec3 v1, vec3 v2, float amount)
 }
 
 // Calculate reflected vector to normal
-MAILIB_INLINE vec3 vec3Reflect(vec3 v, vec3 normal)
+RMDEF Vector3 Vector3Reflect(Vector3 v, Vector3 normal)
 {
     // I is the original vector
     // N is the normal of the incident plane
     // R = I - (2*N*( DotProduct[ I,N] ))
 
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
 
-    float dotProduct = vec3Dot(v, normal);
+    float dotProduct = Vector3DotProduct(v, normal);
 
     result.x = v.x - (2.0f*normal.x)*dotProduct;
     result.y = v.y - (2.0f*normal.y)*dotProduct;
@@ -400,9 +485,9 @@ MAILIB_INLINE vec3 vec3Reflect(vec3 v, vec3 normal)
 }
 
 // Return min value for each pair of components
-MAILIB_INLINE vec3 vec3Min(vec3 v1, vec3 v2)
+RMDEF Vector3 Vector3Min(Vector3 v1, Vector3 v2)
 {
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
 
     result.x = fminf(v1.x, v2.x);
     result.y = fminf(v1.y, v2.y);
@@ -412,9 +497,9 @@ MAILIB_INLINE vec3 vec3Min(vec3 v1, vec3 v2)
 }
 
 // Return max value for each pair of components
-MAILIB_INLINE vec3 vec3Max(vec3 v1, vec3 v2)
+RMDEF Vector3 Vector3Max(Vector3 v1, Vector3 v2)
 {
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
 
     result.x = fmaxf(v1.x, v2.x);
     result.y = fmaxf(v1.y, v2.y);
@@ -425,220 +510,48 @@ MAILIB_INLINE vec3 vec3Max(vec3 v1, vec3 v2)
 
 // Compute barycenter coordinates (u, v, w) for point p with respect to triangle (a, b, c)
 // NOTE: Assumes P is on the plane of the triangle
-MAILIB_INLINE vec3 vec3Barycenter(vec3 p, vec3 a, vec3 b, vec3 c)
+RMDEF Vector3 Vector3Barycenter(Vector3 p, Vector3 a, Vector3 b, Vector3 c)
 {
     //Vector v0 = b - a, v1 = c - a, v2 = p - a;
 
-    vec3 v0 = vec3Sub(b, a);
-    vec3 v1 = vec3Sub(c, a);
-    vec3 v2 = vec3Sub(p, a);
-    float d00 = vec3Dot(v0, v0);
-    float d01 = vec3Dot(v0, v1);
-    float d11 = vec3Dot(v1, v1);
-    float d20 = vec3Dot(v2, v0);
-    float d21 = vec3Dot(v2, v1);
+    Vector3 v0 = Vector3Subtract(b, a);
+    Vector3 v1 = Vector3Subtract(c, a);
+    Vector3 v2 = Vector3Subtract(p, a);
+    float d00 = Vector3DotProduct(v0, v0);
+    float d01 = Vector3DotProduct(v0, v1);
+    float d11 = Vector3DotProduct(v1, v1);
+    float d20 = Vector3DotProduct(v2, v0);
+    float d21 = Vector3DotProduct(v2, v1);
 
-    float denom = d00 * d11 - d01 * d01;
-    float idenom = 1.0f / denom;
+    float denom = d00*d11 - d01*d01;
 
-    vec3 result = { 
-        .x = (d11 * d20 - d01 * d21) * idenom, 
-        .y = (d00 * d21 - d01 * d20) * idenom, 
-        .z = 1.0f - (result.z + result.y) 
-    };
+    Vector3 result = { 0 };
+
+    result.y = (d11*d20 - d01*d21)/denom;
+    result.z = (d00*d21 - d01*d20)/denom;
+    result.x = 1.0f - (result.z + result.y);
 
     return result;
+}
+
+// Returns Vector3 as float array
+RMDEF float3 Vector3ToFloatV(Vector3 v)
+{
+    float3 buffer = { 0 };
+
+    buffer.v[0] = v.x;
+    buffer.v[1] = v.y;
+    buffer.v[2] = v.z;
+
+    return buffer;
 }
 
 //----------------------------------------------------------------------------------
-// Module Functions Definition - vec4 math
-//----------------------------------------------------------------------------------
-
-// Add two vectors
-MAILIB_INLINE vec4 vec4Add(vec4 v1, vec4 v2)
-{
-    vec4 result = { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
-    return result;
-}
-
-// Subtract two vectors
-MAILIB_INLINE vec4 vec4Sub(vec4 v1, vec4 v2)
-{
-    vec4 result = { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w };
-    return result;
-}
-
-// Multiply vector by vector
-MAILIB_INLINE vec4 vec4Mul(vec4 v1, vec4 v2)
-{
-    vec4 result = { v1.x * v2.x, v1.y * v2.y, v1.z * v2.z, v1.w * v2.w };
-    return result;
-}
-
-// Calculate vector length
-MAILIB_INLINE float vec4Length(const vec4 v)
-{
-    float result = sqrtf(v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w);
-    return result;
-}
-
-// Calculate vector length
-MAILIB_INLINE float vec4LengthSq(const vec4 v)
-{
-    float result = v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w;
-    return result;
-}
-
-// Calculate two vectors dot product
-MAILIB_INLINE float vec4Dot(vec4 v1, vec4 v2)
-{
-    float result = (v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w);
-    return result;
-}
-
-// Calculate distance between two vectors
-MAILIB_INLINE float vec4Distance(vec4 v1, vec4 v2)
-{
-    float dx = v2.x - v1.x;
-    float dy = v2.y - v1.y;
-    float dz = v2.z - v1.z;
-    float dw = v2.w - v1.w;
-    float result = sqrtf(dx*dx + dy * dy + dz * dz + dw * dw);
-    return result;
-}
-
-// Calculate distance between two vectors
-MAILIB_INLINE float vec4DistanceSq(vec4 v1, vec4 v2)
-{
-    float dx = v2.x - v1.x;
-    float dy = v2.y - v1.y;
-    float dz = v2.z - v1.z;
-    float dw = v2.w - v1.w;
-    float result = dx * dx + dy * dy + dz * dz + dw * dw;
-    return result;
-}
-
-// Scale provided vector
-MAILIB_INLINE vec4 vec4Scale(vec4 v, float scale)
-{
-    vec4 result = { v.x * scale, v.y * scale, v.z * scale, v.w * scale };
-    return result;
-}
-
-// Scale provided vector
-MAILIB_INLINE vec4 vec4ScaleInv(vec4 v, float scale)
-{
-    vec4 result = { v.x / scale, v.y / scale, v.z / scale, v.w / scale };
-    return result;
-}
-
-// Negate provided vector (invert direction)
-MAILIB_INLINE vec4 vec4Neg(vec4 v)
-{
-    vec4 result = { -v.x, -v.y, -v.z, -v.w };
-    return result;
-}
-
-// Divide vector by vector
-MAILIB_INLINE vec4 vec4Div(vec4 v1, vec4 v2)
-{
-    vec4 result = { v1.x / v2.x, v1.y / v2.y, v1.z / v2.z, v1.w / v2.w };
-    return result;
-}
-
-// Normalize provided vector
-MAILIB_INLINE vec4 vec4Normalize(vec4 v)
-{
-    vec4 result = v;
-
-    float length, ilength;
-    length = vec4Length(v);
-    if (length == 0.0f) length = 1.0f;
-    ilength = 1.0f / length;
-
-    result.x *= ilength;
-    result.y *= ilength;
-    result.z *= ilength;
-    result.w *= ilength;
-
-    return result;
-}
-
-// Transforms a vec4 by a given mat4
-MAILIB_INLINE vec4 vec4Transform(vec4 v, mat4 mat)
-{
-    vec4 result = { 0 };
-    float x = v.x;
-    float y = v.y;
-    float z = v.z;
-    float w = v.w;
-
-    result.x = mat.m0 * x + mat.m4 * y + mat.m8 * z + mat.m12 * w;
-    result.y = mat.m1 * x + mat.m5 * y + mat.m9 * z + mat.m13 * w;
-    result.z = mat.m2 * x + mat.m6 * y + mat.m10 * z + mat.m14 * w;
-    result.w = mat.m3 * x + mat.m7 * y + mat.m11 * z + mat.m15 * w;
-
-    return result;
-}
-
-// Calculate linear interpolation between two vectors
-MAILIB_INLINE vec4 vec4Lerp(vec4 v1, vec4 v2, float amount)
-{
-    vec4 result = { 
-        .x = v1.x + amount * (v2.x - v1.x),
-        .y = v1.y + amount * (v2.y - v1.y),
-        .z = v1.z + amount * (v2.z - v1.z),
-        .w = v1.w + amount * (v2.w - v1.w),
-    };
-
-    return result;
-}
-
-// Return min value for each pair of components
-MAILIB_INLINE vec4 vec4Min(vec4 v1, vec4 v2)
-{
-    vec4 result = { 
-        .x = fminf(v1.x, v2.x),
-        .y = fminf(v1.y, v2.y),
-        .z = fminf(v1.z, v2.z),
-        .w = fminf(v1.w, v2.w),
-    };
-
-    return result;
-}
-
-// Return max value for each pair of components
-MAILIB_INLINE vec4 vec4Max(vec4 v1, vec4 v2)
-{
-    vec4 result = { 
-        .x = fmaxf(v1.x, v2.x),
-        .y = fmaxf(v1.y, v2.y),
-        .z = fmaxf(v1.z, v2.z),
-        .w = fmaxf(v1.w, v2.w),
-    };
-
-    return result;
-}
-
-// Return max value for each pair of components
-MAILIB_INLINE vec4 vec4Clamp(vec4 v, vec4 min, vec4 max)
-{
-    vec4 result = { 
-        .x = clampf(v.x, min.x, max.x),
-        .y = clampf(v.y, min.y, max.y),
-        .z = clampf(v.z, min.z, max.z),
-        .w = clampf(v.w, min.w, max.w),
-    };
-
-    return result;
-}
-
-//----------------------------------------------------------------------------------
-// Module Functions Definition - mat4 math
+// Module Functions Definition - Matrix math
 //----------------------------------------------------------------------------------
 
 // Compute matrix determinant
-MAILIB_INLINE float mat4Determinant(mat4 mat)
+RMDEF float MatrixDeterminant(Matrix mat)
 {
     float result = { 0 };
 
@@ -659,16 +572,16 @@ MAILIB_INLINE float mat4Determinant(mat4 mat)
 }
 
 // Returns the trace of the matrix (sum of the values along the diagonal)
-MAILIB_INLINE float mat4Trace(mat4 mat)
+RMDEF float MatrixTrace(Matrix mat)
 {
     float result = (mat.m0 + mat.m5 + mat.m10 + mat.m15);
     return result;
 }
 
 // Transposes provided matrix
-MAILIB_INLINE mat4 mat4Transpose(mat4 mat)
+RMDEF Matrix MatrixTranspose(Matrix mat)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
     result.m0 = mat.m0;
     result.m1 = mat.m4;
@@ -691,9 +604,9 @@ MAILIB_INLINE mat4 mat4Transpose(mat4 mat)
 }
 
 // Invert provided matrix
-MAILIB_INLINE mat4 mat4Invert(mat4 mat)
+RMDEF Matrix MatrixInvert(Matrix mat)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
     // Cache the matrix values (speed optimization)
     float a00 = mat.m0, a01 = mat.m1, a02 = mat.m2, a03 = mat.m3;
@@ -738,11 +651,11 @@ MAILIB_INLINE mat4 mat4Invert(mat4 mat)
 }
 
 // Normalize provided matrix
-MAILIB_INLINE mat4 mat4Normalize(mat4 mat)
+RMDEF Matrix MatrixNormalize(Matrix mat)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
-    float det = mat4Determinant(mat);
+    float det = MatrixDeterminant(mat);
 
     result.m0 = mat.m0/det;
     result.m1 = mat.m1/det;
@@ -765,9 +678,9 @@ MAILIB_INLINE mat4 mat4Normalize(mat4 mat)
 }
 
 // Returns identity matrix
-MAILIB_INLINE mat4 mat4Identity(void)
+RMDEF Matrix MatrixIdentity(void)
 {
-    mat4 result = { 1.0f, 0.0f, 0.0f, 0.0f,
+    Matrix result = { 1.0f, 0.0f, 0.0f, 0.0f,
                       0.0f, 1.0f, 0.0f, 0.0f,
                       0.0f, 0.0f, 1.0f, 0.0f,
                       0.0f, 0.0f, 0.0f, 1.0f };
@@ -776,9 +689,9 @@ MAILIB_INLINE mat4 mat4Identity(void)
 }
 
 // Add two matrices
-MAILIB_INLINE mat4 mat4Add(mat4 left, mat4 right)
+RMDEF Matrix MatrixAdd(Matrix left, Matrix right)
 {
-    mat4 result = mat4Identity();
+    Matrix result = MatrixIdentity();
 
     result.m0 = left.m0 + right.m0;
     result.m1 = left.m1 + right.m1;
@@ -801,9 +714,9 @@ MAILIB_INLINE mat4 mat4Add(mat4 left, mat4 right)
 }
 
 // Subtract two matrices (left - right)
-MAILIB_INLINE mat4 mat4Subtract(mat4 left, mat4 right)
+RMDEF Matrix MatrixSubtract(Matrix left, Matrix right)
 {
-    mat4 result = mat4Identity();
+    Matrix result = MatrixIdentity();
 
     result.m0 = left.m0 - right.m0;
     result.m1 = left.m1 - right.m1;
@@ -826,9 +739,9 @@ MAILIB_INLINE mat4 mat4Subtract(mat4 left, mat4 right)
 }
 
 // Returns translation matrix
-MAILIB_INLINE mat4 mat4Translate(float x, float y, float z)
+RMDEF Matrix MatrixTranslate(float x, float y, float z)
 {
-    mat4 result = { 1.0f, 0.0f, 0.0f, x,
+    Matrix result = { 1.0f, 0.0f, 0.0f, x,
                       0.0f, 1.0f, 0.0f, y,
                       0.0f, 0.0f, 1.0f, z,
                       0.0f, 0.0f, 0.0f, 1.0f };
@@ -838,9 +751,9 @@ MAILIB_INLINE mat4 mat4Translate(float x, float y, float z)
 
 // Create rotation matrix from axis and angle
 // NOTE: Angle should be provided in radians
-MAILIB_INLINE mat4 mat4Rotate(vec3 axis, float angle)
+RMDEF Matrix MatrixRotate(Vector3 axis, float angle)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
     float x = axis.x, y = axis.y, z = axis.z;
 
@@ -882,9 +795,9 @@ MAILIB_INLINE mat4 mat4Rotate(vec3 axis, float angle)
 }
 
 // Returns xyz-rotation matrix (angles in radians)
-MAILIB_INLINE mat4 mat4RotateXYZ(vec3 ang)
+RMDEF Matrix MatrixRotateXYZ(Vector3 ang)
 {
-    mat4 result = mat4Identity();
+    Matrix result = MatrixIdentity();
 
     float cosz = cosf(-ang.z);
     float sinz = sinf(-ang.z);
@@ -909,9 +822,9 @@ MAILIB_INLINE mat4 mat4RotateXYZ(vec3 ang)
 }
 
 // Returns x-rotation matrix (angle in radians)
-MAILIB_INLINE mat4 mat4RotateX(float angle)
+RMDEF Matrix MatrixRotateX(float angle)
 {
-    mat4 result = mat4Identity();
+    Matrix result = MatrixIdentity();
 
     float cosres = cosf(angle);
     float sinres = sinf(angle);
@@ -925,9 +838,9 @@ MAILIB_INLINE mat4 mat4RotateX(float angle)
 }
 
 // Returns y-rotation matrix (angle in radians)
-MAILIB_INLINE mat4 mat4RotateY(float angle)
+RMDEF Matrix MatrixRotateY(float angle)
 {
-    mat4 result = mat4Identity();
+    Matrix result = MatrixIdentity();
 
     float cosres = cosf(angle);
     float sinres = sinf(angle);
@@ -941,9 +854,9 @@ MAILIB_INLINE mat4 mat4RotateY(float angle)
 }
 
 // Returns z-rotation matrix (angle in radians)
-MAILIB_INLINE mat4 mat4RotateZ(float angle)
+RMDEF Matrix MatrixRotateZ(float angle)
 {
-    mat4 result = mat4Identity();
+    Matrix result = MatrixIdentity();
 
     float cosres = cosf(angle);
     float sinres = sinf(angle);
@@ -957,9 +870,9 @@ MAILIB_INLINE mat4 mat4RotateZ(float angle)
 }
 
 // Returns scaling matrix
-MAILIB_INLINE mat4 mat4Scale(float x, float y, float z)
+RMDEF Matrix MatrixScale(float x, float y, float z)
 {
-    mat4 result = { x, 0.0f, 0.0f, 0.0f,
+    Matrix result = { x, 0.0f, 0.0f, 0.0f,
                       0.0f, y, 0.0f, 0.0f,
                       0.0f, 0.0f, z, 0.0f,
                       0.0f, 0.0f, 0.0f, 1.0f };
@@ -969,9 +882,9 @@ MAILIB_INLINE mat4 mat4Scale(float x, float y, float z)
 
 // Returns two matrix multiplication
 // NOTE: When multiplying matrices... the order matters!
-MAILIB_INLINE mat4 mat4Multiply(mat4 left, mat4 right)
+RMDEF Matrix MatrixMultiply(Matrix left, Matrix right)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
     result.m0 = left.m0*right.m0 + left.m1*right.m4 + left.m2*right.m8 + left.m3*right.m12;
     result.m1 = left.m0*right.m1 + left.m1*right.m5 + left.m2*right.m9 + left.m3*right.m13;
@@ -994,9 +907,9 @@ MAILIB_INLINE mat4 mat4Multiply(mat4 left, mat4 right)
 }
 
 // Returns perspective projection matrix
-MAILIB_INLINE mat4 mat4Frustum(double left, double right, double bottom, double top, double near, double far)
+RMDEF Matrix MatrixFrustum(double left, double right, double bottom, double top, double near, double far)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
     float rl = (float)(right - left);
     float tb = (float)(top - bottom);
@@ -1027,19 +940,19 @@ MAILIB_INLINE mat4 mat4Frustum(double left, double right, double bottom, double 
 
 // Returns perspective projection matrix
 // NOTE: Angle should be provided in radians
-MAILIB_INLINE mat4 mat4Perspective(double fovy, double aspect, double near, double far)
+RMDEF Matrix MatrixPerspective(double fovy, double aspect, double near, double far)
 {
     double top = near*tan(fovy*0.5);
     double right = top*aspect;
-    mat4 result = mat4Frustum(-right, right, -top, top, near, far);
+    Matrix result = MatrixFrustum(-right, right, -top, top, near, far);
 
     return result;
 }
 
 // Returns orthographic projection matrix
-MAILIB_INLINE mat4 mat4Ortho(double left, double right, double bottom, double top, double near, double far)
+RMDEF Matrix MatrixOrtho(double left, double right, double bottom, double top, double near, double far)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
     float rl = (float)(right - left);
     float tb = (float)(top - bottom);
@@ -1066,16 +979,16 @@ MAILIB_INLINE mat4 mat4Ortho(double left, double right, double bottom, double to
 }
 
 // Returns camera look-at matrix (view matrix)
-MAILIB_INLINE mat4 mat4LookAt(vec3 eye, vec3 target, vec3 up)
+RMDEF Matrix MatrixLookAt(Vector3 eye, Vector3 target, Vector3 up)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
-    vec3 z = vec3Sub(eye, target);
-    z = vec3Normalize(z);
-    vec3 x = vec3Cross(up, z);
-    x = vec3Normalize(x);
-    vec3 y = vec3Cross(z, x);
-    y = vec3Normalize(y);
+    Vector3 z = Vector3Subtract(eye, target);
+    z = Vector3Normalize(z);
+    Vector3 x = Vector3CrossProduct(up, z);
+    x = Vector3Normalize(x);
+    Vector3 y = Vector3CrossProduct(z, x);
+    y = Vector3Normalize(y);
 
     result.m0 = x.x;
     result.m1 = x.y;
@@ -1094,29 +1007,61 @@ MAILIB_INLINE mat4 mat4LookAt(vec3 eye, vec3 target, vec3 up)
     result.m14 = eye.z;
     result.m15 = 1.0f;
 
-    result = mat4Invert(result);
+    result = MatrixInvert(result);
 
     return result;
 }
 
+// Returns float array of matrix data
+RMDEF float16 MatrixToFloatV(Matrix mat)
+{
+    float16 buffer = { 0 };
+
+    buffer.v[0] = mat.m0;
+    buffer.v[1] = mat.m1;
+    buffer.v[2] = mat.m2;
+    buffer.v[3] = mat.m3;
+    buffer.v[4] = mat.m4;
+    buffer.v[5] = mat.m5;
+    buffer.v[6] = mat.m6;
+    buffer.v[7] = mat.m7;
+    buffer.v[8] = mat.m8;
+    buffer.v[9] = mat.m9;
+    buffer.v[10] = mat.m10;
+    buffer.v[11] = mat.m11;
+    buffer.v[12] = mat.m12;
+    buffer.v[13] = mat.m13;
+    buffer.v[14] = mat.m14;
+    buffer.v[15] = mat.m15;
+
+    return buffer;
+}
+
 //----------------------------------------------------------------------------------
-// Module Functions Definition - quat math
+// Module Functions Definition - Quaternion math
 //----------------------------------------------------------------------------------
 
+// Returns identity quaternion
+RMDEF Quaternion QuaternionIdentity(void)
+{
+    Quaternion result = { 0.0f, 0.0f, 0.0f, 1.0f };
+    return result;
+}
+
 // Computes the length of a quaternion
-MAILIB_INLINE float quatLength(quat q)
+RMDEF float QuaternionLength(Quaternion q)
 {
     float result = (float)sqrt(q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w);
     return result;
 }
 
 // Normalize provided quaternion
-MAILIB_INLINE quat quatNormalize(quat q)
+RMDEF Quaternion QuaternionNormalize(Quaternion q)
 {
-    quat result = { 0 };
+    Quaternion result = { 0 };
 
     float length, ilength;
-    length = quatLength(q);
+    length = QuaternionLength(q);
     if (length == 0.0f) length = 1.0f;
     ilength = 1.0f/length;
 
@@ -1129,10 +1074,10 @@ MAILIB_INLINE quat quatNormalize(quat q)
 }
 
 // Invert provided quaternion
-MAILIB_INLINE quat quatInvert(quat q)
+RMDEF Quaternion QuaternionInvert(Quaternion q)
 {
-    quat result = q;
-    float length = quatLength(q);
+    Quaternion result = q;
+    float length = QuaternionLength(q);
     float lengthSq = length*length;
 
     if (lengthSq != 0.0)
@@ -1149,9 +1094,9 @@ MAILIB_INLINE quat quatInvert(quat q)
 }
 
 // Calculate two quaternion multiplication
-MAILIB_INLINE quat quatMul(quat q1, quat q2)
+RMDEF Quaternion QuaternionMultiply(Quaternion q1, Quaternion q2)
 {
-    quat result = { 0 };
+    Quaternion result = { 0 };
 
     float qax = q1.x, qay = q1.y, qaz = q1.z, qaw = q1.w;
     float qbx = q2.x, qby = q2.y, qbz = q2.z, qbw = q2.w;
@@ -1165,9 +1110,9 @@ MAILIB_INLINE quat quatMul(quat q1, quat q2)
 }
 
 // Calculate linear interpolation between two quaternions
-MAILIB_INLINE quat quatLerp(quat q1, quat q2, float amount)
+RMDEF Quaternion QuaternionLerp(Quaternion q1, Quaternion q2, float amount)
 {
-    quat result = { 0 };
+    Quaternion result = { 0 };
 
     result.x = q1.x + amount*(q2.x - q1.x);
     result.y = q1.y + amount*(q2.y - q1.y);
@@ -1178,23 +1123,23 @@ MAILIB_INLINE quat quatLerp(quat q1, quat q2, float amount)
 }
 
 // Calculate slerp-optimized interpolation between two quaternions
-MAILIB_INLINE quat quatNlerp(quat q1, quat q2, float amount)
+RMDEF Quaternion QuaternionNlerp(Quaternion q1, Quaternion q2, float amount)
 {
-    quat result = quatLerp(q1, q2, amount);
-    result = quatNormalize(result);
+    Quaternion result = QuaternionLerp(q1, q2, amount);
+    result = QuaternionNormalize(result);
 
     return result;
 }
 
 // Calculates spherical linear interpolation between two quaternions
-MAILIB_INLINE quat quatSlerp(quat q1, quat q2, float amount)
+RMDEF Quaternion QuaternionSlerp(Quaternion q1, Quaternion q2, float amount)
 {
-    quat result = { 0 };
+    Quaternion result = { 0 };
 
     float cosHalfTheta =  q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
 
     if (fabs(cosHalfTheta) >= 1.0f) result = q1;
-    else if (cosHalfTheta > 0.95f) result = quatNlerp(q1, q2, amount);
+    else if (cosHalfTheta > 0.95f) result = QuaternionNlerp(q1, q2, amount);
     else
     {
         float halfTheta = (float) acos(cosHalfTheta);
@@ -1223,12 +1168,12 @@ MAILIB_INLINE quat quatSlerp(quat q1, quat q2, float amount)
 }
 
 // Calculate quaternion based on the rotation from one vector to another
-MAILIB_INLINE quat quatFromVec3ToVec3(vec3 from, vec3 to)
+RMDEF Quaternion QuaternionFromVector3ToVector3(Vector3 from, Vector3 to)
 {
-    quat result = { 0 };
+    Quaternion result = { 0 };
 
-    float cos2Theta = vec3Dot(from, to);
-    vec3 cross = vec3Cross(from, to);
+    float cos2Theta = Vector3DotProduct(from, to);
+    Vector3 cross = Vector3CrossProduct(from, to);
 
     result.x = cross.x;
     result.y = cross.y;
@@ -1236,20 +1181,20 @@ MAILIB_INLINE quat quatFromVec3ToVec3(vec3 from, vec3 to)
     result.w = 1.0f + cos2Theta;     // NOTE: Added QuaternioIdentity()
 
     // Normalize to essentially nlerp the original and identity to 0.5
-    result = quatNormalize(result);
+    result = QuaternionNormalize(result);
 
     // Above lines are equivalent to:
-    //quat result = quatNlerp(q, quatIdentity(), 0.5f);
+    //Quaternion result = QuaternionNlerp(q, QuaternionIdentity(), 0.5f);
 
     return result;
 }
 
 // Returns a quaternion for a given rotation matrix
-MAILIB_INLINE quat quatFromMat4(mat4 mat)
+RMDEF Quaternion QuaternionFromMatrix(Matrix mat)
 {
-    quat result = { 0 };
+    Quaternion result = { 0 };
 
-    float trace = mat4Trace(mat);
+    float trace = MatrixTrace(mat);
 
     if (trace > 0.0f)
     {
@@ -1301,9 +1246,9 @@ MAILIB_INLINE quat quatFromMat4(mat4 mat)
 }
 
 // Returns a matrix for a given quaternion
-MAILIB_INLINE mat4 quatToMat4(quat q)
+RMDEF Matrix QuaternionToMatrix(Quaternion q)
 {
-    mat4 result = { 0 };
+    Matrix result = { 0 };
 
     float x = q.x, y = q.y, z = q.z, w = q.w;
 
@@ -1311,7 +1256,7 @@ MAILIB_INLINE mat4 quatToMat4(quat q)
     float y2 = y + y;
     float z2 = z + z;
 
-    float length = quatLength(q);
+    float length = QuaternionLength(q);
     float lengthSquared = length*length;
 
     float xx = x*x2/lengthSquared;
@@ -1348,15 +1293,15 @@ MAILIB_INLINE mat4 quatToMat4(quat q)
 
 // Returns rotation quaternion for an angle and axis
 // NOTE: angle must be provided in radians
-MAILIB_INLINE quat quatFromAxisAngle(vec3 axis, float angle)
+RMDEF Quaternion QuaternionFromAxisAngle(Vector3 axis, float angle)
 {
-    quat result = { 0.0f, 0.0f, 0.0f, 1.0f };
+    Quaternion result = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-    if (vec3Length(axis) != 0.0f)
+    if (Vector3Length(axis) != 0.0f)
 
     angle *= 0.5f;
 
-    axis = vec3Normalize(axis);
+    axis = Vector3Normalize(axis);
 
     float sinres = sinf(angle);
     float cosres = cosf(angle);
@@ -1366,17 +1311,17 @@ MAILIB_INLINE quat quatFromAxisAngle(vec3 axis, float angle)
     result.z = axis.z*sinres;
     result.w = cosres;
 
-    result = quatNormalize(result);
+    result = QuaternionNormalize(result);
 
     return result;
 }
 
 // Returns the rotation angle and axis for a given quaternion
-MAILIB_INLINE void quatToAxisAngle(quat q, vec3 *outAxis, float *outAngle)
+RMDEF void QuaternionToAxisAngle(Quaternion q, Vector3 *outAxis, float *outAngle)
 {
-    if (fabs(q.w) > 1.0f) q = quatNormalize(q);
+    if (fabs(q.w) > 1.0f) q = QuaternionNormalize(q);
 
-    vec3 resAxis = { 0.0f, 0.0f, 0.0f };
+    Vector3 resAxis = { 0.0f, 0.0f, 0.0f };
     float resAngle = 0.0f;
 
     resAngle = 2.0f*(float)acos(q.w);
@@ -1400,9 +1345,9 @@ MAILIB_INLINE void quatToAxisAngle(quat q, vec3 *outAxis, float *outAngle)
 }
 
 // Returns he quaternion equivalent to Euler angles
-MAILIB_INLINE quat quatFromEuler(float roll, float pitch, float yaw)
+RMDEF Quaternion QuaternionFromEuler(float roll, float pitch, float yaw)
 {
-    quat q = { 0 };
+    Quaternion q = { 0 };
 
     float x0 = cosf(roll*0.5f);
     float x1 = sinf(roll*0.5f);
@@ -1420,10 +1365,10 @@ MAILIB_INLINE quat quatFromEuler(float roll, float pitch, float yaw)
 }
 
 // Return the Euler angles equivalent to quaternion (roll, pitch, yaw)
-// NOTE: Angles are returned in a vec3 struct in degrees
-MAILIB_INLINE vec3 quatToEuler(quat q)
+// NOTE: Angles are returned in a Vector3 struct in degrees
+RMDEF Vector3 QuaternionToEuler(Quaternion q)
 {
-    vec3 result = { 0 };
+    Vector3 result = { 0 };
 
     // roll (x-axis rotation)
     float x0 = 2.0f*(q.w*q.x + q.y*q.z);
@@ -1445,9 +1390,9 @@ MAILIB_INLINE vec3 quatToEuler(quat q)
 }
 
 // Transform a quaternion given a transformation matrix
-MAILIB_INLINE quat quatTransform(quat q, mat4 mat)
+RMDEF Quaternion QuaternionTransform(Quaternion q, Matrix mat)
 {
-    quat result = { 0 };
+    Quaternion result = { 0 };
 
     result.x = mat.m0*q.x + mat.m4*q.y + mat.m8*q.z + mat.m12*q.w;
     result.y = mat.m1*q.x + mat.m5*q.y + mat.m9*q.z + mat.m13*q.w;
@@ -1456,3 +1401,5 @@ MAILIB_INLINE quat quatTransform(quat q, mat4 mat)
 
     return result;
 }
+
+#endif  // RAYMATH_H

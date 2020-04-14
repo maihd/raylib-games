@@ -1,8 +1,8 @@
 #include "NeonShooter_Assets.h"
 #include "NeonShooter_GameAudio.h"
 
-#include <MaiLib.h>
-#include <MaiArray.h>
+#include <Array.h>
+#include <raylib.h>
 
 static Music        music;
 static Array(Sound) shootSounds = 0;
@@ -13,8 +13,9 @@ void GameAudioInit(void)
 {
     InitAudioDevice();
 
-    music = LoadMusicStream(GetAssetPath("Audios/Music.ogg"));
-    StopMusicStream(music);
+    //const char* musicStreamPath = GetAssetPath("Audios/Music.ogg");
+    //music = LoadMusicStream(musicStreamPath);
+    //StopMusicStream(music);
 
     ArrayPush(shootSounds, LoadSound(GetAssetPath("Audios/shoot-01.wav")));
     ArrayPush(shootSounds, LoadSound(GetAssetPath("Audios/shoot-02.wav")));
@@ -60,29 +61,28 @@ void GameAudioRelease(void)
     }
     ArrayFree(explosionSounds);
 
-    UnloadMusicStream(music);
-    music = 0;
+    //UnloadMusicStream(music);
+    //music = (Music){ 0 };
 
     CloseAudioDevice();     // Close audio device
 }
 
 void GameAudioUpdate(void)
 {
-    UpdateMusicStream(music);
+    //UpdateMusicStream(music);
 }
 
 void GameAudioPlayMusic(void)
 {
-    SetMusicVolume(music, 0.5f);
-    SetMusicLoopCount(music, -1);
+    //SetMusicVolume(music, 0.5f);
+    //SetMusicLoopCount(music, -1);
 
-    PlayMusicStream(music);
+    //PlayMusicStream(music);
 }
 
 void GameAudioStopMusic(void)
 {
-
-    StopMusicStream(music);
+    //StopMusicStream(music);
 }
 
 void GameAudioPlayShoot(void)

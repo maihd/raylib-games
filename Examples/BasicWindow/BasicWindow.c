@@ -1,4 +1,4 @@
-#include <MaiLib.h>
+#include <raylib.h>
 
 int main(void)
 {
@@ -9,7 +9,7 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "RayGames - Basics");
     SetTargetFPS(60);
 
-    vec2 ballPosition = { .x = SCREEN_WIDTH * 0.5f, .y = SCREEN_HEIGHT * 0.5f };
+    Vector2 ballPosition = { .x = SCREEN_WIDTH * 0.5f, .y = SCREEN_HEIGHT * 0.5f };
 
     while (!WindowShouldClose())
     {

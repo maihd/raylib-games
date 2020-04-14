@@ -4,13 +4,73 @@
 #include "NeonShooter_ParticleSystem.h"
 
 #include <stdlib.h>
-#include <MaiLib.h>
-#include <MaiMath.h>
-#include <MaiArray.h>
+#include <raylib.h>
+#include <raymath.h>
 
 #define DEFAULT_POINT_DAMPING 1.0F
 
-static PointMass NewPointMass(vec2 position, float invMass)
+int GetFrameCount(void);
+
+static float clampf(float value, float min, float max)
+{
+    const float res = value < min ? min : value;
+    return res > max ? max : res;
+}
+
+// Calculate linear interpolation between two floats
+static float lerpf(float start, float end, float amount)
+{
+    return start + amount * (end - start);
+}
+
+static float Vector2LengthSq(Vector2 v)
+{
+    return v.x * v.x + v.y * v.y;
+}
+
+static float Vector2DistanceSq(Vector2 a, Vector2 b)
+{
+    float dx = a.x - b.x;
+    float dy = a.y - b.y;
+    float d  = dx * dx + dy * dy;
+    return d;
+}
+
+static Vector2 Vector2CatmullRom(Vector2 v1, Vector2 v2, Vector2 v3, Vector2 v4, float amount)
+{
+    float squared = amount * amount;
+    float cubed = amount * squared;
+
+    float x = 0.5f * ((((2.0f * v2.x) + ((-v1.x + v3.x) * amount))
+        + (((((2.0f * v1.x) - (5.0f * v2.x)) + (4.0f * v3.x)) - v4.x) * squared))
+        + ((((-v1.x + (3.0f * v2.x)) - (3.0f * v3.x)) + v4.x) * cubed));
+
+    float y = 0.5f * ((((2.0f * v2.y) + ((-v1.y + v3.y) * amount))
+        + (((((2.0f * v1.y) - (5.0f * v2.y)) + (4.0f * v3.y)) - v4.y) * squared))
+        + ((((-v1.y + (3.0f * v2.y)) - (3.0f * v3.y)) + v4.y) * cubed));
+
+    return (Vector2) { x, y };
+}
+
+static Vector4 Vector4Add(Vector4 v1, Vector4 v2)
+{
+    Vector4 result = { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v1.w };
+    return result;
+}
+
+static Vector4 Vector4Subtract(Vector4 v1, Vector4 v2)
+{
+    Vector4 result = { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v1.w };
+    return result;
+}
+
+static Vector4 Vector4Scale(Vector4 v, float scalar)
+{
+    Vector4 result = { v.x * scalar, v.y * scalar, v.z * scalar, v.w * scalar };
+    return result;
+}
+
+static PointMass NewPointMass(Vector2 position, float invMass)
 {
     return (PointMass) {
         .position = position,
@@ -24,26 +84,26 @@ static PointMass NewPointMass(vec2 position, float invMass)
 
 static void UpdatePointMass(PointMass* p, float timeStep)
 {
-    vec2 velocity = vec2Add(p->velocity, vec2Scale(p->acceleration, timeStep));
-    vec2 position = vec2Add(p->position, vec2Scale(velocity, timeStep));
+    Vector2 velocity = Vector2Add(p->velocity, Vector2Scale(p->acceleration, timeStep));
+    Vector2 position = Vector2Add(p->position, Vector2Scale(velocity, timeStep));
 
-    if (vec2LengthSq(velocity) < 0.001f * 0.001f)
+    if (Vector2LengthSq(velocity) < 0.001f * 0.001f)
     {
-        velocity = vec2New(0, 0);
+        velocity = (Vector2) { 0, 0 };
     }
     else
     {
-        velocity = vec2Scale(velocity, fmaxf(0.0f, 1.0f - p->damping * timeStep));
+        velocity = Vector2Scale(velocity, fmaxf(0.0f, 1.0f - p->damping * timeStep));
     }
 
-    vec2 acceleration = p->acceleration;
-    if (vec2LengthSq(acceleration) < 0.001f * 0.001f)
+    Vector2 acceleration = p->acceleration;
+    if (Vector2LengthSq(acceleration) < 0.001f * 0.001f)
     {
-        acceleration = vec2New(0, 0);
+        acceleration = (Vector2) { 0, 0 };
     }
     else
     {
-        acceleration = vec2Scale(acceleration, fmaxf(0.0f, 1.0f - p->damping * timeStep));
+        acceleration = Vector2Scale(acceleration, fmaxf(0.0f, 1.0f - p->damping * timeStep));
     }
 
     p->position     = position;
@@ -52,9 +112,9 @@ static void UpdatePointMass(PointMass* p, float timeStep)
     p->damping      = DEFAULT_POINT_DAMPING;
 }
 
-static void PointMassApplyForce(PointMass* p, vec2 force, float timeStep)
+static void PointMassApplyForce(PointMass* p, Vector2 force, float timeStep)
 {
-    p->acceleration = vec2Add(p->acceleration, vec2Scale(force, p->invMass * timeStep));
+    p->acceleration = Vector2Add(p->acceleration, Vector2Scale(force, p->invMass * timeStep));
 }
 
 static void PointMassIncreaseDamping(PointMass* p, float factor)
@@ -68,7 +128,7 @@ static Spring NewSpring(PointMass* p0, PointMass* p1, float stiffness, float dam
         .p0 = p0,
         .p1 = p1,
 
-        .targetLength = vec2Distance(p0->position, p1->position) * 0.99f,
+        .targetLength = Vector2Distance(p0->position, p1->position) * 0.99f,
         .stiffness = stiffness,
         .damping = damping,
         .force = 60.0f,
@@ -77,20 +137,20 @@ static Spring NewSpring(PointMass* p0, PointMass* p1, float stiffness, float dam
 
 static void UpdateSpring(Spring* spring, float timeStep)
 {
-    vec2 diff = vec2Sub(spring->p0->position, spring->p1->position);
-    float len = vec2Length(diff);
+    Vector2 diff = Vector2Subtract(spring->p0->position, spring->p1->position);
+    float len = Vector2Length(diff);
     if (len > spring->targetLength)
     {
         float changeRate = (len - spring->targetLength) / len;
-        vec2 dvel = vec2Sub(spring->p1->velocity, spring->p0->velocity);
-        vec2 force = vec2Sub(vec2Scale(diff, changeRate * spring->stiffness), vec2Scale(dvel, fmaxf(0.0f, 1.0f - spring->damping * timeStep)));
+        Vector2 dvel = Vector2Subtract(spring->p1->velocity, spring->p0->velocity);
+        Vector2 force = Vector2Subtract(Vector2Scale(diff, changeRate * spring->stiffness), Vector2Scale(dvel, fmaxf(0.0f, 1.0f - spring->damping * timeStep)));
 
-        PointMassApplyForce(spring->p0, vec2Scale(vec2Neg(force), spring->force), timeStep);
-        PointMassApplyForce(spring->p1, vec2Scale(force, spring->force), timeStep);
+        PointMassApplyForce(spring->p0, Vector2Scale(Vector2Negate(force), spring->force), timeStep);
+        PointMassApplyForce(spring->p1, Vector2Scale(force, spring->force), timeStep);
     }
 }
 
-static WarpGrid NewWarpGrid(rect bounds, vec2 spacing)
+static WarpGrid NewWarpGrid(Rectangle bounds, Vector2 spacing)
 {
     int cols = (int)(bounds.width / spacing.x) + 1;
     int rows = (int)(bounds.height / spacing.y) + 1;
@@ -117,7 +177,7 @@ static WarpGrid NewWarpGrid(rect bounds, vec2 spacing)
         for (int j = 0; j < cols; j++)
         {
             int  index = i * cols + j;
-            vec2 position = (vec2){ bounds.x + j * spacing.x, bounds.y + i * spacing.y };
+            Vector2 position = (Vector2){ bounds.x + j * spacing.x, bounds.y + i * spacing.y };
             
             points[index] = NewPointMass(position, 1.0f);
             fixedPoints[index] = NewPointMass(position, 0.0f);
@@ -187,45 +247,45 @@ static void RenderWarpGrid(WarpGrid grid)
             float horThickness = 2.0f;
             float verThickness = 2.0f;
 
-            vec2 current = grid.points[i * cols + j].position;
+            Vector2 current = grid.points[i * cols + j].position;
             
-            vec2 left = grid.points[i * cols + (j - 1)].position;
-            vec2 up = grid.points[(i - 1) * cols + j].position;
+            Vector2 left = grid.points[i * cols + (j - 1)].position;
+            Vector2 up = grid.points[(i - 1) * cols + j].position;
 
-            vec2 midUp = vec2Scale(vec2Add(current, up), 0.5f);
-            vec2 midLeft = vec2Scale(vec2Add(current, left), 0.5f);
+            Vector2 midUp = Vector2Scale(Vector2Add(current, up), 0.5f);
+            Vector2 midLeft = Vector2Scale(Vector2Add(current, left), 0.5f);
 
-            vec2 upLeft = grid.points[(i - 1) * cols + (j - 1)].position;
-            //DrawLineEx(vec2Scale(vec2Add(upLeft, left), 0.5f), midLeft, horThickness, color);   // horizontal line
+            Vector2 upLeft = grid.points[(i - 1) * cols + (j - 1)].position;
+            //DrawLineEx(Vector2Scale(Vector2Add(upLeft, left), 0.5f), midLeft, horThickness, color);   // horizontal line
 
             int j0 = fmaxf(j - 2, 0);
             int j1 = fminf(j + 1, cols - 1);
-            vec2 horMid = vec2CatmullRom(grid.points[i * cols + j0].position, left, current, grid.points[i * cols + j1].position, 0.5f);
-            if (vec2DistanceSq(horMid, midLeft) > 1.0f)
+            Vector2 horMid = Vector2CatmullRom(grid.points[i * cols + j0].position, left, current, grid.points[i * cols + j1].position, 0.5f);
+            if (Vector2DistanceSq(horMid, midLeft) > 1.0f)
             {
                 DrawLineEx(left, horMid, horThickness, color);
                 DrawLineEx(horMid, current, horThickness, color);
-                DrawLineEx(vec2Scale(vec2Add(upLeft, up), 0.5f), horMid, verThickness, color);   // vertical line
+                DrawLineEx(Vector2Scale(Vector2Add(upLeft, up), 0.5f), horMid, verThickness, color);   // vertical line
             }
             else
             {
                 DrawLineEx(left, current, horThickness, color);
-                DrawLineEx(vec2Scale(vec2Add(upLeft, up), 0.5f), midLeft, verThickness, color);   // vertical line
+                DrawLineEx(Vector2Scale(Vector2Add(upLeft, up), 0.5f), midLeft, verThickness, color);   // vertical line
             }
             
             int i0 = fmaxf(i - 2, 0);
             int i1 = fminf(i + 1, rows - 1);
-            vec2 verMid = vec2CatmullRom(grid.points[i0 * cols + j].position, up, current, grid.points[i1 * cols + j].position, 0.5f);
-            if (vec2DistanceSq(verMid, midUp) > 1.0f)
+            Vector2 verMid = Vector2CatmullRom(grid.points[i0 * cols + j].position, up, current, grid.points[i1 * cols + j].position, 0.5f);
+            if (Vector2DistanceSq(verMid, midUp) > 1.0f)
             {
                 DrawLineEx(up, verMid, verThickness, color);
                 DrawLineEx(verMid, current, verThickness, color);
-                DrawLineEx(vec2Scale(vec2Add(upLeft, left), 0.5f), verMid, horThickness, color);   // horizontal line
+                DrawLineEx(Vector2Scale(Vector2Add(upLeft, left), 0.5f), verMid, horThickness, color);   // horizontal line
             }
             else
             {
                 DrawLineEx(up, current, verThickness, color);
-                DrawLineEx(vec2Scale(vec2Add(upLeft, left), 0.5f), midUp, horThickness, color);   // horizontal line
+                DrawLineEx(Vector2Scale(Vector2Add(upLeft, left), 0.5f), midUp, horThickness, color);   // horizontal line
             }
         }
     }
@@ -233,28 +293,28 @@ static void RenderWarpGrid(WarpGrid grid)
     EndBlendMode();
 }
 
-static void WarpGridApplyDirectedForce(WarpGrid grid, vec2 force, vec2 position, float radius, float timeStep)
+static void WarpGridApplyDirectedForce(WarpGrid grid, Vector2 force, Vector2 position, float radius, float timeStep)
 {
     for (int i = 0, n = ArrayCount(grid.points); i < n; i++)
     {
         PointMass point = grid.points[i];
-        if (vec2DistanceSq(position, point.position) < radius * radius)
+        if (Vector2DistanceSq(position, point.position) < radius * radius)
         {
-             PointMassApplyForce(&grid.points[i], vec2Scale(force, 1.0f / (1.0f + vec2DistanceSq(position, point.position))), timeStep);
+             PointMassApplyForce(&grid.points[i], Vector2Scale(force, 1.0f / (1.0f + Vector2DistanceSq(position, point.position))), timeStep);
         }
     }
 }
 
-static void WarpGridApplyImplosiveForce(WarpGrid grid, float force, vec2 position, float radius, float timeStep)
+static void WarpGridApplyImplosiveForce(WarpGrid grid, float force, Vector2 position, float radius, float timeStep)
 {
     for (int i = 0, n = ArrayCount(grid.points); i < n; i++)
     {
         PointMass point = grid.points[i];
-        vec2 diff = vec2Sub(position, point.position);
-        float distSq = vec2LengthSq(diff);
+        Vector2 diff = Vector2Subtract(position, point.position);
+        float distSq = Vector2LengthSq(diff);
         if (distSq < radius * radius)
         {
-            vec2 appliedForce = vec2Scale(diff, force * 50.0f / (1000.0f + distSq));
+            Vector2 appliedForce = Vector2Scale(diff, force * 50.0f / (1000.0f + distSq));
 
             PointMassApplyForce(&grid.points[i], appliedForce, timeStep);
             PointMassIncreaseDamping(&grid.points[i], 1.0f / 0.6f);
@@ -262,16 +322,16 @@ static void WarpGridApplyImplosiveForce(WarpGrid grid, float force, vec2 positio
     }
 }
 
-static void WarpGridApplyExplosiveForce(WarpGrid grid, float force, vec2 position, float radius, float timeStep)
+static void WarpGridApplyExplosiveForce(WarpGrid grid, float force, Vector2 position, float radius, float timeStep)
 {
     for (int i = 0, n = ArrayCount(grid.points); i < n; i++)
     {
         PointMass point = grid.points[i];
-        vec2 diff = vec2Sub(point.position, position);
-        float distSq = vec2LengthSq(diff);
+        Vector2 diff = Vector2Subtract(point.position, position);
+        float distSq = Vector2LengthSq(diff);
         if (distSq < radius * radius)
         {
-            vec2 appliedForce = vec2Scale(diff, force * 100.0f / (1000.0f + distSq));
+            Vector2 appliedForce = Vector2Scale(diff, force * 100.0f / (1000.0f + distSq));
 
             PointMassApplyForce(&grid.points[i], appliedForce, timeStep);
             PointMassIncreaseDamping(&grid.points[i], 1.0f / 0.6f);
@@ -279,21 +339,21 @@ static void WarpGridApplyExplosiveForce(WarpGrid grid, float force, vec2 positio
     }
 }
 
-static inline vec4 HSV(float h, float s, float v)
+static inline Vector4 HSV(float h, float s, float v)
 {
     if (h == 0 && s == 0)
-        return (vec4){ v, v, v, 1.0f };
+        return (Vector4){ v, v, v, 1.0f };
 
     float c = s * v;
     float x = c * (1 - fabsf(fmodf(h, 2) - 1));
     float m = v - c;
 
-    if (h < 1)      return (vec4){ c + m, x + m, m, 1.0f };
-    else if (h < 2) return (vec4){ x + m, c + m, m, 1.0f };
-    else if (h < 3) return (vec4){ m, c + m, x + m, 1.0f };
-    else if (h < 4) return (vec4){ m, x + m, c + m, 1.0f };
-    else if (h < 5) return (vec4){ x + m, m, c + m, 1.0f };
-    else            return (vec4){ c + m, m, x + m, 1.0f };
+    if (h < 1)      return (Vector4){ c + m, x + m, m, 1.0f };
+    else if (h < 2) return (Vector4){ x + m, c + m, m, 1.0f };
+    else if (h < 3) return (Vector4){ m, c + m, x + m, 1.0f };
+    else if (h < 4) return (Vector4){ m, x + m, c + m, 1.0f };
+    else if (h < 5) return (Vector4){ x + m, m, c + m, 1.0f };
+    else            return (Vector4){ c + m, m, x + m, 1.0f };
 }
 
 static Entity UpdateEntity(Entity entity, float dt)
@@ -302,7 +362,7 @@ static Entity UpdateEntity(Entity entity, float dt)
         .active = entity.active,
 
         .scale = entity.scale,
-        .position = vec2Add(entity.position, vec2Scale(entity.velocity, entity.movespeed * dt)),
+        .position = Vector2Add(entity.position, Vector2Scale(entity.velocity, entity.movespeed * dt)),
         .rotation = entity.velocity.x != 0.0f || entity.velocity.y != 0.0f ? atan2f(entity.velocity.y, entity.velocity.x) : entity.rotation,
 
         .velocity = entity.velocity,
@@ -323,9 +383,9 @@ static void UpdateEntities(Array(Entity) entities, float dt)
     }
 }
 
-static Entity UpdateEntityWithBound(Entity entity, vec2 bound, float dt)
+static Entity UpdateEntityWithBound(Entity entity, Vector2 bound, float dt)
 {
-    vec2  pos = vec2Add(entity.position, vec2Scale(entity.velocity, entity.movespeed * dt));
+    Vector2  pos = Vector2Add(entity.position, Vector2Scale(entity.velocity, entity.movespeed * dt));
     float rad = entity.radius;
 
     if (pos.x + rad > bound.x)
@@ -363,7 +423,7 @@ static Entity UpdateEntityWithBound(Entity entity, vec2 bound, float dt)
     };
 }
 
-static void UpdateEntitiesWithBound(Array(Entity) entities, vec2 bound, float dt)
+static void UpdateEntitiesWithBound(Array(Entity) entities, Vector2 bound, float dt)
 {
     for (int i = 0, n = ArrayCount(entities); i < n; i++)
     {
@@ -378,9 +438,9 @@ static void RenderEntity(Entity entity)
         //DrawTextureEx(entity.texture, entity.position, entity.rotation * RAD2DEG, entity.scale, entity.color
         DrawTexturePro(
             entity.texture, 
-            (rect) { 0, 0, entity.texture.width, entity.texture.height }, 
-            (rect) { entity.position.x, entity.position.y, entity.texture.width, entity.texture.height },
-            (vec2) { entity.texture.width * 0.5f, entity.texture.height * 0.5f },
+            (Rectangle) { 0, 0, entity.texture.width, entity.texture.height }, 
+            (Rectangle) { entity.position.x, entity.position.y, entity.texture.width, entity.texture.height },
+            (Vector2) { entity.texture.width * 0.5f, entity.texture.height * 0.5f },
             entity.rotation * RAD2DEG, 
             entity.color
         );
@@ -396,9 +456,9 @@ static void RenderEntities(Array(Entity) entities)
         {
             DrawTexturePro(
                 entity.texture, 
-                (rect) { 0, 0, entity.texture.width, entity.texture.height }, 
-                (rect) { entity.position.x, entity.position.y, entity.texture.width, entity.texture.height },
-                (vec2) { entity.texture.width * 0.5f, entity.texture.height * 0.5f },
+                (Rectangle) { 0, 0, entity.texture.width, entity.texture.height }, 
+                (Rectangle) { entity.position.x, entity.position.y, entity.texture.width, entity.texture.height },
+                (Vector2) { entity.texture.width * 0.5f, entity.texture.height * 0.5f },
                 entity.rotation * RAD2DEG, 
                 entity.color
             );
@@ -407,7 +467,7 @@ static void RenderEntities(Array(Entity) entities)
     }
 }
 
-static void SpawnBullet(World* world, vec2 pos, vec2 vel)
+static void SpawnBullet(World* world, Vector2 pos, Vector2 vel)
 {
     Texture texture = CacheTexture("Art/Bullet.png");
     Entity entity = {
@@ -427,39 +487,39 @@ static void SpawnBullet(World* world, vec2 pos, vec2 vel)
     FreeListAdd(world->bullets, entity);
 }
 
-static void FireBullets(World* world, vec2 aim_dir)
+static void FireBullets(World* world, Vector2 aim_dir)
 {
     float angle = atan2f(aim_dir.y, aim_dir.x) + (rand() % 101) / 100.0f * (PI * 0.025f);
     float offset = PI * 0.1f;
 
-    aim_dir = (vec2){ cosf(angle), sinf(angle) };
+    aim_dir = (Vector2){ cosf(angle), sinf(angle) };
 
     // First bullet
     {
-        vec2 vel = vec2Normalize(aim_dir);
-        vec2 pos = vec2Add(world->player.position, vec2Scale((vec2){ cosf(angle + offset), sinf(angle + offset) }, (float)world->player.texture.width * 1.25f));
+        Vector2 vel = Vector2Normalize(aim_dir);
+        Vector2 pos = Vector2Add(world->player.position, Vector2Scale((Vector2){ cosf(angle + offset), sinf(angle + offset) }, (float)world->player.texture.width * 1.25f));
         SpawnBullet(world, pos, vel);
     }
 
     // Second bullet
     {
-        vec2 vel = vec2Normalize(aim_dir);
-        vec2 pos = vec2Add(world->player.position, vec2Scale((vec2){ cosf(angle - offset), sinf(angle - offset) }, (float)world->player.texture.width * 1.25f));
+        Vector2 vel = Vector2Normalize(aim_dir);
+        Vector2 pos = Vector2Add(world->player.position, Vector2Scale((Vector2){ cosf(angle - offset), sinf(angle - offset) }, (float)world->player.texture.width * 1.25f));
         SpawnBullet(world, pos, vel);
     }
 }
 
-static vec2 GetSpawnPosition(World world)
+static Vector2 GetSpawnPosition(World world)
 {
     const float min_distance_sqr = (GetScreenHeight() * 0.3f) * (GetScreenHeight() * 0.3f);
 
-    vec2 pos;
+    Vector2 pos;
     do
     {
         float x = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * GetScreenWidth();
         float y = (2.0f * (rand() % 101) / 100.0f - 1.0f) * 0.8f * GetScreenHeight();
-        pos = (vec2){ x, y };
-    } while (vec2DistanceSq(pos, world.player.position) < min_distance_sqr);
+        pos = (Vector2){ x, y };
+    } while (Vector2DistanceSq(pos, world.player.position) < min_distance_sqr);
 
     return pos;
 }
@@ -468,8 +528,8 @@ static void SpawnSeeker(World* world)
 {
     GameAudioPlaySpawn();
 
-    vec2 pos = GetSpawnPosition(*world);
-    vec2 vel = vec2Normalize(vec2Sub(world->player.position, pos));
+    Vector2 pos = GetSpawnPosition(*world);
+    Vector2 vel = Vector2Normalize(Vector2Subtract(world->player.position, pos));
 
     Texture texture = CacheTexture("Art/Seeker.png");
 
@@ -495,8 +555,8 @@ static void SpawnWanderer(World* world)
 {
     GameAudioPlaySpawn();
 
-    vec2 pos = GetSpawnPosition(*world);
-    vec2 vel = vec2Normalize(vec2Sub(world->player.position, pos));
+    Vector2 pos = GetSpawnPosition(*world);
+    Vector2 vel = Vector2Normalize(Vector2Subtract(world->player.position, pos));
 
     Texture texture = CacheTexture("Art/Wanderer.png");
 
@@ -522,8 +582,8 @@ static void SpawnBlackhole(World* world)
 {
     GameAudioPlaySpawn();
 
-    vec2 pos = GetSpawnPosition(*world);
-    vec2 vel = (vec2){ 0.0f, 0.0f };
+    Vector2 pos = GetSpawnPosition(*world);
+    Vector2 vel = (Vector2){ 0.0f, 0.0f };
 
     Texture texture = CacheTexture("Art/Black Hole.png");
 
@@ -559,11 +619,11 @@ static void DestroyBullet(World* world, int index, bool explosion)
         {
             float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
             float angle = rand() % 101 / 100.0f * 2 * PI;
-            vec2  vel   = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
-            vec2  pos   = world->bullets.elements[index].position;
-            vec4  color = (vec4){ 0.6f, 1.0f, 1.0f, 1.0f };
+            Vector2  vel   = (Vector2){ cosf(angle) * speed, sinf(angle) * speed };
+            Vector2  pos   = world->bullets.elements[index].position;
+            Vector4  color = (Vector4){ 0.6f, 1.0f, 1.0f, 1.0f };
 
-            SpawnParticle(texture, pos, color, 1.0f, vec2Repeat(1.0f), 0.0f, vel);
+            SpawnParticle(texture, pos, color, 1.0f, (Vector2) { 1.0f, 1.0f }, 0.0f, vel);
         }
     }
 }
@@ -579,18 +639,18 @@ static void DestroySeeker(World* world, int index)
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-    vec4  color1 = HSV(hue1, 0.5f, 1);
-    vec4  color2 = HSV(hue2, 0.5f, 1);
+    Vector4  color1 = HSV(hue1, 0.5f, 1);
+    Vector4  color2 = HSV(hue2, 0.5f, 1);
 
     for (int i = 0; i < 120; i++)
     {
         float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
         float angle = rand() % 101 / 100.0f * 2 * PI;
-        vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
-        vec2  pos = world->seekers.elements[index].position;
-        vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
+        Vector2  vel = (Vector2){ cosf(angle) * speed, sinf(angle) * speed };
+        Vector2  pos = world->seekers.elements[index].position;
+        Vector4  color = Vector4Add(color1, Vector4Scale(Vector4Subtract(color2, color1), ((rand() % 101) / 100.0f)));
 
-        SpawnParticle(texture, pos, color, 1.0f, (vec2){ 1.0f, 1.0f }, 0.0f, vel);
+        SpawnParticle(texture, pos, color, 1.0f, (Vector2){ 1.0f, 1.0f }, 0.0f, vel);
     }
 }
 
@@ -605,18 +665,18 @@ void DestroyWanderer(World* world, int index)
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-    vec4  color1 = HSV(hue1, 0.5f, 1);
-    vec4  color2 = HSV(hue2, 0.5f, 1);
+    Vector4  color1 = HSV(hue1, 0.5f, 1);
+    Vector4  color2 = HSV(hue2, 0.5f, 1);
 
     for (int i = 0; i < 120; i++)
     {
         float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
         float angle = rand() % 101 / 100.0f * 2 * PI;
-        vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
-        vec2  pos = world->wanderers.elements[index].position;
-        vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
+        Vector2  vel = (Vector2){ cosf(angle) * speed, sinf(angle) * speed };
+        Vector2  pos = world->wanderers.elements[index].position;
+        Vector4  color = Vector4Add(color1, Vector4Scale(Vector4Subtract(color2, color1), ((rand() % 101) / 100.0f)));
 
-        SpawnParticle(texture, pos, color, 1.0f, (vec2){ 1.0f, 1.0f }, 0.0f, vel);
+        SpawnParticle(texture, pos, color, 1.0f, (Vector2){ 1.0f, 1.0f }, 0.0f, vel);
     }
 }
 
@@ -631,18 +691,18 @@ void DestroyBlackhole(World* world, int index)
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-    vec4  color1 = HSV(hue1, 0.5f, 1);
-    vec4  color2 = HSV(hue2, 0.5f, 1);
+    Vector4  color1 = HSV(hue1, 0.5f, 1);
+    Vector4  color2 = HSV(hue2, 0.5f, 1);
 
     for (int i = 0; i < 120; i++)
     {
         float speed = 640.0f * (0.2f + (rand() % 101 / 100.0f) * 0.8f);
         float angle = rand() % 101 / 100.0f * 2 * PI;
-        vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
-        vec2  pos = world->blackHoles.elements[index].position;
-        vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
+        Vector2  vel = (Vector2){ cosf(angle) * speed, sinf(angle) * speed };
+        Vector2  pos = world->blackHoles.elements[index].position;
+        Vector4  color = Vector4Add(color1, Vector4Scale(Vector4Subtract(color2, color1), ((rand() % 101) / 100.0f)));
 
-        SpawnParticle(texture, pos, color, 1.0f, (vec2){ 1.0f, 1.0f }, 0.0f, vel);
+        SpawnParticle(texture, pos, color, 1.0f, (Vector2){ 1.0f, 1.0f }, 0.0f, vel);
     }
 }
 
@@ -661,35 +721,35 @@ void OnGameOver(World* world)
 
     float hue1 = rand() % 101 / 100.0f * 6.0f;
     float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-    vec4  color1 = HSV(hue1, 0.5f, 1);
-    vec4  color2 = HSV(hue2, 0.5f, 1);
+    Vector4  color1 = HSV(hue1, 0.5f, 1);
+    Vector4  color2 = HSV(hue2, 0.5f, 1);
 
     for (int i = 0; i < 1200; i++)
     {
         float speed = 10.0f * fmaxf((float)GetScreenWidth(), (float)GetScreenHeight()) * (0.6f + (rand() % 101 / 100.0f) * 0.4f);
         float angle = rand() % 101 / 100.0f * 2 * PI;
-        vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
+        Vector2  vel = (Vector2){ cosf(angle) * speed, sinf(angle) * speed };
 
-        vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
-        SpawnParticle(texture, world->player.position, color, world->gameOverTimer, vec2Repeat(1.0f), 0.0f, vel);
+        Vector4  color = Vector4Add(color1, Vector4Scale(Vector4Subtract(color2, color1), ((rand() % 101) / 100.0f)));
+        SpawnParticle(texture, world->player.position, color, world->gameOverTimer, (Vector2) { 1.0f, 1.0f }, 0.0f, vel);
     }
 
-    world->player.position = (vec2){ 0, 0 };
-    world->player.velocity = (vec2){ 0, 0 };
+    world->player.position = (Vector2){ 0, 0 };
+    world->player.velocity = (Vector2){ 0, 0 };
     world->player.rotation = 0.0f;
 }
 
 bool UpdateBlackhole(Entity* blackhole, Entity* other)
 {
-    if (vec2Distance(other->position, blackhole->position) <= other->radius + blackhole->radius)
+    if (Vector2Distance(other->position, blackhole->position) <= other->radius + blackhole->radius)
     {
         return true;
     }
-    else if (vec2Distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
+    else if (Vector2Distance(other->position, blackhole->position) <= other->radius + blackhole->radius * 10.0f)
     {
-        vec2 diff = vec2Sub(blackhole->position, other->position);
-        other->velocity = vec2Add(other->velocity, vec2Scale(vec2Normalize(diff), lerpf(1.0f, 0.0f, vec2Length(diff) / (blackhole->radius * 10.0f))));
-        other->velocity = vec2Normalize(other->velocity);
+        Vector2 diff = Vector2Subtract(blackhole->position, other->position);
+        other->velocity = Vector2Add(other->velocity, Vector2Scale(Vector2Normalize(diff), lerpf(1.0f, 0.0f, Vector2Length(diff) / (blackhole->radius * 10.0f))));
+        other->velocity = Vector2Normalize(other->velocity);
     }
 
     return false;
@@ -699,11 +759,11 @@ World WorldNew(void)
 {
     World world = { 0 };
 
-    world.grid = NewWarpGrid((rect) { -GetScreenWidth() * 1.1f, -GetScreenHeight() * 1.1f, 2.2f * GetScreenWidth(), 2.2f * GetScreenHeight() }, (vec2) { 128.0f, 128.0f });
+    world.grid = NewWarpGrid((Rectangle) { -GetScreenWidth() * 1.1f, -GetScreenHeight() * 1.1f, 2.2f * GetScreenWidth(), 2.2f * GetScreenHeight() }, (Vector2) { 128.0f, 128.0f });
     
     world.player.active = true;
     world.player.color = WHITE;
-    world.player.position = (vec2) { 0.0f, 0.0f };
+    world.player.position = (Vector2) { 0.0f, 0.0f };
     world.player.rotation = 0.0f;
     world.player.scale = 1.0f;
     world.player.movespeed = 720.0f;
@@ -744,7 +804,7 @@ void WorldFree(World* world)
     *world = (World) { 0 };
 }
 
-void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, bool fire, float dt)
+void WorldUpdate(World* world, float horizontal, float vertical, Vector2 aim_dir, bool fire, float dt)
 {
     // Update warp grid
     UpdateWarpGrid(world->grid, dt);
@@ -762,11 +822,17 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
 
     // Update is in progress, locking the list
     world->lock = true;
+   
+    Vector2 moveDirection = Vector2Normalize((Vector2) { horizontal, vertical });
+    if (horizontal == 0.0f || vertical == 0.0f)
+    {
+        moveDirection = (Vector2) { 0.0f, 0.0f };
+    }
 
-    world->player.velocity = vec2Lerp(world->player.velocity, vec2Normalize((vec2){ horizontal, vertical }), 5.0f * dt);
-    world->player = UpdateEntityWithBound(world->player, (vec2){ GetScreenWidth(), GetScreenHeight() }, dt);
+    world->player.velocity = Vector2Lerp(world->player.velocity, moveDirection, 5.0f * dt);
+    world->player = UpdateEntityWithBound(world->player, (Vector2){ GetScreenWidth(), GetScreenHeight() }, dt);
     WarpGridApplyExplosiveForce(world->grid, 4.0f * world->player.movespeed, world->player.position, 50.0f, dt);
-    if (vec2LengthSq(world->player.velocity) > 0.1f && fmodf(GetTotalTime(), 0.025f) <= 0.01f)
+    if (Vector2LengthSq(world->player.velocity) > 0.1f && fmodf(GetTime(), 0.025f) <= 0.01f)
     {
         float speed;
         float angle = atan2f(world->player.velocity.y, world->player.velocity.x);
@@ -774,26 +840,26 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         Texture glow_tex = CacheTexture("Art/Laser.png");
         Texture line_tex = CacheTexture("Art/Laser.png");
     
-        vec2 vel = vec2Scale(world->player.velocity, -0.25f * world->player.movespeed);
-        vec2 pos = vec2Add(world->player.position, vec2Scale(world->player.velocity, -45.0f));
-        vec2 nvel = vec2Scale(vec2New(vel.y, -vel.x), 0.9f * sinf(GetTotalTime() * 10.0f));
+        Vector2 vel = Vector2Scale(world->player.velocity, -0.25f * world->player.movespeed);
+        Vector2 pos = Vector2Add(world->player.position, Vector2Scale(world->player.velocity, -45.0f));
+        Vector2 nvel = Vector2Scale((Vector2) { vel.y, -vel.x }, 0.9f * sinf(GetTime() * 10.0f));
         float alpha = 0.7f;
     
-        vec2 mid_vel = vel;
-        SpawnParticle(glow_tex, pos, vec4Scale(vec4New(1.0f, 0.7f, 0.1f, 1.0f), alpha), 0.4f, vec2New(3.0f, 2.0f), angle, mid_vel);
-        SpawnParticle(line_tex, pos, vec4Scale(vec4New(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2New(3.0f, 1.0f), angle, mid_vel);
+        Vector2 mid_vel = vel;
+        SpawnParticle(glow_tex, pos, Vector4Scale((Vector4) { 1.0f, 0.7f, 0.1f, 1.0f }, alpha), 0.4f, (Vector2) { 3.0f, 2.0f }, angle, mid_vel);
+        SpawnParticle(line_tex, pos, Vector4Scale((Vector4) { 1.0f, 1.0f, 1.0f, 1.0f }, alpha), 0.4f, (Vector2) { 3.0f, 1.0f }, angle, mid_vel);
     
         speed = rand() % 101 / 100.0f * 40.0f;
         angle = rand() % 101 / 100.0f * 2.0f * PI;
-        vec2 side_vel1 = vec2Add(vel, vec2Add(nvel, vec2Scale(vec2New(cosf(angle), sinf(angle)), speed)));
-        SpawnParticle(glow_tex, pos, vec4Scale(vec4New(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2New(3.0f, 2.0f), angle, side_vel1);
-        SpawnParticle(line_tex, pos, vec4Scale(vec4New(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2New(3.0f, 1.0f), angle, side_vel1);
+        Vector2 side_vel1 = Vector2Add(vel, Vector2Add(nvel, Vector2Scale((Vector2) { cosf(angle), sinf(angle) }, speed)));
+        SpawnParticle(glow_tex, pos, Vector4Scale((Vector4) { 0.8f, 0.2f, 0.1f, 1.0f }, alpha), 0.4f, (Vector2) { 3.0f, 2.0f }, angle, side_vel1);
+        SpawnParticle(line_tex, pos, Vector4Scale((Vector4) { 1.0f, 1.0f, 1.0f, 1.0f }, alpha), 0.4f, (Vector2) { 3.0f, 1.0f }, angle, side_vel1);
     
         speed = rand() % 101 / 100.0f * 40.0f;
         angle = rand() % 101 / 100.0f * 2.0f * PI;
-        vec2 side_vel2 = vec2Sub(vel, vec2Add(nvel, vec2Scale(vec2New(cosf(angle), sinf(angle)), speed)));
-        SpawnParticle(glow_tex, pos, vec4Scale(vec4New(0.8f, 0.2f, 0.1f, 1.0f), alpha), 0.4f, vec2New(3.0f, 2.0f), angle, side_vel2);
-        SpawnParticle(line_tex, pos, vec4Scale(vec4New(1.0f, 1.0f, 1.0f, 1.0f), alpha), 0.4f, vec2New(3.0f, 1.0f), angle, side_vel2);
+        Vector2 side_vel2 = Vector2Subtract(vel, Vector2Add(nvel, Vector2Scale((Vector2) { cosf(angle), sinf(angle) }, speed)));
+        SpawnParticle(glow_tex, pos, Vector4Scale((Vector4) { 0.8f, 0.2f, 0.1f, 1.0f }, alpha), 0.4f, (Vector2) { 3.0f, 2.0f }, angle, side_vel2);
+        SpawnParticle(line_tex, pos, Vector4Scale((Vector4) { 1.0f, 1.0f, 1.0f, 1.0f }, alpha), 0.4f, (Vector2) { 3.0f, 1.0f }, angle, side_vel2);
     }
 
     for (int i = 0, n = FreeListCount(world->bullets); i < n; i++)
@@ -833,9 +899,9 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
                 //MeshGridApplyExplosiveForce(&world->meshGrid, 2.0f * s->movespeed, s->position, dt);
                 WarpGridApplyExplosiveForce(world->grid, 4.0f * s->movespeed, s->position, 30.0f, dt);
 
-                vec2 dir = vec2Normalize(vec2Sub(world->player.position, s->position));
-                vec2 acl = vec2Scale(dir, 10.0f * dt);
-                s->velocity = vec2Normalize(vec2Add(s->velocity, acl));
+                Vector2 dir = Vector2Normalize(Vector2Subtract(world->player.position, s->position));
+                Vector2 acl = Vector2Scale(dir, 10.0f * dt);
+                s->velocity = Vector2Normalize(Vector2Add(s->velocity, acl));
                 *s = UpdateEntity(*s, dt);
             }
         }
@@ -868,8 +934,8 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
                     }
 
                     s->rotation = direction;
-                    s->velocity = (vec2){ cosf(direction), sinf(direction) };
-                    s->position = vec2Add(s->position, vec2Scale(s->velocity, real_speed * dt));
+                    s->velocity = (Vector2){ cosf(direction), sinf(direction) };
+                    s->position = Vector2Add(s->position, Vector2Scale(s->velocity, real_speed * dt));
 
                     WarpGridApplyExplosiveForce(world->grid, 4.0f * s->movespeed, s->position, 30.0f, dt);
                 }
@@ -887,7 +953,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             Entity* s = &world->seekers.elements[j];
             if (!s->active || s->color.a < 255) continue;
 
-            if (vec2Distance(b->position, s->position) <= b->radius + s->radius)
+            if (Vector2Distance(b->position, s->position) <= b->radius + s->radius)
             {
                 DestroyBullet(world, i, true);
                 DestroySeeker(world, j);
@@ -901,7 +967,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             Entity* s = &world->wanderers.elements[j];
             if (!s->active || s->color.a < 255) continue;
 
-            if (vec2Distance(b->position, s->position) <= b->radius + s->radius)
+            if (Vector2Distance(b->position, s->position) <= b->radius + s->radius)
             {
                 DestroyBullet(world, i, true);
                 DestroyWanderer(world, j);
@@ -915,7 +981,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             Entity* s = &world->blackHoles.elements[j];
             if (!s->active || s->color.a < 255) continue;
 
-            float d = vec2Distance(b->position, s->position);
+            float d = Vector2Distance(b->position, s->position);
             if (d <= b->radius + s->radius)
             {
                 DestroyBullet(world, i, true);
@@ -926,7 +992,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             {
                 float r = b->radius + s->radius * 5.0f;
                 float t = (d - r) / r;
-                b->velocity = vec2Normalize(vec2Add(b->velocity, vec2Scale(vec2Normalize(vec2Sub(b->position, s->position)), 0.3f)));
+                b->velocity = Vector2Normalize(Vector2Add(b->velocity, Vector2Scale(Vector2Normalize(Vector2Subtract(b->position, s->position)), 0.3f)));
             }
         }
     }
@@ -936,7 +1002,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         Entity* s = &world->seekers.elements[j];
         if (!s->active || s->color.a < 255) continue;
 
-        if (vec2Distance(world->player.position, s->position) <= world->player.radius + s->radius)
+        if (Vector2Distance(world->player.position, s->position) <= world->player.radius + s->radius)
         {
             OnGameOver(world);
             break;
@@ -948,7 +1014,7 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
         Entity* s = &world->wanderers.elements[j];
         if (!s->active || s->color.a < 255) continue;
 
-        if (vec2Distance(world->player.position, s->position) <= world->player.radius + s->radius)
+        if (Vector2Distance(world->player.position, s->position) <= world->player.radius + s->radius)
         {
             OnGameOver(world);
             break;
@@ -963,19 +1029,21 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
             Texture glow_tex = CacheTexture("Art/Glow.png");
             Texture line_tex = CacheTexture("Art/Laser.png");
 
-            vec4 color1 = (vec4){ 0.3f, 0.8f, 0.4f, 1.0f };
-            vec4 color2 = (vec4){ 0.5f, 1.0f, 0.7f, 1.0f };
+            Vector4 color1 = (Vector4){ 0.3f, 0.8f, 0.4f, 1.0f };
+            Vector4 color2 = (Vector4){ 0.5f, 1.0f, 0.7f, 1.0f };
 
+            
             if (GetFrameCount() % 3 == 0)
             {
                 float speed = 16.0f * s->radius * (0.8f + (rand() % 101 / 100.0f) * 0.2f);
-                float angle = rand() % 101 / 100.0f * GetTotalTime();
-                vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
-                vec2  pos = vec2Add(vec2Add(s->position, vec2Scale((vec2){ vel.y, -vel.x }, 0.4f)), vec2Repeat(4.0f + rand() % 101 / 100.0f * 4.0f));
+                float angle = rand() % 101 / 100.0f * GetTime();
+                float value = 4.0f + rand() % 101 / 100.0f * 4.0f;
+                Vector2  vel = (Vector2){ cosf(angle) * speed, sinf(angle) * speed };
+                Vector2  pos = Vector2Add(Vector2Add(s->position, Vector2Scale((Vector2) { vel.y, -vel.x }, 0.4f)), (Vector2) { value, value });
 
-                vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
-                SpawnParticle(glow_tex, pos, color, 4.0f, vec2New(0.3f, 0.2f), 0.0f, vel);
-                SpawnParticle(line_tex, pos, color, 4.0f, vec2New(1.0f, 1.0f), 0.0f, vel);
+                Vector4  color = Vector4Add(color1, Vector4Scale(Vector4Subtract(color2, color1), ((rand() % 101) / 100.0f)));
+                SpawnParticle(glow_tex, pos, color, 4.0f, (Vector2) { 0.3f, 0.2f }, 0.0f, vel);
+                SpawnParticle(line_tex, pos, color, 4.0f, (Vector2) { 1.0f, 1.0f }, 0.0f, vel);
             }
 
             if (GetFrameCount() % 60 == 0)
@@ -984,17 +1052,17 @@ void WorldUpdate(World* world, float horizontal, float vertical, vec2 aim_dir, b
 
                 float hue1 = rand() % 101 / 100.0f * 6.0f;
                 float hue2 = fmodf(hue1 + (rand() % 101 / 100.0f * 2.0f), 6.0f);
-                vec4  color1 = HSV(hue1, 0.5f, 1);
-                vec4  color2 = HSV(hue2, 0.5f, 1);
+                Vector4  color1 = HSV(hue1, 0.5f, 1);
+                Vector4  color2 = HSV(hue2, 0.5f, 1);
 
                 for (int i = 0; i < 120.0f; i++)
                 {
                     float speed = 180.0f;
                     float angle = rand() % 101 / 100.0f * 2 * PI;
-                    vec2  vel = (vec2){ cosf(angle) * speed, sinf(angle) * speed };
-                    vec2  pos = vec2Add(s->position, vel);
-                    vec4  color = vec4Add(color1, vec4Scale(vec4Sub(color2, color1), ((rand() % 101) / 100.0f)));
-                    SpawnParticle(texture, pos, color, 2.0f, vec2Repeat(1.0f), 0.0f, vec2Repeat(0.0f));
+                    Vector2  vel = (Vector2){ cosf(angle) * speed, sinf(angle) * speed };
+                    Vector2  pos = Vector2Add(s->position, vel);
+                    Vector4  color = Vector4Add(color1, Vector4Scale(Vector4Subtract(color2, color1), ((rand() % 101) / 100.0f)));
+                    SpawnParticle(texture, pos, color, 2.0f, (Vector2) { 1.0f, 1.0f }, 0.0f, (Vector2) { 0.0f, 0.0f });
                 }
             }
 

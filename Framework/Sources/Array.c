@@ -1,4 +1,4 @@
-#include <MaiArray.h>
+#include <Array.h>
 
 #include <stdlib.h>
 #include <string.h>

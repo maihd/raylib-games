@@ -94,7 +94,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
@@ -107,7 +107,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
@@ -120,7 +120,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
@@ -133,7 +133,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
@@ -142,22 +142,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Framework\Include\MaiArray.h" />
-    <ClInclude Include="..\Framework\Include\MaiDef.h" />
-    <ClInclude Include="..\Framework\Include\MaiEasings.h" />
-    <ClInclude Include="..\Framework\Include\MaiFreeList.h" />
-    <ClInclude Include="..\Framework\Include\MaiGui.h" />
-    <ClInclude Include="..\Framework\Include\MaiHashTable.h" />
-    <ClInclude Include="..\Framework\Include\MaiJobs.h" />
-    <ClInclude Include="..\Framework\Include\MaiLib.h" />
-    <ClInclude Include="..\Framework\Include\MaiMath.h" />
+    <ClInclude Include="..\Framework\Include\Array.h" />
+    <ClInclude Include="..\Framework\Include\Easings.h" />
+    <ClInclude Include="..\Framework\Include\FreeList.h" />
+    <ClInclude Include="..\Framework\Include\RayGui.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Framework\Sources\MaiArray.c" />
-    <ClCompile Include="..\Framework\Sources\MaiGui.c" />
-    <ClCompile Include="..\Framework\Sources\MaiHashTable.c" />
-    <ClCompile Include="..\Framework\Sources\MaiJobs.c" />
-    <ClCompile Include="..\Framework\Sources\MaiLib.c" />
+    <ClCompile Include="..\Framework\Sources\Array.c" />
+    <ClCompile Include="..\Framework\Sources\RayGui.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

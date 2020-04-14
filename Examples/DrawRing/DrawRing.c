@@ -1,12 +1,12 @@
-#include <Mailib.h>
-#include <MaiGui.h>
+#include <raylib.h>
+#include <raygui.h>
 
 int main(void)
 {
     const int screenWidth = 800;
     const int screenHeight = 450;
 
-    vec2 center = { .x = (screenWidth - 300) * 0.5f, .y = screenHeight * 0.5f };
+    Vector2 center = { .x = (screenWidth - 300) * 0.5f, .y = screenHeight * 0.5f };
 
     float innerRadius = 80.0f;
     float outerRadius = 190.0f;
@@ -36,17 +36,17 @@ int main(void)
             if (drawRingLines) DrawRingLines(center, innerRadius, outerRadius, startAngle, endAngle, segments, Fade(BLACK, 0.4));
             if (drawCircleLines) DrawCircleSectorLines(center, outerRadius, startAngle, endAngle, segments, Fade(BLACK, 0.4));
 
-            startAngle = GuiSlider((rect) { 600, 40, 120, 20 }, "Start Angle", TextFormat("%2.1f", startAngle), startAngle, -450, 450);
-            endAngle = GuiSlider((rect) { 600, 70, 120, 20 }, "End Angle", TextFormat("%2.1f", endAngle), endAngle, -450, 450);
+            startAngle = GuiSlider((Rectangle) { 600, 40, 120, 20 }, "Start Angle", TextFormat("%2.1f", startAngle), startAngle, -450, 450);
+            endAngle = GuiSlider((Rectangle) { 600, 70, 120, 20 }, "End Angle", TextFormat("%2.1f", endAngle), endAngle, -450, 450);
 
-            innerRadius = GuiSliderBar((rect) { 600, 140, 120, 20 }, "Inner Radius", TextFormat("%2.1f", innerRadius), innerRadius, 0, 100, true);
-            outerRadius = GuiSliderBar((rect) { 600, 170, 120, 20 }, "Outer Radius", TextFormat("%2.1f", outerRadius), outerRadius, 0, 200, true);
+            innerRadius = GuiSliderBar((Rectangle) { 600, 140, 120, 20 }, "Inner Radius", TextFormat("%2.1f", innerRadius), innerRadius, 0, 100, true);
+            outerRadius = GuiSliderBar((Rectangle) { 600, 170, 120, 20 }, "Outer Radius", TextFormat("%2.1f", outerRadius), outerRadius, 0, 200, true);
 
-            segments = GuiSlider((rect) { .x = 600, .y = 240, .width = 120, .height = 20 }, "Segments", TextFormat("%2.0f", segments), segments, 0, 100);
+            segments = GuiSlider((Rectangle) { .x = 600, .y = 240, .width = 120, .height = 20 }, "Segments", TextFormat("%2.0f", segments), segments, 0, 100);
 
-            drawRing = GuiCheckBox((rect) { 600, 320, 20, 20 }, "Draw Ring", drawRing);
-            drawRingLines = GuiCheckBox((rect) { 600, 350, 20, 20 }, "Draw Ring", drawRingLines);
-            drawCircleLines = GuiCheckBox((rect) { 600, 380, 20, 20 }, "Draw Ring", drawCircleLines);
+            drawRing = GuiCheckBox((Rectangle) { 600, 320, 20, 20 }, "Draw Ring", drawRing);
+            drawRingLines = GuiCheckBox((Rectangle) { 600, 350, 20, 20 }, "Draw Ring", drawRingLines);
+            drawCircleLines = GuiCheckBox((Rectangle) { 600, 380, 20, 20 }, "Draw Ring", drawCircleLines);
 
             DrawText(TextFormat("MODE: %s", (segments >= 4) ? "MANUAL" : "AUTO"), 600, 270, 10, (segments >= 4) ? MAROON : DARKGRAY);
 

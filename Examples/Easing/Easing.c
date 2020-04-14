@@ -1,5 +1,5 @@
-#include <MaiLib.h>
-#include <MaiEasings.h>
+#include <raylib.h>
+#include <Easings.h>
 
 int main(void)
 {

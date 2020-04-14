@@ -1,5 +1,4 @@
-#include <MaiLib.h>
-#include <MaiFreeList.h>
+#include <raylib.h>
 
 int main(void)
 {
@@ -12,17 +11,12 @@ int main(void)
 
     Texture scarfy = LoadTexture("../Assets/scarfy.png");
 
-    vec2 position = { 350.0f, 280.0f };
-    rect frameRec = { 0.0f, 0.0f, (float)scarfy.width / 6.0f, (float)scarfy.height };
+    Vector2 position = { 350.0f, 280.0f };
+    Rectangle frameRec = { 0.0f, 0.0f, (float)scarfy.width / 6.0f, (float)scarfy.height };
     int currentFrame = 0;
 
     int frameCounter = 0;
     int frameInterval = 8;
-
-    FreeListStruct(int) numberList = FreeListNew(int, 0);
-    FreeListAdd(numberList, 10);
-    FreeListRemove(numberList, 10);
-    FreeListFree(numberList);
 
     SetTargetFPS(60);
 
