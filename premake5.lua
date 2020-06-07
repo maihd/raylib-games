@@ -129,5 +129,6 @@ example "Textures"
 example "DrawRing"
 example "LiquidSurface2D"
 example "MeshDeformation2D"
+example "UI"
 
 game "NeonShooter"
