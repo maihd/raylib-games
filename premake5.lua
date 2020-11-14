@@ -56,7 +56,7 @@ do
     filter {}
 end
 
-function template(name, projectPath, shouldHideConsole)
+local function template(name, projectPath, shouldHideConsole)
     project (name)
     do
         if not shouldHideConsole then
@@ -112,11 +112,11 @@ function template(name, projectPath, shouldHideConsole)
     end
 end
 
-function example(name)
+local function example(name)
     template(name, path.join("Examples", name))
 end
 
-function game(name)
+local function game(name)
     template(name, path.join("Games", name), true)
 end
 
@@ -129,6 +129,8 @@ example "Textures"
 example "DrawRing"
 example "LiquidSurface2D"
 example "MeshDeformation2D"
+example "Todos"
 example "UI"
+example "ECS"
 
 game "NeonShooter"

@@ -10,10 +10,6 @@
 #include "NeonShooter_GameAudio.h"
 #include "NeonShooter_ParticleSystem.h"
 
-#ifdef RELEASE
-#define main __stdcall WinMain
-#endif
-
 static float clampf(float value, float min, float max)
 {
     const float res = value < min ? min : value;
@@ -26,13 +22,15 @@ static float lerpf(float start, float end, float amount)
     return start + amount * (end - start);
 }
 
-
 static int frameCount;
 int GetFrameCount(void)
 {
     return frameCount;
 }
 
+#ifdef RELEASE
+#define main __stdcall WinMain
+#endif
 int main()
 {
     const int SCREEN_WIDTH = 1280;

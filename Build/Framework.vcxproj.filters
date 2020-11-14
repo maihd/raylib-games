@@ -18,12 +18,18 @@
     <ClInclude Include="..\Framework\Include\FreeList.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Framework\Include\Memory.h">
+      <Filter>Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\Framework\Include\RayGui.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Framework\Sources\Array.c">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Framework\Sources\Memory.c">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\RayGui.c">
