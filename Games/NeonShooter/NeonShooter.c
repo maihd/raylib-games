@@ -204,9 +204,9 @@ int main()
             float my = GetMouseY();
             bool fire = IsMouseButtonDown(MOUSE_LEFT_BUTTON);
             {
-                Vector2 clip = (Vector2) { 2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f };
+                Vector2 clip = { 2.0f * mx / GetScreenWidth() - 1.0f, 2.0f * my / GetScreenHeight() - 1.0f };
 
-                Vector2 mpos = (Vector2) { clip.x * GetScreenWidth(), clip.y * GetScreenHeight() };
+                Vector2 mpos = { clip.x * GetScreenWidth(), clip.y * GetScreenHeight() };
 
                 Vector2 taim = Vector2Normalize(Vector2Subtract(mpos, world.player.position));
 
@@ -226,7 +226,7 @@ int main()
                 float axis_right_y = GetGamepadAxisMovement(0, GAMEPAD_AXIS_RIGHT_Y);
                 float x = fabsf(axis_right_x) > 0.1f ? axis_right_x : 0.0f;
                 float y = fabsf(axis_right_y) > 0.1f ? axis_right_y : 0.0f;
-                if (Vector2Length((Vector2) { x, y }) < 0.01f)
+                if (Vector2Length((Vector2){ x, y }) < 0.01f)
                 {
                     //aim = (Vector2){0, 0};
                 }
@@ -238,7 +238,7 @@ int main()
                     float aim_angle = atan2f(y, x);
 
                     cur_angle = lerpf(cur_angle, aim_angle, 0.8f);
-                    aim = (Vector2) { cosf(cur_angle), sinf(cur_angle) };
+                    aim = (Vector2){ cosf(cur_angle), sinf(cur_angle) };
 
                     aim.x = lerpf(aim.x, x, 0.6f);
                     aim.y = lerpf(aim.y, y, 0.6f);
@@ -248,14 +248,14 @@ int main()
             Vector2 axes = { axisHorizontal, axisVertical };
             if (Vector2Length(axes) < 0.01f)
             {
-                axes = (Vector2) { 0, 0 };
+                axes = (Vector2){ 0, 0 };
             }
             else
             {
                 float magnitude = clampf(Vector2Length(axes), 0, 1);
                 float angle = atan2f(axes.y, axes.x);
 
-                axes = (Vector2) { cosf(angle) * magnitude, sinf(angle) * magnitude };
+                axes = (Vector2){ cosf(angle) * magnitude, sinf(angle) * magnitude };
             }
 
             fpsCount++;
@@ -275,8 +275,8 @@ int main()
             //ClearBackground(BLACK);
 
             Camera2D camera = {
-                (Vector2) { GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f },
-                (Vector2) { 0, 0 },
+                (Vector2){ GetScreenWidth() * 0.5f, GetScreenHeight() * 0.5f },
+                (Vector2){ 0, 0 },
                 0,
                 0.5f,
             };
@@ -290,7 +290,7 @@ int main()
             //EndTextureMode();
 
             BeginShaderMode(bloomShader);
-            DrawTextureRec(framebuffer.texture, (Rectangle) { 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, (Vector2) { 0, 0 }, WHITE);
+            DrawTextureRec(framebuffer.texture, (Rectangle){ 0, 0, SCREEN_WIDTH, -SCREEN_HEIGHT }, (Vector2){ 0, 0 }, WHITE);
             EndShaderMode();
 
             DrawText(TextFormat("CPU FPS: %d", fpsValue), 0, 0, 18, RAYWHITE);

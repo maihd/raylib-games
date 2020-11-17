@@ -24,7 +24,7 @@ void* Array_NewMemory(int capacity, int elementSize)
     newCapacity = newCapacity | (newCapacity >> 16);
     newCapacity = newCapacity + 1;
 
-    ArrayHeader* newBuffer = MemoryAlloc(sizeof(ArrayHeader) + newCapacity * elementSize);
+    ArrayHeader* newBuffer = (ArrayHeader*)MemoryAlloc(sizeof(ArrayHeader) + newCapacity * elementSize);
     if (newBuffer)
     {
         newBuffer->count    = 0;
@@ -63,7 +63,7 @@ int Array_GrowMemory(void** array, int capacity, int elementSize)
 
     int oldCount = ArrayCount(*array);
     ArrayHeader* oldBuffer = *array ? ((ArrayHeader*)(*array) - 1) : NULL;
-    ArrayHeader* newBuffer = MemoryRealloc(oldBuffer, sizeof(ArrayHeader) + newCapacity * elementSize);
+    ArrayHeader* newBuffer = (ArrayHeader*)MemoryRealloc(oldBuffer, sizeof(ArrayHeader) + newCapacity * elementSize);
 
     if (newBuffer)
     {

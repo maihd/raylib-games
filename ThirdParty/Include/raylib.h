@@ -161,8 +161,8 @@
     typedef enum { false, true } bool;
 #endif
 
-#if !defined(HAVE_RAYMATH_TYPES)
-    #define HAVE_RAYMATH_TYPES
+#ifndef HAVE_RAYMATH_TYPES
+#define HAVE_RAYMATH_TYPES
     
     // Vector2 type
     typedef struct Vector2 {

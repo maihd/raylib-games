@@ -1,39 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Include">
-      <UniqueIdentifier>{6917EFFE-D5F6-6D9A-DE0E-F9704A6DD4FB}</UniqueIdentifier>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{1362EE31-7FCC-A2A8-C80A-544E34B480FD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources">
-      <UniqueIdentifier>{89565304-F535-D29F-FE4D-5D766AAC3801}</UniqueIdentifier>
+    <Filter Include="Framework\Include">
+      <UniqueIdentifier>{6654B2E3-D26A-B079-1BE2-3B9B87378101}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Sources">
+      <UniqueIdentifier>{869316E9-F2A9-147F-3B21-A0A0A776E506}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty">
+      <UniqueIdentifier>{107145F9-FC28-8746-6530-60A251072237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\Include">
+      <UniqueIdentifier>{631033FF-4FF4-F354-B854-EEA7A457DED6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Framework\Include\Array.h">
-      <Filter>Include</Filter>
+      <Filter>Framework\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Framework\Include\Debug.h">
+      <Filter>Framework\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Framework\Include\Easings.h">
-      <Filter>Include</Filter>
+      <Filter>Framework\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Framework\Include\FreeList.h">
-      <Filter>Include</Filter>
+      <Filter>Framework\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Framework\Include\Memory.h">
-      <Filter>Include</Filter>
+      <Filter>Framework\Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Framework\Include\RayGui.h">
-      <Filter>Include</Filter>
+      <Filter>Framework\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Include\raylib.h">
+      <Filter>ThirdParty\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\Include\raymath.h">
+      <Filter>ThirdParty\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Framework\Sources\Array.c">
-      <Filter>Sources</Filter>
+      <Filter>Framework\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\Memory.c">
-      <Filter>Sources</Filter>
+      <Filter>Framework\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\RayGui.c">
-      <Filter>Sources</Filter>
+      <Filter>Framework\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

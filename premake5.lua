@@ -1,16 +1,17 @@
 local ROOT_DIR = path.getabsolute(".")
 local BUILD_DIR = path.join(ROOT_DIR, "Build")
+local THIRDPARTY_DIR = path.join(ROOT_DIR, "ThirdParty")
 
 workspace "RaylibGames"
 do
-    language "C"
+    language "C++"
     location (BUILD_DIR)
 
     platforms { "x32", "x64" }
     configurations { "Debug", "Release" }
 
-    cdialect "c99"
-    compileas "C"
+    --cdialect "c99"
+    --compileas "C++"
     --staticruntime "On"
 
     flags {
@@ -51,6 +52,11 @@ do
         path.join(ROOT_DIR, "Framework/Include/**/*.h"),
         path.join(ROOT_DIR, "Framework/Sources/*.c"),
         path.join(ROOT_DIR, "Framework/Sources/**/*.c"),
+        path.join(ROOT_DIR, "Framework/Sources/*.cpp"),
+        path.join(ROOT_DIR, "Framework/Sources/**/*.cpp"),
+
+        path.join(THIRDPARTY_DIR, "Include/raylib.h"),
+        path.join(THIRDPARTY_DIR, "Include/raymath.h"),
     }
 
     filter {}
@@ -91,6 +97,8 @@ local function template(name, projectPath, shouldHideConsole)
             path.join(ROOT_DIR, projectPath, "**/*.h"),
             path.join(ROOT_DIR, projectPath, "*.c"),
             path.join(ROOT_DIR, projectPath, "**/*.c"),
+            path.join(ROOT_DIR, projectPath, "*.cpp"),
+            path.join(ROOT_DIR, projectPath, "**/*.cpp"),
         }
 
         defines {

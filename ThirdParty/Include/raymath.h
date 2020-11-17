@@ -21,7 +21,7 @@
 *   LICENSE: zlib/libpng
 *
 *   Copyright (c) 2015-2019 Ramon Santamaria (@raysan5)
-*
+*   
 *   This software is provided "as-is", without any express or implied warranty. In no event
 *   will the authors be held liable for any damages arising from the use of this software.
 *
@@ -39,15 +39,9 @@
 *
 **********************************************************************************************/
 
-#ifndef RAYMATH_H
-#define RAYMATH_H
+#pragma once
 
-//#define RAYMATH_STANDALONE      // NOTE: To use raymath as standalone lib, just uncomment this line
-//#define RAYMATH_HEADER_ONLY     // NOTE: To compile functions as static inline, uncomment this line
-
-#ifndef RAYMATH_STANDALONE
-    #include <raylib.h>           // Required for structs: Vector3, Matrix
-#endif
+#define RAYMATH_HEADER_ONLY     // NOTE: To compile functions as static inline, uncomment this line
 
 #if defined(RAYMATH_IMPLEMENTATION) && defined(RAYMATH_HEADER_ONLY)
     #error "Specifying both RAYMATH_IMPLEMENTATION and RAYMATH_HEADER_ONLY is contradictory"
@@ -75,16 +69,11 @@
 // Defines and Macros
 //----------------------------------------------------------------------------------
 #ifndef PI
-    #define PI 3.14159265358979323846
+    #define PI 3.14159265358979323846f
 #endif
 
-#ifndef DEG2RAD
-    #define DEG2RAD (PI/180.0f)
-#endif
-
-#ifndef RAD2DEG
-    #define RAD2DEG (180.0f/PI)
-#endif
+#define DEG2RAD (PI/180.0f)
+#define RAD2DEG (180.0f/PI)
 
 // Return float vector for Matrix
 #ifndef MatrixToFloat
@@ -100,9 +89,8 @@
 // Types and Structures Definition
 //----------------------------------------------------------------------------------
 
-#if defined(RAYMATH_STANDALONE) && !defined(HAVE_RAYMATH_TYPES)
-    #define HAVE_RAYMATH_TYPES
-
+#ifndef HAVE_RAYMATH_TYPES
+#define HAVE_RAYMATH_TYPES
     // Vector2 type
     typedef struct Vector2 {
         float x;
@@ -1407,4 +1395,230 @@ RMDEF Quaternion QuaternionTransform(Quaternion q, Matrix mat)
     return result;
 }
 
-#endif  // RAYMATH_H
+#ifdef __cplusplus
+
+// --------------------------------
+// Vector2 operators
+// --------------------------------
+
+__forceinline Vector2 operator+(Vector2 a, Vector2 b)
+{
+    return Vector2Add(a, b);
+}
+
+__forceinline Vector2 operator-(Vector2 a, Vector2 b)
+{
+    return Vector2Subtract(a, b);
+}
+
+__forceinline Vector2 operator*(Vector2 a, Vector2 b)
+{
+    return Vector2MultiplyV(a, b);
+}
+
+__forceinline Vector2 operator/(Vector2 a, Vector2 b)
+{
+    return Vector2MultiplyV(a, { 1.0f / b.x, 1.0f / b.y });
+}
+
+__forceinline Vector2 operator+(Vector2 a, float b)
+{
+    return Vector2Add(a, { b, b });
+}
+
+__forceinline Vector2 operator-(Vector2 a, float b)
+{
+    return Vector2Subtract(a, { b, b });
+}
+
+__forceinline Vector2 operator*(Vector2 a, float b)
+{
+    return Vector2MultiplyV(a, { b, b });
+}
+
+__forceinline Vector2 operator/(Vector2 a, float b)
+{
+    const float ib = 1.0f / b;
+    return Vector2MultiplyV(a, { ib, ib });
+}
+
+__forceinline Vector2 operator+(float a, Vector2 b)
+{
+    return Vector2Add({ a, a }, b);
+}
+
+__forceinline Vector2 operator-(float a, Vector2 b)
+{
+    return Vector2Subtract({ a, a }, b);
+}
+
+__forceinline Vector2 operator*(float a, Vector2 b)
+{
+    return Vector2MultiplyV({ a, a }, b);
+}
+
+__forceinline Vector2 operator/(float a, Vector2 b)
+{
+    return (Vector2{ a, a }) / b;
+}
+
+__forceinline bool operator==(Vector2 a, Vector2 b)
+{
+    return a.x == b.x && a.y == b.y;
+}
+
+__forceinline bool operator!=(Vector2 a, Vector2 b)
+{
+    return a.x != b.x || a.y != b.y;
+}
+
+// --------------------------------
+// Vector3 operators
+// --------------------------------
+
+__forceinline Vector3 operator+(Vector3 a, Vector3 b)
+{
+    return Vector3Add(a, b);
+}
+
+__forceinline Vector3 operator-(Vector3 a, Vector3 b)
+{
+    return Vector3Subtract(a, b);
+}
+
+__forceinline Vector3 operator*(Vector3 a, Vector3 b)
+{
+    return Vector3MultiplyV(a, b);
+}
+
+__forceinline Vector3 operator/(Vector3 a, Vector3 b)
+{
+    return Vector3MultiplyV(a, { 1.0f / b.x, 1.0f / b.y });
+}
+
+__forceinline Vector3 operator+(Vector3 a, float b)
+{
+    return Vector3Add(a, { b, b, b });
+}
+
+__forceinline Vector3 operator-(Vector3 a, float b)
+{
+    return Vector3Subtract(a, { b, b, b });
+}
+
+__forceinline Vector3 operator*(Vector3 a, float b)
+{
+    return Vector3MultiplyV(a, { b, b, b });
+}
+
+__forceinline Vector3 operator/(Vector3 a, float b)
+{
+    const float ib = 1.0f / b;
+    return Vector3MultiplyV(a, { ib, ib, ib });
+}
+
+__forceinline Vector3 operator+(float a, Vector3 b)
+{
+    return Vector3Add({ a, a, a }, b);
+}
+
+__forceinline Vector3 operator-(float a, Vector3 b)
+{
+    return Vector3Subtract({ a, a, a }, b);
+}
+
+__forceinline Vector3 operator*(float a, Vector3 b)
+{
+    return Vector3MultiplyV({ a, a, a }, b);
+}
+
+__forceinline Vector3 operator/(float a, Vector3 b)
+{
+    return (Vector3{ a, a, a }) / b;
+}
+
+__forceinline bool operator==(Vector3 a, Vector3 b)
+{
+    return a.x == b.x && a.y == b.y && a.z == b.z;
+}
+
+__forceinline bool operator!=(Vector3 a, Vector3 b)
+{
+    return a.x != b.x || a.y != b.y || a.z != b.z;
+}
+
+// --------------------------------
+// Vector4 operators
+// --------------------------------
+
+//__forceinline Vector4 operator+(Vector4 a, Vector4 b)
+//{
+//    return Vector3Add(a, b);
+//}
+//
+//__forceinline Vector4 operator-(Vector4 a, Vector4 b)
+//{
+//    return Vector3Subtract(a, b);
+//}
+//
+//__forceinline Vector4 operator*(Vector4 a, Vector4 b)
+//{
+//    return Vector3MultiplyV(a, b);
+//}
+//
+//__forceinline Vector4 operator/(Vector4 a, Vector4 b)
+//{
+//    return Vector3MultiplyV(a, { 1.0f / b.x, 1.0f / b.y });
+//}
+//
+//__forceinline Vector4 operator+(Vector4 a, float b)
+//{
+//    return Vector3Add(a, { b, b, b });
+//}
+//
+//__forceinline Vector4 operator-(Vector4 a, float b)
+//{
+//    return Vector3Subtract(a, { b, b, b });
+//}
+//
+//__forceinline Vector4 operator*(Vector4 a, float b)
+//{
+//    return Vector3MultiplyV(a, { b, b, b });
+//}
+//
+//__forceinline Vector4 operator/(Vector4 a, float b)
+//{
+//    const float ib = 1.0f / b;
+//    return Vector3MultiplyV(a, { ib, ib, ib });
+//}
+//
+//__forceinline Vector4 operator+(float a, Vector4 b)
+//{
+//    return Vector3Add({ a, a, a }, b);
+//}
+//
+//__forceinline Vector4 operator-(float a, Vector4 b)
+//{
+//    return Vector3Subtract({ a, a, a }, b);
+//}
+//
+//__forceinline Vector4 operator*(float a, Vector4 b)
+//{
+//    return Vector3MultiplyV({ a, a, a }, b);
+//}
+//
+//__forceinline Vector4 operator/(float a, Vector4 b)
+//{
+//    return (Vector4{ a, a, a, a }) / b;
+//}
+//
+//__forceinline bool operator==(Vector4 a, Vector4 b)
+//{
+//    return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
+//}
+//
+//__forceinline bool operator!=(Vector4 a, Vector4 b)
+//{
+//    return a.x != b.x || a.y != b.y || a.z != b.z || a.w != b.w;
+//}
+#endif

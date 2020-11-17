@@ -3,6 +3,7 @@
 #include <Array.h>
 #include <raylib.h>
 #include <stdint.h>
+#include <string.h>
 
 typedef uint8_t  u8;
 typedef uint32_t u32;
@@ -112,7 +113,7 @@ Texture CacheTexture(const char* path)
     Texture texture = LoadTexture(finalPath);
     if (texture.id != 0)
     {
-        CachedTexture newEntry = { .hash = targetHash, .texture = texture };
+        CachedTexture newEntry = { targetHash, texture };
         ArrayPush(cachedTextures, newEntry);
     }
 
