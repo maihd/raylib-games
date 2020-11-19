@@ -151,11 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\Examples\ECS\flecs.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\Examples\ECS\ECS.c" />
-    <ClCompile Include="..\Examples\ECS\flecs.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Framework.vcxproj">
