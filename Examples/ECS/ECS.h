@@ -8,24 +8,23 @@ typedef uint64_t EcsComponent;
 
 #define ECS_MASK(TYPES_COUNT, ...) TYPES_COUNT, (EcsComponent[]){ ##__VA_ARGS }
 
-typedef enum
+enum
 {
-    EcsSystemType_Update,
-    EcsSystemType_Render,
-} EcsSystemType;
+    ECS_SYSTEM_UPDATE,
+    ECS_SYSTEM_RENDER,
+};
 
 typedef struct EcsWorld EcsWorld;
 
-typedef void (*EcsSystemFn)(EcsWorld* world);
-typedef void (*EcsDestroyComponentFn)(void* data);
+typedef void (*EcsSystem)(EcsWorld* world);
 
 EcsWorld*   EcsNew(int maxEntities, int componentCount, int systemCount);
 void        EcsFree(EcsWorld** world);
 
-void        EcsRegisterComponent(EcsWorld* world, EcsComponent component, int count, int size, EcsDestroyComponentFn destroyer);
-void        EcsRegisterSystem(EcsWorld* world, EcsSystemFn system, EcsSystemType type);
+void        EcsRegisterComponent(EcsWorld* world, EcsComponent component, int count, int size);
+void        EcsRegisterSystem(EcsWorld* world, int type, EcsSystem system);
 
-void        EcsRunSystemByType(EcsWorld* world, EcsSystemType type);
+void        EcsRunSystemByType(EcsWorld* world, int type);
 void        EcsRunSystemAtIndex(EcsWorld* world, int systemIndex);
 
 void        EcsForCount(EcsWorld* world);
