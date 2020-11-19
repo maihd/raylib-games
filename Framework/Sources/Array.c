@@ -25,7 +25,7 @@ void* Array_NewMemoryDebug(int capacity, int elementSize, const char* func, cons
     newCapacity = newCapacity | (newCapacity >> 16);
     newCapacity = newCapacity + 1;
 
-    ArrayHeader* newBuffer = (ArrayHeader*)_MemoryAlloc(sizeof(ArrayHeader) + newCapacity * elementSize, func, file, line);
+    ArrayHeader* newBuffer = (ArrayHeader*)MemoryAllocDebug(sizeof(ArrayHeader) + newCapacity * elementSize, func, file, line);
     if (newBuffer)
     {
         newBuffer->count    = 0;
@@ -39,7 +39,7 @@ int Array_FreeMemoryDebug(void* array, const char* func, const char* file, int l
 {
     if (array)
     {
-        MemoryFree((ArrayHeader*)array - 1);
+        MemoryFreeDebug((ArrayHeader*)array - 1, func, file, line);
         return 1;
     }
     else
@@ -64,7 +64,7 @@ int Array_GrowMemoryDebug(void** array, int capacity, int elementSize, const cha
 
     int oldCount = ArrayCount(*array);
     ArrayHeader* oldBuffer = *array ? ((ArrayHeader*)(*array) - 1) : NULL;
-    ArrayHeader* newBuffer = (ArrayHeader*)_MemoryRealloc(oldBuffer, sizeof(ArrayHeader) + newCapacity * elementSize, func, file, line);
+    ArrayHeader* newBuffer = (ArrayHeader*)MemoryReallocDebug(oldBuffer, sizeof(ArrayHeader) + newCapacity * elementSize, func, file, line);
 
     if (newBuffer)
     {

@@ -183,14 +183,14 @@ static void UnregisterAlloc(void* ptr, const char* func, const char* file, int l
     }
 }
 
-void* _MemoryAlloc(size_t size, const char* func, const char* file, int line)
+void* MemoryAllocDebug(size_t size, const char* func, const char* file, int line)
 {
     void* ptr = malloc(size);
     RegisterAlloc(ptr, size, func, file, line);
     return ptr;
 }
 
-void* _MemoryRealloc(void* ptr, size_t size, const char* func, const char* file, int line)
+void* MemoryReallocDebug(void* ptr, size_t size, const char* func, const char* file, int line)
 {
     if (ptr == NULL)
     {
@@ -202,7 +202,7 @@ void* _MemoryRealloc(void* ptr, size_t size, const char* func, const char* file,
     return newPtr;
 }
 
-void _MemoryFree(void* ptr, const char* func, const char* file, int line)
+void MemoryFreeDebug(void* ptr, const char* func, const char* file, int line)
 {
     if (ptr != NULL)
     {

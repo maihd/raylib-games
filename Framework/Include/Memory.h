@@ -4,13 +4,13 @@
 #include <string.h>
 
 #if !defined(NDEBUG)
-#define MemoryAlloc(size)              _MemoryAlloc(size, __FUNCTION__, __FILE__, __LINE__)
-#define MemoryRealloc(ptr, size)       _MemoryRealloc(ptr, size, __FUNCTION__, __FILE__, __LINE__)
-#define MemoryFree(ptr)                _MemoryFree(ptr, __FUNCTION__, __FILE__, __LINE__)
+#define MemoryAlloc(size)              MemoryAllocDebug(size, __FUNCTION__, __FILE__, __LINE__)
+#define MemoryRealloc(ptr, size)       MemoryReallocDebug(ptr, size, __FUNCTION__, __FILE__, __LINE__)
+#define MemoryFree(ptr)                MemoryFreeDebug(ptr, __FUNCTION__, __FILE__, __LINE__)
 
-void* _MemoryAlloc(size_t size, const char* func, const char* file, int line);
-void* _MemoryRealloc(void* ptr, size_t size, const char* func, const char* file, int line);
-void  _MemoryFree(void* ptr, const char* func, const char* file, int line);
+void* MemoryAllocDebug(size_t size, const char* func, const char* file, int line);
+void* MemoryReallocDebug(void* ptr, size_t size, const char* func, const char* file, int line);
+void  MemoryFreeDebug(void* ptr, const char* func, const char* file, int line);
 #else
 void* MemoryAlloc(size_t size);
 void* MemoryRealloc(void* ptr, size_t size);
