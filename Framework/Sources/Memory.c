@@ -139,7 +139,7 @@ static void UpdateAlloc(void* ptr, void* newPtr, size_t size, const char* func, 
     Tracker.allocSize -= allocDesc->size;
     Tracker.allocSize += size;
 
-    uint64_t newPtrHash = HashPtr64(ptr) & (ALLOC_DESC_COUNT - 1);
+    uint64_t newPtrHash = HashPtr64(newPtr) & (ALLOC_DESC_COUNT - 1);
     if (newPtrHash != ptrHash)
     {
         if (prevAllocDesc)
