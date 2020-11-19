@@ -36,6 +36,9 @@
     <ClInclude Include="..\Framework\Include\RayGui.h">
       <Filter>Framework\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Framework\Include\System.h">
+      <Filter>Framework\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\ThirdParty\Include\raylib.h">
       <Filter>ThirdParty\Include</Filter>
     </ClInclude>
@@ -47,10 +50,16 @@
     <ClCompile Include="..\Framework\Sources\Array.c">
       <Filter>Framework\Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\Framework\Sources\Debug.c">
+      <Filter>Framework\Sources</Filter>
+    </ClCompile>
     <ClCompile Include="..\Framework\Sources\Memory.c">
       <Filter>Framework\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\RayGui.c">
+      <Filter>Framework\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Framework\Sources\System.c">
       <Filter>Framework\Sources</Filter>
     </ClCompile>
   </ItemGroup>

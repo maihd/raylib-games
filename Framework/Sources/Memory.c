@@ -194,7 +194,7 @@ void* MemoryReallocDebug(void* ptr, size_t size, const char* func, const char* f
 {
     if (ptr == NULL)
     {
-        return _MemoryAlloc(size, func, file, line);
+        return MemoryAllocDebug(size, func, file, line);
     }
 
     void* newPtr = realloc(ptr, size);
