@@ -1,24 +1,5 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// INTERNAL
-void*    Array_NewMemory(int capacity, int elementSize);
-
-// INTERNAL
-int      Array_FreeMemory(void*  array);
-
-// INTERNAL
-int      Array_GrowMemory(void** array, int capacity, int elementSize);
-
-// INTERNAL
-int      Array_MoveMemory(void*  array, int start, int end, int count, int elementSize);
-
-#ifdef __cplusplus
-}
-#endif
 
 #ifndef Array
 #define Array(T)                        T*
@@ -108,3 +89,53 @@ int      Array_MoveMemory(void*  array, int start, int end, int count, int eleme
         ArrayLastIndexOf(array, value, index);                                                              \
         ArrayErase(array, index);                                                                           \
     } while (0)
+
+// ----------------------------------
+// Internal functions
+// ----------------------------------
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef NDEBUG
+    // INTERNAL
+#define Array_NewMemory(capacity, elementSize) Array_NewMemoryDebug(capacity, elementSize, __FUNCTION__, __FILE__, __LINE__)
+
+// INTERNAL
+#define Array_FreeMemory(array) Array_FreeMemoryDebug(array, __FUNCTION__, __FILE__, __LINE__)
+
+// INTERNAL
+#define Array_GrowMemory(array) Array_GrowMemoryDebug(array, capacity, elementSize, __FUNCTION__, __FILE__, __LINE__)
+
+// INTERNAL
+#define Array_MoveMemory(array, start, end, count, elementSize) Array_MoveMemoryDebug(array, start, end, count, elementSize, __FUNCTION__, __FILE__, __LINE__)
+
+// INTERNAL
+void*   Array_NewMemoryDebug(int capacity, int elementSize, const char* func, const char* file, int line);
+
+// INTERNAL
+int     Array_FreeMemoryDebug(void*  array, const char* func, const char* file, int line);
+
+// INTERNAL
+int     Array_GrowMemoryDebug(void** array, int capacity, int elementSize, const char* func, const char* file, int line);
+
+// INTERNAL
+int     Array_MoveMemoryDebug(void*  array, int start, int end, int count, int elementSize, const char* func, const char* file, int line);
+#else
+// INTERNAL
+void*   Array_NewMemory(int capacity, int elementSize);
+
+// INTERNAL
+int     Array_FreeMemory(void*  array);
+
+// INTERNAL
+int     Array_GrowMemory(void** array, int capacity, int elementSize);
+
+// INTERNAL
+int     Array_MoveMemory(void*  array, int start, int end, int count, int elementSize);
+#endif
+
+#ifdef __cplusplus
+}
+#endif
