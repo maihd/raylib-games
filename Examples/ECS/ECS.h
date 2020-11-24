@@ -10,6 +10,7 @@ typedef uint64_t EcsComponent;
 
 enum
 {
+    ECS_SYSTEM_NONE,
     ECS_SYSTEM_UPDATE,
     ECS_SYSTEM_RENDER,
 };

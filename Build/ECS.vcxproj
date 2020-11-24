@@ -151,6 +151,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Examples\ECS\ECS.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\Examples\ECS\ECS.c" />
   </ItemGroup>
   <ItemGroup>

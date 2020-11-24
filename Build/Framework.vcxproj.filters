@@ -30,6 +30,9 @@
     <ClInclude Include="..\Framework\Include\FreeList.h">
       <Filter>Framework\Include</Filter>
     </ClInclude>
+    <ClInclude Include="..\Framework\Include\HashTable.h">
+      <Filter>Framework\Include</Filter>
+    </ClInclude>
     <ClInclude Include="..\Framework\Include\Memory.h">
       <Filter>Framework\Include</Filter>
     </ClInclude>
@@ -51,6 +54,9 @@
       <Filter>Framework\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\Debug.c">
+      <Filter>Framework\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Framework\Sources\HashTable.c">
       <Filter>Framework\Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\Memory.c">

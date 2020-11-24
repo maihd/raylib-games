@@ -143,6 +143,7 @@
     <ClInclude Include="..\Framework\Include\Debug.h" />
     <ClInclude Include="..\Framework\Include\Easings.h" />
     <ClInclude Include="..\Framework\Include\FreeList.h" />
+    <ClInclude Include="..\Framework\Include\HashTable.h" />
     <ClInclude Include="..\Framework\Include\Memory.h" />
     <ClInclude Include="..\Framework\Include\RayGui.h" />
     <ClInclude Include="..\Framework\Include\System.h" />
@@ -152,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="..\Framework\Sources\Array.c" />
     <ClCompile Include="..\Framework\Sources\Debug.c" />
+    <ClCompile Include="..\Framework\Sources\HashTable.c" />
     <ClCompile Include="..\Framework\Sources\Memory.c" />
     <ClCompile Include="..\Framework\Sources\RayGui.c" />
     <ClCompile Include="..\Framework\Sources\System.c" />

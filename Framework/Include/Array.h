@@ -54,6 +54,8 @@ int     Array_MoveMemory(void*  array, int start, int end, int count, int elemen
 // Inline functions
 // -----------------------------
 
+#define ARRAY_EMPTY                     0
+
 #ifndef Array
 #define Array(T)                        T*
 #endif
