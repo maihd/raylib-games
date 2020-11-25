@@ -140,5 +140,6 @@ example "MeshDeformation2D"
 example "Todos"
 example "UI"
 example "ECS"
+example "FLECS"
 
 game "NeonShooter"

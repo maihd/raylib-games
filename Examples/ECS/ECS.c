@@ -87,6 +87,22 @@ void EcsBuffer_RemoveItem(EcsBuffer* buffer, int index)
     }
 }
 
+void* EcsBuffer_GetItem(EcsBuffer* buffer, int index)
+{
+    DebugAssert(buffer != NULL, "Require valid buffer");
+    DebugAssert(index > -1 && index < buffer->count, "Index is out of range");
+
+    return (char*)buffer->data + buffer->itemSize * index;
+}
+
+void EscBuffer_SetItem(EcsBuffer* buffer, int index, void* data)
+{
+    DebugAssert(buffer != NULL, "Require valid buffer");
+    DebugAssert(index > -1 && index < buffer->count, "Index is out of range");
+
+    memset((char*)buffer->data + buffer->itemSize * index, data, buffer->itemSize);
+}
+
 FreeListStruct(int);
 
 struct EcsWorld
@@ -94,7 +110,7 @@ struct EcsWorld
     FreeList(int)               entities;
     Array(int)                  entityLifes;
 
-    HashTable(EcsBuffer)        components;
+    HashTable(EcsBuffer)        componentsPool;
     HashTable(Array(EcsSystem)) systems;
 };
 
@@ -105,7 +121,7 @@ EcsWorld* EcsWorld_Create(void)
     world->entities = FreeListNew(int, 0);
 
     HashTable_Init(world->systems, 64, 64);
-    HashTable_Init(world->components, 64, 64);
+    HashTable_Init(world->componentsPool, 64, 64);
     return world;
 }
 
@@ -122,6 +138,11 @@ int EcsWorld_NewEntity(EcsWorld* world)
 void* EcsWorld_GetComponent(EcsWorld* world, int entity, int componentName)
 {
     int index = ECS_ENTITY_INDEX(entity);
+    int life = ECS_ENTITY_LIFE(entity);
+    if (world->entityLifes[index] > life)
+    {
+        return NULL;
+    }
 
 
     return NULL;
