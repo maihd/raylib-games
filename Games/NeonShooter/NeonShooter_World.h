@@ -29,7 +29,6 @@ typedef struct PointMass
     Vector2 position;
     Vector2 velocity;
     Vector2 acceleration;
-
     float invMass;
     float damping;
 } PointMass;
