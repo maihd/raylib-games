@@ -16,6 +16,18 @@
     <Filter Include="ThirdParty\Include">
       <UniqueIdentifier>{631033FF-4FF4-F354-B854-EEA7A457DED6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ThirdParty\Sources">
+      <UniqueIdentifier>{834F9704-6F33-585A-D893-52ADC49642DC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\Sources\spine-c">
+      <UniqueIdentifier>{615B8FAF-4D6B-3B80-B624-A09EA2532A19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\Sources\spine-c\src">
+      <UniqueIdentifier>{F8E1BB54-E407-86BB-CD4D-0B87B912AB87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ThirdParty\Sources\spine-c\src\spine">
+      <UniqueIdentifier>{262BCEAC-1212-90A4-BB62-F6C1A728090B}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Framework\Include\Array.h">
@@ -67,6 +79,123 @@
     </ClCompile>
     <ClCompile Include="..\Framework\Sources\System.c">
       <Filter>Framework\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Animation.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AnimationState.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AnimationStateData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Array.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Atlas.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AtlasAttachmentLoader.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Attachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AttachmentLoader.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Bone.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\BoneData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\BoundingBoxAttachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\ClippingAttachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Color.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Event.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\EventData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\IkConstraint.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\IkConstraintData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Json.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\MeshAttachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PathAttachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PathConstraint.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PathConstraintData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PointAttachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\RegionAttachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Skeleton.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonBinary.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonBounds.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonClipping.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonJson.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Skin.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Slot.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SlotData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\TransformConstraint.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\TransformConstraintData.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Triangulator.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\VertexAttachment.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\VertexEffect.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\extension.c">
+      <Filter>ThirdParty\Sources\spine-c\src\spine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

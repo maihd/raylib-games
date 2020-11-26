@@ -95,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;..\ThirdParty\Sources\spine-c\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -107,7 +107,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;..\ThirdParty\Sources\spine-c\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -119,7 +119,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;..\ThirdParty\Sources\spine-c\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -131,7 +131,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Framework\Include;..\ThirdParty\Include;..\ThirdParty\Sources\spine-c\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
@@ -157,6 +157,47 @@
     <ClCompile Include="..\Framework\Sources\Memory.c" />
     <ClCompile Include="..\Framework\Sources\RayGui.c" />
     <ClCompile Include="..\Framework\Sources\System.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Animation.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AnimationState.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AnimationStateData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Array.c">
+      <ObjectFileName>$(IntDir)\Array1.obj</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Atlas.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AtlasAttachmentLoader.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Attachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\AttachmentLoader.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Bone.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\BoneData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\BoundingBoxAttachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\ClippingAttachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Color.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Event.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\EventData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\IkConstraint.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\IkConstraintData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Json.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\MeshAttachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PathAttachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PathConstraint.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PathConstraintData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\PointAttachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\RegionAttachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Skeleton.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonBinary.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonBounds.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonClipping.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SkeletonJson.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Skin.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Slot.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\SlotData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\TransformConstraint.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\TransformConstraintData.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\Triangulator.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\VertexAttachment.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\VertexEffect.c" />
+    <ClCompile Include="..\ThirdParty\Sources\spine-c\src\spine\extension.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

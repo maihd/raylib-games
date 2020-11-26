@@ -45,6 +45,7 @@ do
     includedirs { 
         path.join(ROOT_DIR, "Framework/Include"),
         path.join(ROOT_DIR, "ThirdParty/Include"),
+        path.join(ROOT_DIR, "ThirdParty/Sources/spine-c/include"),
     }
 
     files {
@@ -57,6 +58,9 @@ do
 
         path.join(THIRDPARTY_DIR, "Include/raylib.h"),
         path.join(THIRDPARTY_DIR, "Include/raymath.h"),
+
+        path.join(THIRDPARTY_DIR, "Sources/spine-c/src/*.c"),
+        path.join(THIRDPARTY_DIR, "Sources/spine-c/src/**/*.c"),
     }
 
     filter {}
@@ -90,6 +94,7 @@ local function template(name, projectPath, shouldHideConsole)
         includedirs {
             path.join(ROOT_DIR, "Framework/Include"),
             path.join(ROOT_DIR, "ThirdParty/Include"),
+            path.join(ROOT_DIR, "ThirdParty/Sources/spine-c/include"),
         }
 
         files {
