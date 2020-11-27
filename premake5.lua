@@ -146,5 +146,6 @@ example "Todos"
 example "UI"
 example "ECS"
 example "FLECS"
+example "Spine"
 
 game "NeonShooter"
