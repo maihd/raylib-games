@@ -81,8 +81,10 @@ int main(int argc, char* argv[])
     ECS_COMPONENT(world, Velocity);
     ECS_COMPONENT(world, Circle);
 
+    int EcsOnRender = EcsOnUpdate + 1;
+
     ECS_SYSTEM(world, Move, EcsOnUpdate, Position, Velocity);
-    ECS_SYSTEM(world, Render, EcsOnUpdate, Position, Circle);
+    ECS_SYSTEM(world, Render, EcsOnRender, Position, Circle);
 
     int width = 800;
     int height = 600;
@@ -100,7 +102,6 @@ int main(int argc, char* argv[])
     InitWindow(width, height, "ECS");
 
     SetTargetFPS(60);
-    ecs_set_target_fps(world, 60);
 
     while (!WindowShouldClose())
     {
